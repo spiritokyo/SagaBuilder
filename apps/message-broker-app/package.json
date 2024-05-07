@@ -1,0 +1,49 @@
+{
+  "name": "message-broker-app",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "exports": "./dist/apps/message-broker-app/main.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx ./main.ts",
+    "build": "tsc && tsc-alias",
+    "debug": "tsc && (concurrently --kill-others \"tsc -w\" \"tsc-alias -w\" \"nodemon --watch --inspect=0.0.0.0:9229 ./dist/apps/message-broker-app/main.js\")",
+    "debug:ts": "node --inspect=0.0.0.0:9229 --experimental-specifier-resolution=node --loader ./loader.js ./main.ts",
+    "lint:check": "eslint \"**/*.ts\"",
+    "lint:fix": "eslint \"**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.4"
+  },
+  "devDependencies": {
+    "@types/amqplib": "*",
+    "@types/express": "*",
+    "@types/node": "*",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "concurrently": "*",
+    "eslint": "*",
+    "eslint-config-prettier": "*",
+    "eslint-import-resolver-typescript": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-prettier": "*",
+    "prettier": "*",
+    "ts-node": "*",
+    "tsconfig-paths": "*",
+    "tsx": "*",
+    "typescript": "*",
+    "tsc-alias": "*",
+    "nodemon": "*"
+  },
+  "aliases": {
+    "@libs": "./dist/libs"
+  }
+}

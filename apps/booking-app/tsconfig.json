@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist",
+    "paths": {
+      "@domain/*": [
+        "./src/domain/*"
+      ],
+      "@application/*": [
+        "./src/application/*"
+      ],
+      "@infra/*": [
+        "./src/infra/*"
+      ],
+      "@libs/*": [
+        "../../libs/*"
+      ]
+    },
+  },
+  "include": ["src/**/*", "../message-broker-app/hello.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,93 @@
+services:
+  # Message broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: "user"
+      RABBITMQ_DEFAULT_PASS: "password"
+      RABBITMQ_DEFAULT_VHOST: "/"
+    volumes:
+      - "./configs/rabbitmq/rabbitmq_enabled_plugins:/etc/rabbitmq/enabled_plugins"
+    networks:
+      - reverseproxy-nw
+
+  # RabbitMQ migrator
+  # TODO: turn into build version
+  message-broker-app:
+    build:
+      dockerfile: ./apps/message-broker-app/Dockerfile
+      context: .
+      target: development
+    container_name: message-broker-service
+    restart: on-failure:10
+    depends_on:
+      rabbitmq:
+        condition: service_started
+    links:
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+    environment:
+      NODE_ENV: development
+    networks:
+      - reverseproxy-nw
+
+  # Database
+  booking-db:
+    image: postgres:16
+    restart: always
+    container_name: booking-db
+    ports:
+      - '5433:5432'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./apps/booking-app/src/infra/database/init-database.sh:/docker-entrypoint-initdb.d/init-database.sh
+      - booking_db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: booking
+    networks:
+      - reverseproxy-nw
+
+  # Change data capture
+  debezium:
+    image: quay.io/debezium/server:2.5
+    container_name: debezium
+    healthcheck:
+      test: curl http://debezium:8080/q/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      message-broker-app:
+        condition: service_completed_successfully
+      booking-db:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - booking-db
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs/debezium:/debezium/conf:readonly
+    networks:
+      - reverseproxy-nw
+
+networks:
+  reverseproxy-nw:
+    external: true
+
+volumes:
+  booking_db_data:
+    driver: local

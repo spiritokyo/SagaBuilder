@@ -1,0 +1,30 @@
+include:
+  - path:
+    - ./docker-compose.infra.yml
+
+services:
+  booking-app:
+    extends:
+      file: ./docker-compose.base.yml
+      service: booking-app
+    build:
+      dockerfile: ./apps/booking-app/Dockerfile
+      context: .
+      target: production
+    environment:
+      NODE_ENV: production
+
+  payment-app:
+    extends:
+      file: ./docker-compose.base.yml
+      service: payment-app
+    build:
+      dockerfile: ./apps/payment-app/Dockerfile
+      context: .
+      target: production
+    environment:
+      NODE_ENV: production
+
+networks:
+  reverseproxy-nw:
+    external: true

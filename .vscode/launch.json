@@ -1,0 +1,63 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Debug booking-app",
+        "remoteRoot": "/apps/booking-app/dist/apps/booking-app",
+        "localRoot": "${workspaceFolder}/apps/booking-app/dist/apps/booking-app",
+        "skipFiles": [
+          "<node_modules>/**"
+        ],
+        "port": 9229,
+      },
+      {
+        "type": "node",
+        "request": "attach",
+        "name": "Debug payment-app",
+        "remoteRoot": "/apps/payment-app/dist/apps/payment-app",
+        "localRoot": "${workspaceFolder}/apps/payment-app/dist/apps/payment-app",
+        "skipFiles": [
+          "<node_modules>/**"
+        ],
+        "cwd": "${workspaceRoot}",
+        "port": 9230,
+    }
+    // {
+    //   "type": "node",
+    //   "request": "launch",
+    //   "name": "Debug TS",
+    //   "skipFiles": [
+    //     "<node_internals>/**"
+    //   ],
+    //   "program": "${workspaceFolder}/apps/booking-app/main.ts",
+    //   "runtimeArgs": [
+    //     "-r",
+    //     "ts-node/register",
+    //     "-r",
+    //     "tsconfig-paths/register",
+    //     "--loader",
+    //     "ts-node/esm"
+    //   ],
+    //   "console": "integratedTerminal",
+    //   "outFiles": [
+    //     "${workspaceFolder}/**/*.js"
+    //   ]
+    // },
+    // {
+    //   "name": "Docker Node.js Launch",
+    //   "type": "docker",
+    //   "request": "launch",
+    //   "preLaunchTask": "docker-run: debug",
+    //   "platform": "node",
+    //   "node": {
+    //     "package": "${workspaceFolder}/apps/booking-app/package.json",
+    //     "localRoot": "${workspaceFolder}/apps/booking-app"
+    //   }
+    // }
+  ]
+}

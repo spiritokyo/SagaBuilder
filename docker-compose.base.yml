@@ -1,0 +1,40 @@
+services:
+  booking-app:
+    container_name: booking-app-service
+    restart: on-failure:10
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      message-broker-app:
+        condition: service_completed_successfully
+      booking-db:
+        condition: service_started
+      debezium:
+        condition: service_healthy
+    links:
+      - rabbitmq
+      - message-broker-app
+      - booking-db
+      - debezium
+    ports:
+      - '3000:3000'
+    networks:
+      - reverseproxy-nw
+
+  payment-app:
+    container_name: payment-app-service
+    restart: on-failure:10
+    depends_on:
+      rabbitmq:
+        condition: service_started
+      message-broker-app:
+        condition: service_completed_successfully
+    links:
+      - rabbitmq
+      - message-broker-app
+    networks:
+      - reverseproxy-nw
+
+networks:
+  reverseproxy-nw:
+    external: true
