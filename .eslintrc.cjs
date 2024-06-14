@@ -112,24 +112,34 @@ module.exports = {
             ],
               pathGroups: [
                 {
-                  pattern: '@auth-jwt/**',
+                  pattern: '@domain/**',
                   group: 'internal',
+                  position: 'before'
                 },
                 {
-                  pattern: '@auth-session/**',
+                  pattern: '@application/**',
                   group: 'internal',
+                  position: 'before'
                 },
                 {
-                  pattern: '@shared/**',
+                  pattern: '@infra/**',
                   group: 'internal',
+                  position: 'before'
                 },
                 {
-                  pattern: '@certificate/**',
+                  pattern: '@libs/**',
                   group: 'internal',
+                  position: 'before'
                 },
               ],
               pathGroupsExcludedImportTypes: ['internal'],
-              'newlines-between': 'always-and-inside-groups',
+              'newlines-between': 'always',
+              // 'newlines-between': 'always-and-inside-groups',
+              distinctGroup: true,
+              alphabetize: {
+                order: 'asc',
+                caseInsensitive: true
+              }
         },
     ],
     'import/newline-after-import': 'error',

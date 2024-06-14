@@ -1,9 +1,9 @@
-import type { AuthorizePaymentCardCommand } from '@libs/shared'
-import { CONTRACTS_QUEUES } from '@libs/shared'
 import type { Channel } from 'amqplib'
 import { randomUUID } from 'node:crypto'
-
 import type EventEmitter from 'node:events'
+
+import { CONTRACTS_QUEUES } from '@libs/shared'
+import type { AuthorizePaymentCardCommand } from '@libs/shared'
 
 export class CommandMessagePublisherRabbitMQ {
   constructor(private channelPayment: Channel, private eventEmitter: EventEmitter) {}

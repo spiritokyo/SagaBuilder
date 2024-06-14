@@ -1,7 +1,7 @@
-import { CONTRACTS_QUEUES } from '@libs/shared'
 import type { Channel, ConsumeMessage } from 'amqplib'
-
 import type { EventEmitter } from 'node:stream'
+
+import { CONTRACTS_QUEUES } from '@libs/shared'
 
 export class ReplyCreatingBookingSagaConsumerRabbitMQ {
   constructor(private channelBookingSagaReplyTo: Channel, private eventEmitter: EventEmitter) {}

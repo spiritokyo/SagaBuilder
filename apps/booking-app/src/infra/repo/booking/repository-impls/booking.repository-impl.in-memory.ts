@@ -1,12 +1,10 @@
 import type { Booking } from '@domain/index'
 
-import { emulateChaosError } from '@libs/infra/error/utils'
-
 import { ReserveBookingErrors } from '@infra/controllers/reserve-booking'
-
 import { BookingMapper } from '@infra/mappers'
-
 import type { BookingPersistenceEntity } from '@infra/persistence-entities'
+
+import { emulateChaosError } from '@libs/infra/error/utils'
 
 import type { TBookingRepository } from '../booking.repository'
 

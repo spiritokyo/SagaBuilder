@@ -1,5 +1,7 @@
 import { Booking } from '@domain/index'
+
 import type { BookingPersistenceEntity } from '@infra/persistence-entities'
+
 import { UniqueEntityID } from '@libs/domain/unique-entity-id'
 import type { TMapper } from '@libs/infra'
 

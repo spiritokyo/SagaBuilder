@@ -1,10 +1,11 @@
-import { buildCircuitBreaker } from '@libs/infra/error/utils'
 import type EventEmitter from 'node:events'
-
-import { ReserveBookingErrors } from '@infra/controllers/reserve-booking'
 
 import type { Booking } from '@domain/index'
 import { DomainBookingErrors } from '@domain/index'
+
+import { ReserveBookingErrors } from '@infra/controllers/reserve-booking'
+
+import { buildCircuitBreaker } from '@libs/infra/error/utils'
 
 import type { SagaStep } from '../saga.types'
 

@@ -1,6 +1,5 @@
-import type { UniqueEntityID } from '@libs/domain/unique-entity-id'
-
 import { AggregateRoot } from '@libs/domain'
+import type { UniqueEntityID } from '@libs/domain/unique-entity-id'
 
 import {
   BookingCreatedDomainEvent,

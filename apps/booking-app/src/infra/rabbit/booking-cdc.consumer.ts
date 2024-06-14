@@ -1,5 +1,6 @@
-import { CONTRACTS_QUEUES } from '@libs/shared'
 import type { Channel, ConsumeMessage } from 'amqplib'
+
+import { CONTRACTS_QUEUES } from '@libs/shared'
 
 export class BookingCDCConsumerRabbitMQ {
   constructor(private channelBookingCDC: Channel) {}

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
 import type { BookingDetailsVO } from '@domain/index'
+
 import { UseCaseError } from '@libs/core'
 
 export type IBookingDetailsExtractor = {

@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express'
 
+import { DomainBookingErrors } from '@domain/index'
+
 import type { ReserveBookingUsecase } from '@application/usecases/reserve-booking/reserve-booking.usecase'
 
 import { BaseController } from '@libs/infra'
-
-import { DomainBookingErrors } from '@domain/index'
 
 import type { ReserveBookingDTO } from './reserve-booking.dto'
 import { ReserveBookingErrors } from './reserve-booking.errors'

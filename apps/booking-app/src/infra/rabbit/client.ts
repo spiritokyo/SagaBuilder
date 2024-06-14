@@ -1,16 +1,14 @@
 /* eslint-disable require-atomic-updates */
 import { connect } from 'amqplib'
-
 import type { Channel, Connection } from 'amqplib'
-
 import EventEmitter from 'events'
 
-import { rabbitMQConfig } from '@libs/shared/constants'
 import type { AuthorizePaymentCardCommand, TChannelsUnion } from '@libs/shared'
+import { rabbitMQConfig } from '@libs/shared/constants'
 
+import { BookingCDCConsumerRabbitMQ } from './booking-cdc.consumer'
 import { CommandMessagePublisherRabbitMQ } from './command-message.publisher'
 import { ReplyCreatingBookingSagaConsumerRabbitMQ } from './reply-saga.consumer'
-import { BookingCDCConsumerRabbitMQ } from './booking-cdc.consumer'
 
 export class RabbitMQClient {
   public static instance: RabbitMQClient | null = null

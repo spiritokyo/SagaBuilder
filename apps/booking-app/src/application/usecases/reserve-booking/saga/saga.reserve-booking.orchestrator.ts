@@ -1,13 +1,12 @@
 import EventEmitter from 'node:events'
 
-import type { UniqueEntityID } from '@libs/domain'
-import { AggregateRoot } from '@libs/domain'
+import type { Booking } from '@domain/index'
 
 import type { RabbitMQClient } from '@infra/rabbit/client'
-
 import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-saga'
 
-import type { Booking } from '@domain/index'
+import type { UniqueEntityID } from '@libs/domain'
+import { AggregateRoot } from '@libs/domain'
 
 import type { SagaStep, TSagaStateUnion } from './saga.types'
 import { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'

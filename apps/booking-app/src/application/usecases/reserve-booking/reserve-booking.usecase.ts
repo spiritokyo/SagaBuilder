@@ -1,10 +1,9 @@
-import type { UseCase } from '@libs/core'
+import type { BookingDomainService, MaybeErrorResponse } from '@domain/index'
 
 import type { ReserveBookingDTO } from '@infra/controllers/reserve-booking'
-
 import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-saga'
 
-import type { BookingDomainService, MaybeErrorResponse } from '@domain/index'
+import type { UseCase } from '@libs/core'
 
 import type { ReserveBookingSagaResult } from './saga/saga.reserve-booking.orchestrator'
 
