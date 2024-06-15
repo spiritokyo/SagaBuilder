@@ -4,7 +4,7 @@ import type { MaybeErrorResponse, BookingDomainService } from '@booking-domain/i
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 import { ReserveBookingSaga } from '@reserve-booking-saga-domain/index'
 
-import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
+import type { ReserveBookingDTO } from '@booking-controller/index'
 
 import type { TReserveBookingSagaRepository } from '@reserve-booking-saga-infra/repo'
 

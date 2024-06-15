@@ -2,9 +2,9 @@ import { BookingDomainService } from '@booking-domain/booking.domain-service'
 
 import { ReserveBookingSaga } from '@reserve-booking-saga-domain/index'
 
-import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases/reserve-booking'
+import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
 
-import { ReserveBookingController } from '@reserve-booking-saga-controller/index'
+import { ReserveBookingController } from '@booking-controller/index'
 
 import { initializeBookingDomainSubscribers } from '@booking-infra/domain-subscriptions'
 

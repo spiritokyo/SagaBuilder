@@ -134,7 +134,7 @@ module.exports = {
                 },
                 //
                 {
-                  pattern: '@reserve-booking-saga-controller/**',
+                  pattern: '@booking-controller/**',
                   group: 'internal',
                   position: 'before'
                 },

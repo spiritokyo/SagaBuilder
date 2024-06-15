@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import type { IBookingDetailsExtractor } from '@reserve-booking-saga-controller/index'
+import type { IBookingDetailsExtractor } from '@booking-controller/index'
 
 import type { BookingState } from './booking.state-machine'
 import type { BookingDetailsVO } from './booking.value-objects'

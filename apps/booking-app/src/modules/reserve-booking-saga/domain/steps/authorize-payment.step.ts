@@ -3,7 +3,7 @@ import type { EventEmitter } from 'node:events'
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
+import { ReserveBookingErrors } from '@booking-controller/index'
 
 import type { RabbitMQClient } from '@shared/infra/rabbit/client'
 

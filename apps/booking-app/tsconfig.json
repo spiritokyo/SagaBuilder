@@ -10,6 +10,9 @@
       "@booking-application/*": [
         "src/modules/booking/application/*"
       ],
+      "@booking-controller/*": [
+        "src/modules/booking/controller/*"
+      ],
       "@booking-infra/*": [
         "src/modules/booking/infra/*"
       ],
@@ -19,9 +22,6 @@
       ],
       "@reserve-booking-saga-application/*": [
         "src/modules/reserve-booking-saga/application/*"
-      ],
-      "@reserve-booking-saga-controller/*": [
-        "src/modules/reserve-booking-saga/controller/*"
       ],
       "@reserve-booking-saga-infra/*": [
         "src/modules/reserve-booking-saga/infra/*"

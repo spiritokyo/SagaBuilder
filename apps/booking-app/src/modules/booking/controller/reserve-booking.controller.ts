@@ -2,7 +2,7 @@ import type { Request, Response } from 'express'
 
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import type { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases/reserve-booking'
+import type { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
 
 import { BaseController } from '@libs/infra'
 

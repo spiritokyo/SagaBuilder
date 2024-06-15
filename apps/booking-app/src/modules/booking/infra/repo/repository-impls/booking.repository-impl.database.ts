@@ -1,10 +1,9 @@
 /* eslint-disable no-restricted-syntax */
 
+import { ReserveBookingErrors } from '@booking-controller/index'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/index'
-
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
 
 import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'

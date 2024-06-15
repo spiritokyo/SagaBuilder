@@ -1,6 +1,6 @@
-import type { Booking } from '@booking-domain/booking.aggregate'
+import type { Booking } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
+import { ReserveBookingErrors } from '@booking-controller/index'
 
 import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
