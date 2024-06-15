@@ -1,7 +1,7 @@
 import type { UniqueEntityID } from '@libs/domain'
 import type { IDomainEvent } from '@libs/domain/events/domain-event.type'
 
-import type { ReserveBookingSaga } from './saga.reserve-booking.orchestrator'
+import type { ReserveBookingSaga } from './saga.reserve-booking.aggregate'
 
 export abstract class ReserveBookingSagaDomainEvent implements IDomainEvent {
   public dateTimeOccurred: Date

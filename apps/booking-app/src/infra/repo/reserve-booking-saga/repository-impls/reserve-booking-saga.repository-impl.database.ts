@@ -1,6 +1,6 @@
 import type { PoolClient } from 'pg'
 
-import type { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+import type { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.aggregate'
 
 import { ReserveBookingSagaMapper } from '@infra/mappers'
 import type { ReserveBookingSagaPersistenceEntity } from '@infra/persistence-entities'
@@ -51,6 +51,7 @@ export class ReserveBookingSagaRepositoryImplDatabase implements TReserveBooking
       )
 
     // 2
+    // @ts-expect-error for debug
     const res = await this.client.query(
       `
         INSERT INTO "ReserveBookingSaga" ("id", "bookingId", "state") VALUES ($1, $2, $3)

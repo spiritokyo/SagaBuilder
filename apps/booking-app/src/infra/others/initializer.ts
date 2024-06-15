@@ -1,7 +1,7 @@
 import { BookingDomainService } from '@domain/booking.domain-service'
 
 import { ReserveBookingUsecase } from '@application/usecases/reserve-booking'
-import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.aggregate'
 
 import { ReserveBookingController } from '@infra/controllers/reserve-booking'
 import { getConnection } from '@infra/database/client'

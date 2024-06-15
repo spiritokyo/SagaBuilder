@@ -6,8 +6,8 @@ import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-
 
 import type { UseCase } from '@libs/core'
 
-import { ReserveBookingSaga } from './saga/saga.reserve-booking.orchestrator'
-import type { ReserveBookingSagaResult } from './saga/saga.reserve-booking.orchestrator'
+import { ReserveBookingSaga } from './saga/saga.reserve-booking.aggregate'
+import type { ReserveBookingSagaResult } from './saga/saga.reserve-booking.aggregate'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>

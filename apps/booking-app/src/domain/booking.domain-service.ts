@@ -1,7 +1,7 @@
 import type {
   ReserveBookingSaga,
   ReserveBookingSagaResult,
-} from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+} from '@application/usecases/reserve-booking/saga/saga.reserve-booking.aggregate'
 
 import type { ReserveBookingErrors } from '@infra/controllers/reserve-booking'
 

@@ -3,10 +3,7 @@ import type { UniqueEntityID } from '@libs/domain/unique-entity-id'
 
 import {
   BookingCreatedDomainEvent,
-  BookingPaidDomainEvent,
-  BookingRefundedDomainEvent,
   BookingConfirmedDomainEvent,
-  BookingCancelledDomainEvent,
   BookingFrozenDomainEvent,
 } from './booking.events'
 import { BookingDetailsVO } from './booking.value-objects'

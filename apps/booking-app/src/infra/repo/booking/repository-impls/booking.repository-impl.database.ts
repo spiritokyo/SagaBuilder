@@ -22,6 +22,7 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
 
     // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
 
+    // @ts-expect-error for debug
     const res = await this.client.query(
       `
       INSERT INTO "Booking" ("id", "customer_id", "course_id", "payment_id", "email", "current_state") 

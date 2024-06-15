@@ -1,4 +1,4 @@
-import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.aggregate'
 
 import type { ReserveBookingSagaPersistenceEntity } from '@infra/persistence-entities'
 import type { TBookingRepository } from '@infra/repo/booking'
