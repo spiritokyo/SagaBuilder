@@ -37,7 +37,7 @@ export class AuthorizePaymentStep
     paymentId: number
   }> {
     const result = await this.messageBroker.sendAuthorizeCardCommand(
-      new AuthorizePaymentCardCommand(booking.id.toString(), booking.getDetails().customerId),
+      new AuthorizePaymentCardCommand(booking.getId(), booking.getDetails().customerId),
     )
 
     if (!result.authorizedPayment) {
@@ -60,7 +60,7 @@ export class AuthorizePaymentStep
     try {
       // Make refund payment
       const paymentResult = await this.messageBroker.sendAuthorizeRefundCardCommand(
-        new AuthorizePaymentCardCommand(booking.id.toString(), booking.getDetails().customerId),
+        new AuthorizePaymentCardCommand(booking.getId(), booking.getDetails().customerId),
       )
 
       if (!paymentResult.authorizedPayment) {

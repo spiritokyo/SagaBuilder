@@ -1,7 +1,7 @@
 import type { IDomainEvent } from './domain-event.type'
 import type { AggregateRoot } from '../aggregate-root'
-import type { UniqueEntityID } from '../unique-entity-id'
 import type { EntityProps } from '../entity'
+import type { UniqueEntityID } from '../unique-entity-id'
 
 export class DomainEvents {
   // eslint-disable-next-line @typescript-eslint/ban-types

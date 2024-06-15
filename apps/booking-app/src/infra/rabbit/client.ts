@@ -103,6 +103,6 @@ export class RabbitMQClient {
   }
 
   async consumeBookingCDC(): Promise<void> {
-    return await this.bookingCDCConsumer.consumeCDC()
+    return await this.bookingCDCConsumer.publishDomainEvents()
   }
 }
