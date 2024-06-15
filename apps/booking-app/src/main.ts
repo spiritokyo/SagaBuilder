@@ -1,7 +1,8 @@
 import express from 'express'
 
-import { handleErrors, initializeInfra } from '@infra/others'
-import { initializeBookingRouter } from '@infra/router'
+import { initializeBookingRouter } from '@booking-infra/router'
+
+import { initializeInfra, handleErrors } from '@shared/others'
 
 /**
  * Initialize all infrastructure

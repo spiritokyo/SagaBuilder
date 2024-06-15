@@ -112,20 +112,51 @@ module.exports = {
             ],
               pathGroups: [
                 {
-                  pattern: '@domain/**',
+                  pattern: '@booking-domain/**',
                   group: 'internal',
                   position: 'before'
                 },
                 {
-                  pattern: '@application/**',
+                  pattern: '@reserve-booking-saga-domain/**',
+                  group: 'internal',
+                  position: 'before'
+                },
+                //
+                {
+                  pattern: '@booking-application/**',
                   group: 'internal',
                   position: 'before'
                 },
                 {
-                  pattern: '@infra/**',
+                  pattern: '@reserve-booking-saga-application/**',
                   group: 'internal',
                   position: 'before'
                 },
+                //
+                {
+                  pattern: '@reserve-booking-saga-controller/**',
+                  group: 'internal',
+                  position: 'before'
+                },
+                //
+                {
+                  pattern: '@booking-infra/**',
+                  group: 'internal',
+                  position: 'before'
+                },
+                
+                {
+                  pattern: '@reserve-booking-saga-infra/**',
+                  group: 'internal',
+                  position: 'before'
+                },
+                //
+                {
+                  pattern: '@shared/**',
+                  group: 'internal',
+                  position: 'before'
+                },
+                
                 {
                   pattern: '@libs/**',
                   group: 'internal',
