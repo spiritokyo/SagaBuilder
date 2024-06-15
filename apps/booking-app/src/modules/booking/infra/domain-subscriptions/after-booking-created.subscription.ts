@@ -20,7 +20,7 @@ export class AfterBookingCreated implements IHandle<BookingCreatedDomainEvent> {
   }
 
   private onBookingCreated(event: BookingCreatedDomainEvent): void {
-    console.log(`[AfterBookingCreated]:{${JSON.stringify(event.booking.getDetails())}}`)
+    console.log(`[AfterBookingCreated]:{${JSON.stringify(event.bookingDetails)}}`)
     // logic to add events in event store about creating new booking
   }
 }

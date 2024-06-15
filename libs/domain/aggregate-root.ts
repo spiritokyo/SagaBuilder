@@ -26,21 +26,17 @@ export abstract class AggregateRoot<T extends EntityProps> extends Entity<T> {
     // events it eventually needs to dispatch.
     DomainEvents.markAggregateForDispatch(this)
     // Log the domain event
-    this.logDomainEventAdded(domainEvent)
+    // this.logDomainEventAdded(domainEvent)
   }
 
-  private logDomainEventAdded(domainEvent: IDomainEvent): void {
-    const thisClass = Reflect.getPrototypeOf(this)
-    const domainEventClass = Reflect.getPrototypeOf(domainEvent)
-    console.info(
-      '[Domain Event Created]:',
-      thisClass?.constructor.name,
-      '==>',
-      domainEventClass?.constructor.name,
-    )
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    DomainEvents
-    debugger
-  }
+  // private _logDomainEventAdded(domainEvent: IDomainEvent): void {
+  //   const thisClass = Reflect.getPrototypeOf(this)
+  //   const domainEventClass = Reflect.getPrototypeOf(domainEvent)
+  //   console.info(
+  //     '[Domain Event Created]:',
+  //     thisClass?.constructor.name,
+  //     '==>',
+  //     domainEventClass?.constructor.name,
+  //   )
+  // }
 }

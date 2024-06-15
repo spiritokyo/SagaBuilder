@@ -21,7 +21,7 @@ export class AfterBookingConfirmed implements IHandle<BookingConfirmedDomainEven
   }
 
   private onBookingConfirmed(event: BookingPaidDomainEvent): void {
-    console.log(`[AfterBookingConfirmed]:{${JSON.stringify(event.booking.getDetails())}}`)
+    console.log(`[AfterBookingConfirmed]:{${JSON.stringify(event.bookingDetails)}}`)
     // logic to send notification to customer via email
   }
 }

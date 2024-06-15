@@ -1,11 +1,7 @@
 import { AggregateRoot } from '@libs/domain'
 import type { UniqueEntityID } from '@libs/domain/unique-entity-id'
 
-import {
-  BookingCreatedDomainEvent,
-  BookingConfirmedDomainEvent,
-  BookingFrozenDomainEvent,
-} from './booking.events'
+import { BookingCreatedDomainEvent, BookingConfirmedDomainEvent } from './booking.events'
 import { BookingDetailsVO } from './booking.value-objects'
 import { BookingState } from './index'
 
@@ -38,7 +34,7 @@ export class Booking extends AggregateRoot<BookingProps> {
     super(props as BookingProps, id)
 
     if (isBrandNew) {
-      const event = new BookingCreatedDomainEvent(this)
+      const event = new BookingCreatedDomainEvent(this.getId(), this.getDetails())
       this.addDomainEvent(event)
     }
   }
@@ -79,7 +75,7 @@ export class Booking extends AggregateRoot<BookingProps> {
     if (Math.random() > 0.1) {
       this.props.bookingState = BookingState.CONFIRMED
 
-      const event = new BookingConfirmedDomainEvent(this)
+      const event = new BookingConfirmedDomainEvent(this.getId(), this.getDetails())
       this.addDomainEvent(event)
       return true
     }
@@ -108,8 +104,8 @@ export class Booking extends AggregateRoot<BookingProps> {
   freezeBooking(): void {
     this.props.isFrozen = true
 
-    const event = new BookingFrozenDomainEvent(this)
-    this.addDomainEvent(event)
+    // const event = new BookingFrozenDomainEvent(this.getId(), this.getDetails())
+    // this.addDomainEvent(event)
   }
 
   getId(): string {

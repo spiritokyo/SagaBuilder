@@ -12,10 +12,10 @@ import { ReserveBookingErrors } from './reserve-booking.errors'
 export class ReserveBookingController extends BaseController {
   constructor(private usecase: ReserveBookingUsecase) {
     super()
-    this.usecase = usecase
   }
 
   async executeImpl(req: Request, res: Response): Promise<Response> {
+    // TODO: add validation
     const dto: ReserveBookingDTO = {
       customerId: req.body.customerId,
       courseId: req.body.courseId,
@@ -24,10 +24,8 @@ export class ReserveBookingController extends BaseController {
 
     const result = await this.usecase.execute(dto)
 
-    // console.log('🚀 ~ ReserveBookingController ~ executeImpl ~ result:', result)
-
     if (result instanceof Error) {
-      // 4. Saga successfully was compensated
+      // Saga successfully was compensated
       if (
         result instanceof ReserveBookingErrors.BookingRepoInfraError ||
         result instanceof ReserveBookingErrors.BookingPaymentInfraError ||
@@ -44,13 +42,11 @@ export class ReserveBookingController extends BaseController {
         })
       }
 
-      // 5. Error during compensation transaction - we should freeze saga with error status
+      // Error during compensation transaction - we should freeze saga with error status
       return this.fail(
         res,
         (result as DomainBookingErrors.ExceptionAbortCreateBookingTransaction).message,
       )
-
-      // TODO: handle error related with publishing domain events
     }
 
     return this.ok(res, result)
