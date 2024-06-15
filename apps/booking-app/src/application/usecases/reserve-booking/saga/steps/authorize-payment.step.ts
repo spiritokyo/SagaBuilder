@@ -11,16 +11,9 @@ import { AuthorizePaymentCardCommand } from '@libs/shared'
 
 import type { SagaStep } from '../saga.types'
 
-export class AuthorizePaymentStep
-  implements
-    SagaStep<
-      Booking,
-      {
-        paymentId: number
-      }
-    >
-{
+export class AuthorizePaymentStep implements SagaStep<Booking> {
   static STEP_NAME = 'AuthorizePaymentStep' as const
+  static STEP_NAME_COMPENSATION = 'AuthorizePaymentStepCompensation' as const
 
   circutBreaker = buildCircuitBreaker(
     [ReserveBookingErrors.BookingRepoInfraError],
@@ -33,9 +26,11 @@ export class AuthorizePaymentStep
     return AuthorizePaymentStep.STEP_NAME
   }
 
-  async invoke(booking: Booking): Promise<{
-    paymentId: number
-  }> {
+  get nameCompensation(): string {
+    return AuthorizePaymentStep.STEP_NAME_COMPENSATION
+  }
+
+  async invoke(booking: Booking): Promise<void> {
     const result = await this.messageBroker.sendAuthorizeCardCommand(
       new AuthorizePaymentCardCommand(booking.getId(), booking.getDetails().customerId),
     )
@@ -47,16 +42,12 @@ export class AuthorizePaymentStep
       )
     }
 
-    await this.circutBreaker.execute(() => booking.approvePayment())
+    await this.circutBreaker.execute(() => booking.approvePayment(result.paymentId))
 
     this.eventBus.emit('update:saga-state', AuthorizePaymentStep.STEP_NAME)
-
-    return { paymentId: result.paymentId }
   }
 
-  async withCompensation(booking: Booking): Promise<{
-    paymentId: number
-  }> {
+  async withCompensation(booking: Booking): Promise<void> {
     try {
       // Make refund payment
       const paymentResult = await this.messageBroker.sendAuthorizeRefundCardCommand(
@@ -70,11 +61,9 @@ export class AuthorizePaymentStep
         )
       }
 
-      await this.circutBreaker.execute(() => booking.refundPayment())
+      await this.circutBreaker.execute(() => booking.refundPayment(paymentResult.paymentId))
 
-      this.eventBus.emit('update:saga-state', AuthorizePaymentStep.STEP_NAME)
-
-      return { paymentId: paymentResult.paymentId }
+      this.eventBus.emit('update:saga-state', AuthorizePaymentStep.STEP_NAME_COMPENSATION)
     } catch (err) {
       throw new DomainBookingErrors.ExceptionAbortCreateBookingTransaction(
         (err as ReserveBookingErrors.BookingRepoInfraError).message,

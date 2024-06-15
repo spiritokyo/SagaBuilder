@@ -2,12 +2,12 @@ import type { EventEmitter } from 'node:stream'
 
 import type { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'
 
-export type SagaStep<Params, Result> = {
+export type SagaStep<Params> = {
   name: string
   eventBus: EventEmitter
 
-  invoke(params: Params): Promise<Result>
-  withCompensation(params: Params): Promise<Result> | Promise<void>
+  invoke(params: Params): Promise<void>
+  withCompensation(params: Params): Promise<void>
 }
 
 export type TSagaStateUnion =

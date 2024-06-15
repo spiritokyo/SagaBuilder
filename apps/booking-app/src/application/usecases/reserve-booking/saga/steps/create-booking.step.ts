@@ -9,8 +9,10 @@ import { buildCircuitBreaker } from '@libs/infra/error/utils'
 
 import type { SagaStep } from '../saga.types'
 
-export class CreateBookingStep implements SagaStep<Booking, void> {
+export class CreateBookingStep implements SagaStep<Booking> {
   static STEP_NAME = 'CreateBookingStep' as const
+  static STEP_NAME_COMPENSATION = 'CreateBookingStepCompensation' as const
+
   boookingDomainService = new BookingDomainService()
 
   circutBreaker = buildCircuitBreaker(
@@ -22,6 +24,10 @@ export class CreateBookingStep implements SagaStep<Booking, void> {
 
   get name(): string {
     return CreateBookingStep.STEP_NAME
+  }
+
+  get nameCompensation(): string {
+    return CreateBookingStep.STEP_NAME_COMPENSATION
   }
 
   async invoke(booking: Booking): Promise<void> {
@@ -44,7 +50,7 @@ export class CreateBookingStep implements SagaStep<Booking, void> {
     try {
       await this.circutBreaker.execute(() => booking.cancelBooking())
 
-      this.eventBus.emit('update:saga-state', CreateBookingStep.STEP_NAME)
+      this.eventBus.emit('update:saga-state', CreateBookingStep.STEP_NAME_COMPENSATION)
     } catch (err) {
       throw new DomainBookingErrors.ExceptionAbortCreateBookingTransaction(
         (err as ReserveBookingErrors.BookingRepoInfraError).message,

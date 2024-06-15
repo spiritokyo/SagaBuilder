@@ -9,7 +9,7 @@ import { buildCircuitBreaker } from '@libs/infra/error/utils'
 
 import type { SagaStep } from '../saga.types'
 
-export class ConfirmBookingStep implements SagaStep<Booking, boolean> {
+export class ConfirmBookingStep implements SagaStep<Booking> {
   static STEP_NAME = 'ConfirmBookingStep' as const
   circutBreaker = buildCircuitBreaker(
     [ReserveBookingErrors.BookingRepoInfraError],
@@ -22,7 +22,7 @@ export class ConfirmBookingStep implements SagaStep<Booking, boolean> {
     return ConfirmBookingStep.STEP_NAME
   }
 
-  async invoke(booking: Booking): Promise<boolean> {
+  async invoke(booking: Booking): Promise<void> {
     const isBookingConfirmedSuccess = (await this.circutBreaker.execute(() =>
       booking.confirmBooking(),
     )) as boolean
@@ -32,8 +32,6 @@ export class ConfirmBookingStep implements SagaStep<Booking, boolean> {
     }
 
     this.eventBus.emit('update:saga-state', ConfirmBookingStep.STEP_NAME)
-
-    return isBookingConfirmedSuccess
   }
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
