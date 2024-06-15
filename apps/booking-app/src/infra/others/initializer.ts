@@ -5,13 +5,15 @@ import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/s
 
 import { ReserveBookingController } from '@infra/controllers/reserve-booking'
 import { getConnection } from '@infra/database/client'
-import { initializeBookingDomainSubscribers } from '@infra/domain-subscriptions'
+import { initializeBookingDomainSubscribers } from '@infra/domain-subscriptions/booking'
+import { initializeReserveBookingSagaDomainSubscribers } from '@infra/domain-subscriptions/reserve-booking-saga'
 import { RabbitMQClient } from '@infra/rabbit/client'
 import { ReserveBookingSagaRepositoryImplDatabase } from '@infra/repo/reserve-booking-saga/repository-impls'
 
 export async function initializeInfra(): Promise<ReserveBookingController> {
   // Initialize domain subscribers
   initializeBookingDomainSubscribers()
+  initializeReserveBookingSagaDomainSubscribers()
 
   // Initialize postgresql connection
   const connection = await getConnection()

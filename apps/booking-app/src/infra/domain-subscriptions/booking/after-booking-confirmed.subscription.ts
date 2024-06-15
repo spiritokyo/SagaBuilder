@@ -4,6 +4,9 @@ import { BookingConfirmedDomainEvent } from '@domain/index'
 import { DomainEvents } from '@libs/domain/events'
 import type { IDomainEvent, IHandle } from '@libs/domain/events'
 
+/**
+ * We can inject here f.e usecases
+ */
 export class AfterBookingConfirmed implements IHandle<BookingConfirmedDomainEvent> {
   constructor() {
     this.setupSubscriptions()
@@ -19,5 +22,6 @@ export class AfterBookingConfirmed implements IHandle<BookingConfirmedDomainEven
 
   private onBookingConfirmed(event: BookingPaidDomainEvent): void {
     console.log(`[AfterBookingConfirmed]:{${JSON.stringify(event.booking.getDetails())}}`)
+    // logic to send notification to customer via email
   }
 }

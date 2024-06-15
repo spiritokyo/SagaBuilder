@@ -66,16 +66,16 @@ export class Booking extends AggregateRoot<BookingProps> {
     this.props.bookingState = BookingState.APPROVAL_PENDING
     this.props.paymentId = paymentId
 
-    const event = new BookingPaidDomainEvent(this)
-    this.addDomainEvent(event)
+    // const event = new BookingPaidDomainEvent(this)
+    // this.addDomainEvent(event)
   }
 
   refundPayment(paymentId: number): void {
     this.props.bookingState = BookingState.CANCEL_PENDING
     this.props.paymentId = paymentId
 
-    const event = new BookingRefundedDomainEvent(this)
-    this.addDomainEvent(event)
+    // const event = new BookingRefundedDomainEvent(this)
+    // this.addDomainEvent(event)
   }
 
   confirmBooking(): boolean {
@@ -93,8 +93,8 @@ export class Booking extends AggregateRoot<BookingProps> {
   cancelBooking(): void {
     this.props.bookingState = BookingState.REJECTED
 
-    const event = new BookingCancelledDomainEvent(this)
-    this.addDomainEvent(event)
+    // const event = new BookingCancelledDomainEvent(this)
+    // this.addDomainEvent(event)
   }
 
   getDetails(): BookingDetailsVO {

@@ -74,17 +74,3 @@ export class BookingFrozenDomainEvent extends BookingDomainEvent {
     super(booking)
   }
 }
-
-// TOOD: remove
-export class BookingDomainEventPublisher {
-  publish(bookingDomainEvents: BookingDomainEvent[]): Promise<void> {
-    console.log('------------------------------------------------------------')
-    // Publish domain events
-    bookingDomainEvents.forEach((event) => {
-      console.log(`[${event.name}]: ${JSON.stringify(event.booking, null, 2)}`)
-    })
-    console.log('------------------------------------------------------------')
-
-    return Promise.resolve()
-  }
-}

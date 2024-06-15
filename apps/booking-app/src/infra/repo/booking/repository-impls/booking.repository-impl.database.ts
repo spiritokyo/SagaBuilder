@@ -43,10 +43,10 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
       ],
     )
 
-    console.log('DB SAVE BOOKING')
-    console.table({
-      payload: res.rows[0],
-    })
+    // console.log('DB SAVE BOOKING')
+    // console.table({
+    //   payload: res.rows[0],
+    // })
   }
 
   async restoreBookingFromDB(bookingId: string): Promise<Booking | null> {

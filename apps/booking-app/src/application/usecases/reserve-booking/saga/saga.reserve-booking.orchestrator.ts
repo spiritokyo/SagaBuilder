@@ -8,6 +8,10 @@ import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-
 import type { UniqueEntityID } from '@libs/domain'
 import { AggregateRoot } from '@libs/domain'
 
+import {
+  ReserveBookingSagaCompletedDomainEvent,
+  ReserveBookingSagaFailedDomainEvent,
+} from './saga.reserve-booking.events'
 import type { SagaStep, TSagaStateUnion } from './saga.types'
 import { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'
 
@@ -116,6 +120,9 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
     this.props.state.isErrorSaga = true
     this.props.booking.freezeBooking()
 
+    const event = new ReserveBookingSagaFailedDomainEvent(this)
+    this.addDomainEvent(event)
+
     await this.saveSagaInDB(false)
   }
 
@@ -131,6 +138,9 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
 
   async compeleteSaga(): Promise<void> {
     this.props.state.isCompleted = true
+
+    const event = new ReserveBookingSagaCompletedDomainEvent(this)
+    this.addDomainEvent(event)
 
     await this.saveSagaInDB(true)
   }

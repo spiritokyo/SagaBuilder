@@ -70,11 +70,11 @@ export class ReserveBookingSagaRepositoryImplDatabase implements TReserveBooking
       ],
     )
 
-    console.log('SAVE SAGA DB')
-    console.table({
-      isBookingPersisted: reserveBookingSaga.isBookingPersisted,
-      payload: JSON.stringify(res.rows[0], null, 2),
-    })
+    // console.log('SAVE SAGA DB')
+    // console.table({
+    //   isBookingPersisted: reserveBookingSaga.isBookingPersisted,
+    //   payload: JSON.stringify(res.rows[0], null, 2),
+    // })
   }
 
   async restoreReserveBookingSagaFromDB(sagaId: string): Promise<ReserveBookingSaga | null> {
