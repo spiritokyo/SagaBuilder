@@ -2,8 +2,8 @@ import { AggregateRoot } from '@libs/domain'
 import type { UniqueEntityID } from '@libs/domain/unique-entity-id'
 
 import { BookingCreatedDomainEvent, BookingConfirmedDomainEvent } from './booking.events'
+import { BookingState } from './booking.state-machine'
 import { BookingDetailsVO } from './booking.value-objects'
-import { BookingState } from './index'
 
 export type BookingProps = {
   readonly customerId: number

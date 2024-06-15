@@ -6,6 +6,7 @@ import type { IDomainEvent, IHandle } from '@libs/domain/events'
 /**
  * We can inject here f.e usecases
  */
+// TODO: clear saga from database
 export class AfterSagaCompleted implements IHandle<ReserveBookingSagaCompletedDomainEvent> {
   constructor() {
     this.setupSubscriptions()

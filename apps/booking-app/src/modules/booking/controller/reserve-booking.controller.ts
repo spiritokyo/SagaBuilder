@@ -15,7 +15,7 @@ export class ReserveBookingController extends BaseController {
   }
 
   async executeImpl(req: Request, res: Response): Promise<Response> {
-    // TODO: add validation
+    // TODO: add validation 1
     const dto: ReserveBookingDTO = {
       customerId: req.body.customerId,
       courseId: req.body.courseId,

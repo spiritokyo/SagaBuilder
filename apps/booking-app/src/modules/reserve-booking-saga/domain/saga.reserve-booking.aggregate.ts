@@ -31,6 +31,12 @@ export type ReserveBookingSagaProps = {
   }
 }
 
+// TODO draw declarative model how to describe saga workflow
+// TODO: try to generalize into AbstractSaga
+// TODO: add interface implementation for Saga
+// TODO: add cron for restoring failed sagas
+// TODO: check clean code articles & refactor up
+// TODO: add programmable E2E tests with artificial chaos errors (based on env variables)
 export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
   static reserveBookingSagaRepository: TReserveBookingSagaRepository
   static messageBroker: RabbitMQClient

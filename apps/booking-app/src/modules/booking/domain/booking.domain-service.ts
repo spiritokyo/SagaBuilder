@@ -1,9 +1,9 @@
-import type { ReserveBookingErrors } from '@booking-controller/index'
-
 import type {
   ReserveBookingSaga,
   ReserveBookingSagaResult,
 } from '@reserve-booking-saga-domain/index'
+
+import type { ReserveBookingErrors } from '@booking-controller/index'
 
 import type { DomainBookingErrors } from './booking.errors'
 
