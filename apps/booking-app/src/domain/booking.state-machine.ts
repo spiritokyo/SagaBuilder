@@ -4,6 +4,6 @@ export enum BookingState {
   CANCEL_PENDING = 'CANCEL_PENDING',
   CONFIRMED = 'CONFIRMED',
   REJECTED = 'REJECTED',
-  // We can't rollback the saga
-  ERROR = 'ERROR',
+  // SAGA ERROR => Freeze booking
+  FROZEN = 'FROZEN',
 }

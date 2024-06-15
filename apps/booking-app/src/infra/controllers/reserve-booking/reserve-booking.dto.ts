@@ -1,5 +1,5 @@
 export type ReserveBookingDTO = {
-  customerId: string
-  courseId: string
+  customerId: number
+  courseId: number
   email: string
 }

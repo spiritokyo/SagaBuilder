@@ -12,6 +12,7 @@ exports.up = async function (knex) {
        * completed_step: TSagaStateUnion
        * is_compensating_direction: boolean
        * is_error_saga: boolean
+       * is_completed: boolean
        */
     })
 
@@ -20,11 +21,13 @@ exports.up = async function (knex) {
       table.uuid('id', { primaryKey: true }).defaultTo(knex.raw("uuid_generate_v4()"))
       table.integer('customer_id').notNullable()
       table.integer('course_id').notNullable()
+      table.integer('payment_id').nullable()
       table.enu('current_state', [
         'PAYMENT_PENDING', 'APPROVAL_PENDING', 'CANCEL_PENDING',
-        'CONFIRMED', 'REJECTED', 'ERROR'
+        'CONFIRMED', 'REJECTED', 'FROZEN'
       ])
       table.string('email').notNullable()
+      table.boolean('is_frozen').defaultTo(false).notNullable()
     })
 };
 

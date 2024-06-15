@@ -29,6 +29,7 @@ export class ReserveBookingSagaMapper
           isErrorSaga: state.is_error_saga,
           completedStep: state.completed_step,
           isCompensatingDirection: state.is_compensating_direction,
+          isCompleted: state.is_completed,
         },
       },
       new UniqueEntityID(reserveBookingSagaPersistenceEntity.id),
@@ -43,6 +44,7 @@ export class ReserveBookingSagaMapper
         is_error_saga: domainEntity.getState().isErrorSaga,
         completed_step: domainEntity.getState().completedStep,
         is_compensating_direction: domainEntity.getState().isCompensatingDirection,
+        is_completed: domainEntity.getState().isCompleted,
       },
     }
   }

@@ -17,8 +17,8 @@ export class ReserveBookingController extends BaseController {
 
   async executeImpl(req: Request, res: Response): Promise<Response> {
     const dto: ReserveBookingDTO = {
-      customerId: req.body.customerId as string,
-      courseId: req.body.courseId as string,
+      customerId: req.body.customerId,
+      courseId: req.body.courseId,
       email: req.body.email as string,
     }
 

@@ -68,6 +68,13 @@ export class BookingCancelledDomainEvent extends BookingDomainEvent {
   }
 }
 
+export class BookingFrozenDomainEvent extends BookingDomainEvent {
+  name = 'BookingFrozen'
+  constructor(booking: Booking) {
+    super(booking)
+  }
+}
+
 // TOOD: remove
 export class BookingDomainEventPublisher {
   publish(bookingDomainEvents: BookingDomainEvent[]): Promise<void> {

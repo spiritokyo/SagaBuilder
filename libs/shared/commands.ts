@@ -1,3 +1,3 @@
 export class AuthorizePaymentCardCommand {
-  constructor(public readonly bookingId: string, public readonly customerId: string) {}
+  constructor(public readonly bookingId: string, public readonly customerId: number) {}
 }

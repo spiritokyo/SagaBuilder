@@ -5,8 +5,10 @@ import type { BookingState } from '@domain/booking.state-machine'
  */
 export type BookingPersistenceEntity = {
   id: string
-  customer_id: string
-  course_id: string
+  customer_id: number
+  course_id: number
+  payment_id: number | null
   current_state: BookingState
   email: string
+  is_frozen: boolean
 }

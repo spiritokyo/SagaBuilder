@@ -1,6 +1,6 @@
 import EventEmitter from 'node:events'
 
-import type { Booking } from '@domain/index'
+import type { Booking, BookingDetailsVO } from '@domain/index'
 
 import type { RabbitMQClient } from '@infra/rabbit/client'
 import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-saga'
@@ -11,15 +11,10 @@ import { AggregateRoot } from '@libs/domain'
 import type { SagaStep, TSagaStateUnion } from './saga.types'
 import { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'
 
-export type ReserveBookingSagaResult = {
-  booking: {
-    bookingId: string
-    customerId: string
-    courseId: string
-    email: string
-  }
-  payment: { paymentId: string | null }
-}
+export type ReserveBookingSagaResult = Pick<
+  BookingDetailsVO,
+  'paymentId' | 'customerId' | 'courseId' | 'email'
+> & { bookingId: string }
 
 export type ReserveBookingSagaProps = {
   booking: Booking
@@ -27,6 +22,7 @@ export type ReserveBookingSagaProps = {
     completedStep: TSagaStateUnion
     isCompensatingDirection: boolean
     isErrorSaga: boolean
+    isCompleted: boolean
   }
 }
 
@@ -44,8 +40,8 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
   private readonly step2: AuthorizePaymentStep
   private readonly step3: ConfirmBookingStep
 
-  private successfulSteps: SagaStep<Booking, unknown>[] = []
-  private steps: SagaStep<Booking, unknown>[]
+  private successfulSteps: SagaStep<Booking>[] = []
+  private steps: SagaStep<Booking>[]
 
   /**
    * @description before creating of ReserveBookingSaga, it should be initialized
@@ -81,6 +77,7 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
       completedStep: 'INITIAL' as const,
       isCompensatingDirection: false,
       isErrorSaga: false,
+      isCompleted: false,
     }
 
     // TODO: Emit domain event
@@ -105,21 +102,37 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
     ReserveBookingSaga._isInitialized = true
   }
 
-  async saveSagaInDB(): Promise<void> {
-    await ReserveBookingSaga.reserveBookingSagaRepository.saveReserveBookingSagaInDB(this)
+  async saveSagaInDB(updateOnlySagaState: boolean): Promise<void> {
+    await ReserveBookingSaga.reserveBookingSagaRepository.saveReserveBookingSagaInDB(
+      this,
+      updateOnlySagaState,
+    )
   }
 
+  /**
+   * @description Compensation saga was broken => freeze saga and booking
+   */
   async freezeSaga(): Promise<void> {
     this.props.state.isErrorSaga = true
+    this.props.booking.freezeBooking()
 
-    await this.saveSagaInDB()
+    await this.saveSagaInDB(false)
   }
 
+  /**
+   * @description Saga in compensation mode => update saga
+   */
   async switchToCompensatingDirection(): Promise<void> {
     console.log('[Saga]: switchToCompensatingDirection')
     this.props.state.isCompensatingDirection = true
 
-    await this.saveSagaInDB()
+    await this.saveSagaInDB(true)
+  }
+
+  async compeleteSaga(): Promise<void> {
+    this.props.state.isCompleted = true
+
+    await this.saveSagaInDB(true)
   }
 
   /**
@@ -132,41 +145,20 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
    */
 
   async execute(): Promise<ReserveBookingSagaResult> {
-    const bookingDetails = this.props.booking.getDetails()
-
-    const sagaResult = {
-      payment: { paymentId: null as string | null },
-      booking: {
-        bookingId: this.props.booking.getId(),
-        ...bookingDetails,
-        bookingState: undefined,
-      },
-    }
-
     console.log('Start new booking saga!')
 
     for (const step of this.steps) {
       try {
         console.info(`[Invoking]: ${step.name} ...`)
 
-        const stepResult = await step.invoke(this.props.booking)
+        await step.invoke(this.props.booking)
 
-        // Invoke saga step
-        // => update saga state in DB
-        // => generate post domain event based on CDC
-        await this.saveSagaInDB()
-
-        if (step.name === AuthorizePaymentStep.STEP_NAME) {
-          const { paymentId } = stepResult as { paymentId: string }
-
-          sagaResult.payment.paymentId = paymentId
-        }
+        await this.saveSagaInDB(false)
 
         this.successfulSteps.unshift(step)
       } catch (invokeError) {
-        console.log('🚀[Reason to run compensation flow]:', invokeError as Error)
+        console.log('🚀[Reason to run compensation flow]:', (invokeError as Error).message)
 
-        // Saga in compensation mode => update saga state in DB
         await this.switchToCompensatingDirection()
 
         console.error(`[Failed Step]: ${step.name} !!`)
@@ -177,9 +169,10 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
 
             await successfulStep.withCompensation(this.props.booking)
 
-            // Invoke compensate saga step => update saga state in DB
-            await this.saveSagaInDB()
+            await this.saveSagaInDB(false)
           }
+
+          await this.compeleteSaga()
           console.log('Successful end of compensating workflow')
         } catch (compensateError) {
           console.log(
@@ -187,7 +180,6 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
             (compensateError as Error).constructor.name,
           )
 
-          // Compensation saga was broken => freeze saga => update saga state in DB
           await this.freezeSaga()
 
           // Original error that has became the reason of failing compensation flow
@@ -198,9 +190,14 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
         throw invokeError
       }
     }
+
+    await this.compeleteSaga()
     console.info('Order Creation Transaction ended successfuly')
 
-    return sagaResult
+    return {
+      bookingId: this.props.booking.getId(),
+      ...this.props.booking.getDetails(),
+    }
   }
 
   getId(): string {

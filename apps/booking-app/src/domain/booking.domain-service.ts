@@ -18,7 +18,7 @@ export type MaybeErrorResponse =
   | DomainBookingErrors.UnsupportedStateTransitionException
 
 export class BookingDomainService {
-  async checkBookingAvailability(_courseId: string): Promise<boolean> {
+  async checkBookingAvailability(_courseId: number): Promise<boolean> {
     // Emulating sending async operation to 3rd party service (f.e check avaialable teachers for this course)
     if (Math.random() > 0.1) {
       return await Promise.resolve(true)

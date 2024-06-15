@@ -10,5 +10,6 @@ export type ReserveBookingSagaPersistenceEntity = {
     completed_step: TSagaStateUnion
     is_compensating_direction: boolean
     is_error_saga: boolean
+    is_completed: boolean
   }
 }
