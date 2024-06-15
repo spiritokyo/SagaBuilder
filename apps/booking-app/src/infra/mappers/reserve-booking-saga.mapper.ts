@@ -1,10 +1,10 @@
+import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+
 import type { ReserveBookingSagaPersistenceEntity } from '@infra/persistence-entities'
 import type { TBookingRepository } from '@infra/repo/booking'
 
 import { UniqueEntityID } from '@libs/domain'
 import type { TMapper } from '@libs/infra'
-
-import { ReserveBookingSaga } from '../../application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
 
 export class ReserveBookingSagaMapper
   implements TMapper<ReserveBookingSagaPersistenceEntity, ReserveBookingSaga>
@@ -14,9 +14,9 @@ export class ReserveBookingSagaMapper
   async toDomain(
     reserveBookingSagaPersistenceEntity: ReserveBookingSagaPersistenceEntity,
   ): Promise<ReserveBookingSaga> {
-    const { id, state } = reserveBookingSagaPersistenceEntity.props
+    const { bookingId, state } = reserveBookingSagaPersistenceEntity
 
-    const booking = await this.bookingRepository.restoreBookingFromDB(id)
+    const booking = await this.bookingRepository.restoreBookingFromDB(bookingId)
 
     if (!booking) {
       throw new Error('Booking not found')
@@ -38,13 +38,11 @@ export class ReserveBookingSagaMapper
   toPersistence(domainEntity: ReserveBookingSaga): ReserveBookingSagaPersistenceEntity {
     return {
       id: domainEntity.getId(),
-      props: {
-        id: domainEntity.props.booking.id.toString(),
-        state: {
-          is_error_saga: domainEntity.getState().isErrorSaga,
-          completed_step: domainEntity.getState().completedStep,
-          is_compensating_direction: domainEntity.getState().isCompensatingDirection,
-        },
+      bookingId: domainEntity.props.booking.getId(),
+      state: {
+        is_error_saga: domainEntity.getState().isErrorSaga,
+        completed_step: domainEntity.getState().completedStep,
+        is_compensating_direction: domainEntity.getState().isCompensatingDirection,
       },
     }
   }

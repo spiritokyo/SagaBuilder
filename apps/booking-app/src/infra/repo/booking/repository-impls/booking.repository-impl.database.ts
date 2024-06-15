@@ -22,17 +22,14 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
 
     // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
 
-    console.log('DB SAVE BOOKING: ', bookingPersistenceEntity)
-
-    await this.client.query(
+    const res = await this.client.query(
       `
-      INSERT INTO "Booking" ("id", "customer_id", "course_id", "email") VALUES ($1, $2, $3, $4)
+      INSERT INTO "Booking" ("id", "customer_id", "course_id", "email", "current_state") 
+      VALUES ($1, $2, $3, $4, $5)
       ON CONFLICT ("id")
       DO UPDATE
       SET
-        "customer_id" = $2,
-        "course_id" = $3,
-        "email" = $4
+        "current_state" = $5
       RETURNING *
         `,
       [
@@ -40,8 +37,14 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
         bookingPersistenceEntity.customer_id,
         bookingPersistenceEntity.course_id,
         bookingPersistenceEntity.email,
+        bookingPersistenceEntity.current_state,
       ],
     )
+
+    console.log('DB SAVE BOOKING')
+    console.table({
+      payload: res.rows[0],
+    })
   }
 
   async restoreBookingFromDB(bookingId: string): Promise<Booking | null> {

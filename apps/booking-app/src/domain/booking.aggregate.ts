@@ -8,41 +8,54 @@ import {
   BookingConfirmedDomainEvent,
   BookingCancelledDomainEvent,
 } from './booking.events'
-import { BookingState } from './booking.state-machine'
 import { BookingDetailsVO } from './booking.value-objects'
+import { BookingState } from './index'
 
 export type BookingProps = {
   readonly customerId: string
   readonly courseId: string
   readonly email: string
-  bookingState?: BookingState
+  bookingState: BookingState
 }
 
 export class Booking extends AggregateRoot<BookingProps> {
-  constructor(props: BookingProps, id?: UniqueEntityID) {
-    super(props, id)
+  constructor(
+    props: Omit<BookingProps, 'bookingState'> & { bookingState?: BookingState },
+    id?: UniqueEntityID,
+  ) {
+    const isBrandNew = !props.bookingState
 
-    if (!props.bookingState) {
-      this.props.bookingState = BookingState.CREATING_PENDING
+    if (isBrandNew) {
+      props.bookingState = BookingState.PAYMENT_PENDING
+    }
+
+    super(props as BookingProps, id)
+
+    if (isBrandNew) {
+      const event = new BookingCreatedDomainEvent(this)
+      this.addDomainEvent(event)
     }
   }
 
-  public static create(props: BookingProps, id?: UniqueEntityID): Booking {
+  public static create(
+    props: Omit<BookingProps, 'bookingState'> & { bookingState?: BookingState },
+    id?: UniqueEntityID,
+  ): Booking {
     // Should be guards
 
-    const defaultValues: BookingProps = {
+    const defaultValues = {
       ...props,
     }
 
     return new Booking(defaultValues, id)
   }
 
-  approveCreating(): void {
-    this.props.bookingState = BookingState.PAYMENT_PENDING
+  // approveCreating(): void {
+  //   this.props.bookingState = BookingState.PAYMENT_PENDING
 
-    const event = new BookingCreatedDomainEvent(this)
-    this.addDomainEvent(event)
-  }
+  //   const event = new BookingCreatedDomainEvent(this)
+  //   this.addDomainEvent(event)
+  // }
 
   approvePayment(): void {
     this.props.bookingState = BookingState.APPROVAL_PENDING
@@ -78,6 +91,15 @@ export class Booking extends AggregateRoot<BookingProps> {
   }
 
   getDetails(): BookingDetailsVO {
-    return new BookingDetailsVO(this.props.customerId, this.props.courseId, this.props.email)
+    return new BookingDetailsVO(
+      this.props.customerId,
+      this.props.courseId,
+      this.props.email,
+      this.props.bookingState,
+    )
+  }
+
+  getId(): string {
+    return this.id.toString()
   }
 }

@@ -12,7 +12,6 @@ import type { SagaStep } from '../saga.types'
 export class CreateBookingStep implements SagaStep<Booking, void> {
   static STEP_NAME = 'CreateBookingStep' as const
   boookingDomainService = new BookingDomainService()
-  // bookingRepository = new BookingRepositoryImplDatabase()
 
   circutBreaker = buildCircuitBreaker(
     [ReserveBookingErrors.BookingRepoInfraError],
@@ -31,9 +30,9 @@ export class CreateBookingStep implements SagaStep<Booking, void> {
     )
 
     if (isAvailable) {
-      await this.circutBreaker.execute(() => booking.approveCreating())
-
       this.eventBus.emit('update:saga-state', CreateBookingStep.STEP_NAME)
+      // Means that booking is persisted (will be stored in DB on the next iteration of saving)
+      this.eventBus.emit('update:booking-persistence', true)
       return
     }
 

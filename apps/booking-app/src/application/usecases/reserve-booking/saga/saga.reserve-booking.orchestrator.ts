@@ -35,6 +35,9 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
   static messageBroker: RabbitMQClient
   private static _isInitialized = false
 
+  // Controls weither booking in Saga is persisted or not
+  public isBookingPersisted: boolean
+
   private readonly eventBus: EventEmitter
 
   private readonly step1: CreateBookingStep
@@ -50,6 +53,7 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
   private constructor(props: ReserveBookingSagaProps, id?: UniqueEntityID) {
     super(props, id)
 
+    this.isBookingPersisted = false
     this.eventBus = new EventEmitter()
 
     this.listenUpdateSagaState()
@@ -102,7 +106,7 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
   }
 
   async saveSagaInDB(): Promise<void> {
-    await ReserveBookingSaga.reserveBookingSagaRepository.saveReserveBookingSagaInDB(this, false)
+    await ReserveBookingSaga.reserveBookingSagaRepository.saveReserveBookingSagaInDB(this)
   }
 
   async freezeSaga(): Promise<void> {
@@ -133,8 +137,9 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
     const sagaResult = {
       payment: { paymentId: null as string | null },
       booking: {
-        bookingId: this.props.booking.id.toString(),
+        bookingId: this.props.booking.getId(),
         ...bookingDetails,
+        bookingState: undefined,
       },
     }
 
@@ -146,7 +151,9 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
 
         const stepResult = await step.invoke(this.props.booking)
 
-        // Invoke saga step => update saga state in DB
+        // Invoke saga step
+        // => update saga state in DB
+        // => generate post domain event based on CDC
         await this.saveSagaInDB()
 
         if (step.name === AuthorizePaymentStep.STEP_NAME) {
@@ -200,13 +207,19 @@ export class ReserveBookingSaga extends AggregateRoot<ReserveBookingSagaProps> {
     return this.id.toString()
   }
 
-  getBookingEntityId(): string {
-    return this.props.booking.id.toString()
+  getBookingId(): string {
+    return this.props.booking.getId()
   }
 
   listenUpdateSagaState(): void {
     this.eventBus.on('update:saga-state', (newState) => {
       this.props.state.completedStep = newState
+    })
+    this.eventBus.on('update:booking-persistence', (bookingPersistence) => {
+      /**
+       * Change to true, we want to save booking in DB
+       */
+      this.isBookingPersisted = bookingPersistence
     })
   }
 

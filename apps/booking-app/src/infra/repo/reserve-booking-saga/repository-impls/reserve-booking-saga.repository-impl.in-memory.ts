@@ -1,6 +1,4 @@
-import { Booking } from '@domain/index'
-
-import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+import type { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
 
 import { ReserveBookingSagaMapper } from '@infra/mappers'
 import type { ReserveBookingSagaPersistenceEntity } from '@infra/persistence-entities'
@@ -27,19 +25,16 @@ export class ReserveBookingSagaRepositoryImplInMemory implements TReserveBooking
     return new ReserveBookingSagaRepositoryImplInMemory()
   }
 
-  async saveReserveBookingSagaInDB(
-    reserveBookingSaga: ReserveBookingSaga,
-    isNew: boolean,
-  ): Promise<void> {
+  async saveReserveBookingSagaInDB(reserveBookingSaga: ReserveBookingSaga): Promise<void> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     /**
-     * * 1. Save child booking aggregate
-     * * 2. Save saga itself
+     * 1. Save child booking aggregate
+     * 2. Save saga itself
      */
 
-    if (isNew) {
-      // 1
+    // 1
+    if (reserveBookingSaga.isBookingPersisted) {
       await ReserveBookingSagaRepositoryImplInMemory.bookingRepo.saveBookingInDB(
         reserveBookingSaga.props.booking,
       )
@@ -50,6 +45,11 @@ export class ReserveBookingSagaRepositoryImplInMemory implements TReserveBooking
       ReserveBookingSagaRepositoryImplInMemory.reserveBookingSagaMapper.toPersistence(
         reserveBookingSaga,
       )
+
+    // @ts-expect-error emulate nullable field
+    reserveBookingSagaPersistenceEntity.bookingId = reserveBookingSaga.isBookingPersisted
+      ? reserveBookingSagaPersistenceEntity.bookingId
+      : null
 
     const idx = sagaBookingEntitiesInMemory.findIndex(
       (saga) => saga.id === reserveBookingSagaPersistenceEntity.id,
@@ -79,15 +79,5 @@ export class ReserveBookingSagaRepositoryImplInMemory implements TReserveBooking
           )
         : null,
     )
-  }
-
-  createReserveBookingSaga(data: {
-    customerId: string
-    courseId: string
-    email: string
-  }): ReserveBookingSaga {
-    const booking = Booking.create(data)
-
-    return ReserveBookingSaga.create({ booking })
   }
 }

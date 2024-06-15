@@ -1,3 +1,4 @@
+import { Booking } from '@domain/index'
 import type { BookingDomainService, MaybeErrorResponse } from '@domain/index'
 
 import type { ReserveBookingDTO } from '@infra/controllers/reserve-booking'
@@ -5,6 +6,7 @@ import type { TReserveBookingSagaRepository } from '@infra/repo/reserve-booking-
 
 import type { UseCase } from '@libs/core'
 
+import { ReserveBookingSaga } from './saga/saga.reserve-booking.orchestrator'
 import type { ReserveBookingSagaResult } from './saga/saga.reserve-booking.orchestrator'
 
 export class ReserveBookingUsecase
@@ -29,16 +31,14 @@ export class ReserveBookingUsecase
     dto: ReserveBookingDTO,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     // 1. Create saga instance
-    const reserveBookingSaga =
-      ReserveBookingUsecase.reserveBookingSagaRepository.createReserveBookingSaga(dto)
+    const reserveBookingSaga = ReserveBookingSaga.create({ booking: Booking.create(dto) })
 
     // 2. Save saga instance
     await ReserveBookingUsecase.reserveBookingSagaRepository.saveReserveBookingSagaInDB(
       reserveBookingSaga,
-      true,
     )
 
-    // 3. Run saga execution
+    // 3. Run saga execution (RPC)
     return await this.bookingDomainService.reserveBooking(reserveBookingSaga)
   }
 }

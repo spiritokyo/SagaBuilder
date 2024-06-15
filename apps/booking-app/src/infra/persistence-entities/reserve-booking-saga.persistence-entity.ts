@@ -5,12 +5,10 @@ import type { TSagaStateUnion } from '@application/usecases/reserve-booking/saga
  */
 export type ReserveBookingSagaPersistenceEntity = {
   id: string
-  props: {
-    id: string
-    state: {
-      completed_step: TSagaStateUnion
-      is_compensating_direction: boolean
-      is_error_saga: boolean
-    }
+  bookingId: string
+  state: {
+    completed_step: TSagaStateUnion
+    is_compensating_direction: boolean
+    is_error_saga: boolean
   }
 }

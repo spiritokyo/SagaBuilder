@@ -12,6 +12,7 @@ export class BookingMapper implements TMapper<BookingPersistenceEntity, Booking>
         customerId: bookingPersistenceEntity.customer_id,
         courseId: bookingPersistenceEntity.course_id,
         email: bookingPersistenceEntity.email,
+        bookingState: bookingPersistenceEntity.current_state,
       },
       new UniqueEntityID(bookingPersistenceEntity.id),
     )
@@ -19,9 +20,10 @@ export class BookingMapper implements TMapper<BookingPersistenceEntity, Booking>
 
   public toPersistence(booking: Booking): BookingPersistenceEntity {
     return {
-      id: booking.id.toString(),
+      id: booking.getId(),
       course_id: booking.getDetails().courseId,
       customer_id: booking.getDetails().customerId,
+      current_state: booking.getDetails().bookingState,
       email: booking.getDetails().email,
     }
   }

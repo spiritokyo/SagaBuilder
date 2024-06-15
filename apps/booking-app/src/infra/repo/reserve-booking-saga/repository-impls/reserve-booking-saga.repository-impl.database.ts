@@ -1,8 +1,6 @@
 import type { PoolClient } from 'pg'
 
-import { Booking } from '@domain/index'
-
-import { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
+import type { ReserveBookingSaga } from '@application/usecases/reserve-booking/saga/saga.reserve-booking.orchestrator'
 
 import { ReserveBookingSagaMapper } from '@infra/mappers'
 import type { ReserveBookingSagaPersistenceEntity } from '@infra/persistence-entities'
@@ -29,19 +27,16 @@ export class ReserveBookingSagaRepositoryImplDatabase implements TReserveBooking
     return new ReserveBookingSagaRepositoryImplDatabase(client)
   }
 
-  async saveReserveBookingSagaInDB(
-    reserveBookingSaga: ReserveBookingSaga,
-    isNew: boolean,
-  ): Promise<void> {
+  async saveReserveBookingSagaInDB(reserveBookingSaga: ReserveBookingSaga): Promise<void> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     /**
-     * 1. Save child booking aggregate (on creating)
+     * 1. Save child booking aggregate
      * 2. Save saga itself
      */
 
-    if (isNew) {
-      // 1
+    // 1
+    if (reserveBookingSaga.isBookingPersisted) {
       await ReserveBookingSagaRepositoryImplDatabase.bookingRepo.saveBookingInDB(
         reserveBookingSaga.props.booking,
       )
@@ -52,23 +47,31 @@ export class ReserveBookingSagaRepositoryImplDatabase implements TReserveBooking
         reserveBookingSaga,
       )
 
-    console.log('DB SAVE SAGA:', reserveBookingSagaPersistenceEntity)
-
     // 2
-    await this.client.query(
+    const res = await this.client.query(
       `
-        INSERT INTO "ReserveBookingSaga" ("id", "state") VALUES ($1, $2)
+        INSERT INTO "ReserveBookingSaga" ("id", "bookingId", "state") VALUES ($1, $2, $3)
         ON CONFLICT ("id")
         DO UPDATE
         SET
-          "state" = $2
+          "bookingId" = $2,
+          "state" = $3
         RETURNING *
         `,
       [
         reserveBookingSagaPersistenceEntity.id,
-        JSON.stringify(reserveBookingSagaPersistenceEntity.props.state),
+        reserveBookingSaga.isBookingPersisted
+          ? reserveBookingSagaPersistenceEntity.bookingId
+          : null,
+        JSON.stringify(reserveBookingSagaPersistenceEntity.state),
       ],
     )
+
+    console.log('SAVE SAGA DB')
+    console.table({
+      isBookingPersisted: reserveBookingSaga.isBookingPersisted,
+      payload: JSON.stringify(res.rows[0], null, 2),
+    })
   }
 
   async restoreReserveBookingSagaFromDB(sagaId: string): Promise<ReserveBookingSaga | null> {
@@ -89,15 +92,5 @@ export class ReserveBookingSagaRepositoryImplDatabase implements TReserveBooking
           reserveBookingSagaPersistenceEntity,
         )
       : null
-  }
-
-  createReserveBookingSaga(data: {
-    customerId: string
-    courseId: string
-    email: string
-  }): ReserveBookingSaga {
-    const booking = Booking.create(data)
-
-    return ReserveBookingSaga.create({ booking })
   }
 }
