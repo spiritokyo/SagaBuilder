@@ -7,26 +7,35 @@ import {
   BookingRefundedDomainEvent,
   BookingConfirmedDomainEvent,
   BookingCancelledDomainEvent,
+  BookingFrozenDomainEvent,
 } from './booking.events'
 import { BookingDetailsVO } from './booking.value-objects'
 import { BookingState } from './index'
 
 export type BookingProps = {
-  readonly customerId: string
-  readonly courseId: string
+  readonly customerId: number
+  readonly courseId: number
   readonly email: string
   bookingState: BookingState
+  isFrozen: boolean
+  paymentId: number | null
 }
 
 export class Booking extends AggregateRoot<BookingProps> {
   constructor(
-    props: Omit<BookingProps, 'bookingState'> & { bookingState?: BookingState },
+    props: Omit<BookingProps, 'bookingState' | 'isFrozen' | 'paymentId'> & {
+      paymentId?: number | null
+      bookingState?: BookingState
+      isFrozen?: boolean
+    },
     id?: UniqueEntityID,
   ) {
     const isBrandNew = !props.bookingState
 
     if (isBrandNew) {
       props.bookingState = BookingState.PAYMENT_PENDING
+      props.isFrozen = false
+      props.paymentId = null
     }
 
     super(props as BookingProps, id)
@@ -38,11 +47,14 @@ export class Booking extends AggregateRoot<BookingProps> {
   }
 
   public static create(
-    props: Omit<BookingProps, 'bookingState'> & { bookingState?: BookingState },
+    props: Omit<BookingProps, 'bookingState' | 'isFrozen' | 'paymentId'> & {
+      paymentId?: number | null
+      bookingState?: BookingState
+      isFrozen?: boolean
+    },
     id?: UniqueEntityID,
   ): Booking {
     // Should be guards
-
     const defaultValues = {
       ...props,
     }
@@ -50,22 +62,17 @@ export class Booking extends AggregateRoot<BookingProps> {
     return new Booking(defaultValues, id)
   }
 
-  // approveCreating(): void {
-  //   this.props.bookingState = BookingState.PAYMENT_PENDING
-
-  //   const event = new BookingCreatedDomainEvent(this)
-  //   this.addDomainEvent(event)
-  // }
-
-  approvePayment(): void {
+  approvePayment(paymentId: number): void {
     this.props.bookingState = BookingState.APPROVAL_PENDING
+    this.props.paymentId = paymentId
 
     const event = new BookingPaidDomainEvent(this)
     this.addDomainEvent(event)
   }
 
-  refundPayment(): void {
+  refundPayment(paymentId: number): void {
     this.props.bookingState = BookingState.CANCEL_PENDING
+    this.props.paymentId = paymentId
 
     const event = new BookingRefundedDomainEvent(this)
     this.addDomainEvent(event)
@@ -94,9 +101,18 @@ export class Booking extends AggregateRoot<BookingProps> {
     return new BookingDetailsVO(
       this.props.customerId,
       this.props.courseId,
+      this.props.paymentId,
       this.props.email,
       this.props.bookingState,
+      this.props.isFrozen,
     )
+  }
+
+  freezeBooking(): void {
+    this.props.isFrozen = true
+
+    const event = new BookingFrozenDomainEvent(this)
+    this.addDomainEvent(event)
   }
 
   getId(): string {

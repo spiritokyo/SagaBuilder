@@ -36,6 +36,7 @@ export class ReserveBookingUsecase
     // 2. Save saga instance
     await ReserveBookingUsecase.reserveBookingSagaRepository.saveReserveBookingSagaInDB(
       reserveBookingSaga,
+      false,
     )
 
     // 3. Run saga execution (RPC)
