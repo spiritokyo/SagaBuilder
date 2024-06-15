@@ -24,18 +24,20 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
 
     const res = await this.client.query(
       `
-      INSERT INTO "Booking" ("id", "customer_id", "course_id", "email", "current_state") 
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO "Booking" ("id", "customer_id", "course_id", "payment_id", "email", "current_state") 
+      VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT ("id")
       DO UPDATE
       SET
-        "current_state" = $5
+        "payment_id" = $4,
+        "current_state" = $6
       RETURNING *
         `,
       [
         bookingPersistenceEntity.id,
         bookingPersistenceEntity.customer_id,
         bookingPersistenceEntity.course_id,
+        bookingPersistenceEntity.payment_id,
         bookingPersistenceEntity.email,
         bookingPersistenceEntity.current_state,
       ],

@@ -25,7 +25,10 @@ export class ReserveBookingSagaRepositoryImplInMemory implements TReserveBooking
     return new ReserveBookingSagaRepositoryImplInMemory()
   }
 
-  async saveReserveBookingSagaInDB(reserveBookingSaga: ReserveBookingSaga): Promise<void> {
+  async saveReserveBookingSagaInDB(
+    reserveBookingSaga: ReserveBookingSaga,
+    updateOnlySagaState: boolean,
+  ): Promise<void> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     /**
@@ -34,7 +37,7 @@ export class ReserveBookingSagaRepositoryImplInMemory implements TReserveBooking
      */
 
     // 1
-    if (reserveBookingSaga.isBookingPersisted) {
+    if (reserveBookingSaga.isBookingPersisted && !updateOnlySagaState) {
       await ReserveBookingSagaRepositoryImplInMemory.bookingRepo.saveBookingInDB(
         reserveBookingSaga.props.booking,
       )
