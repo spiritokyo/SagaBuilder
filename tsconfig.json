@@ -48,6 +48,11 @@
       "ES6",
       "ESNext"
     ],
+    "paths": {
+      "@libs/*": [
+      "./libs/*"
+     ]
+    }
   },
   "include": [
     "libs/**/*",
