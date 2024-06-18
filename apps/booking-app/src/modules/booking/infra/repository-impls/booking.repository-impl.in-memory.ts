@@ -6,15 +6,14 @@ import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 
 import { emulateChaosError } from '@libs/infra/error/utils'
-
-import type { TBookingRepository } from '../booking.repository'
+import type { TAbstractAggregateRepository } from '@libs/infra/repo'
 
 const BookingPersistenceEntitiesInMemory: BookingPersistenceEntity[] = []
 
-export class BookingRepositoryImplInMemory implements TBookingRepository {
+export class BookingRepositoryImplInMemory implements TAbstractAggregateRepository<Booking> {
   private mapper = new BookingMapper()
 
-  async saveBookingInDB(booking: Booking): Promise<void> {
+  async saveAggregateInDB(booking: Booking): Promise<void> {
     const bookingPersistenceEntity = this.mapper.toPersistence(booking)
 
     emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
@@ -36,7 +35,7 @@ export class BookingRepositoryImplInMemory implements TBookingRepository {
     await Promise.resolve()
   }
 
-  restoreBookingFromDB(bookingId: string): Promise<Booking | null> {
+  restoreAggregateFromDB(bookingId: string): Promise<Booking | null> {
     emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 10)
 
     const bookingPersistenceModel =
@@ -47,7 +46,7 @@ export class BookingRepositoryImplInMemory implements TBookingRepository {
     )
   }
 
-  deleteBookingById(bookingId: string): Promise<void> {
+  deleteAggregateById(bookingId: string): Promise<void> {
     emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 90)
 
     const result = BookingPersistenceEntitiesInMemory.findIndex(

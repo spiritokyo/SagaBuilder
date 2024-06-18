@@ -20,6 +20,6 @@ export class AfterSagaFailed implements IHandle<ReserveBookingSagaFailedDomainEv
   }
 
   private onSagaFailed(event: ReserveBookingSagaFailedDomainEvent): void {
-    console.log(`[AfterSagaFailed]:{${JSON.stringify(event.saga.getState())}}`)
+    console.log(`[AfterSagaFailed]:{${JSON.stringify(event.sagaState)}}`)
   }
 }

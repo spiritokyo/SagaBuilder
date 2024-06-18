@@ -9,8 +9,7 @@ import type { RabbitMQClient } from '@shared/infra/rabbit/client'
 
 import { buildCircuitBreaker } from '@libs/infra/error/utils'
 import { AuthorizePaymentCardCommand } from '@libs/shared'
-
-import type { SagaStep } from '..'
+import type { SagaStep } from '@libs/shared/saga/saga.types'
 
 export class AuthorizePaymentStep implements SagaStep<Booking> {
   static STEP_NAME = 'AuthorizePaymentStep' as const

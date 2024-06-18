@@ -6,8 +6,7 @@ import { DomainBookingErrors, BookingDomainService } from '@booking-domain/index
 import { ReserveBookingErrors } from '@booking-controller/index'
 
 import { buildCircuitBreaker } from '@libs/infra/error/utils'
-
-import type { SagaStep } from '../saga.types'
+import type { SagaStep } from '@libs/shared/saga'
 
 export class CreateBookingStep implements SagaStep<Booking> {
   static STEP_NAME = 'CreateBookingStep' as const
@@ -38,7 +37,7 @@ export class CreateBookingStep implements SagaStep<Booking> {
     if (isAvailable) {
       this.eventBus.emit('update:saga-state', CreateBookingStep.STEP_NAME)
       // Means that booking is persisted (will be stored in DB on the next iteration of saving)
-      this.eventBus.emit('update:booking-persistence', true)
+      this.eventBus.emit('update:child-aggregate-persistence', true)
       return
     }
 

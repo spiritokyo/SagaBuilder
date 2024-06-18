@@ -1,35 +1,36 @@
-import type { UniqueEntityID } from '@libs/domain'
+import { UniqueEntityID } from '@libs/domain'
 import type { IDomainEvent } from '@libs/domain/events/domain-event.type'
-
-import type { ReserveBookingSaga } from './saga.reserve-booking.aggregate'
+import type { AbstractProps } from '@libs/shared/saga/saga.types'
 
 export abstract class ReserveBookingSagaDomainEvent implements IDomainEvent {
   public dateTimeOccurred: Date
-  public saga: ReserveBookingSaga
+  public sagaId: UniqueEntityID
+  public sagaState: AbstractProps['state']
 
   abstract name: string
 
-  constructor(saga: ReserveBookingSaga) {
+  constructor(sagaId: string, sagaState: AbstractProps['state']) {
     this.dateTimeOccurred = new Date()
-    this.saga = saga
+    this.sagaId = new UniqueEntityID(sagaId)
+    this.sagaState = sagaState
   }
 
   getAggregateId(): UniqueEntityID {
-    return this.saga.id
+    return this.sagaId
   }
 }
 // --------------------------------------------------------------
 
 export class ReserveBookingSagaCompletedDomainEvent extends ReserveBookingSagaDomainEvent {
   name = 'ReserveBookingSagaCompleted'
-  constructor(saga: ReserveBookingSaga) {
-    super(saga)
+  constructor(sagaId: string, sagaState: AbstractProps['state']) {
+    super(sagaId, sagaState)
   }
 }
 
 export class ReserveBookingSagaFailedDomainEvent extends ReserveBookingSagaDomainEvent {
   name = 'ReserveBookingSagaFailed'
-  constructor(saga: ReserveBookingSaga) {
-    super(saga)
+  constructor(sagaId: string, sagaState: AbstractProps['state']) {
+    super(sagaId, sagaState)
   }
 }

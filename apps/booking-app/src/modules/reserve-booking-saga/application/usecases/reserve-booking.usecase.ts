@@ -1,44 +1,64 @@
+import type { EventEmitter } from 'node:events'
+
 import { Booking } from '@booking-domain/index'
 import type { MaybeErrorResponse, BookingDomainService } from '@booking-domain/index'
 
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
-import { ReserveBookingSaga } from '@reserve-booking-saga-domain/index'
+import {
+  ReserveBookingSaga,
+  ReserveBookingSagaCompletedDomainEvent,
+  ReserveBookingSagaFailedDomainEvent,
+} from '@reserve-booking-saga-domain/index'
+import {
+  CreateBookingStep,
+  AuthorizePaymentStep,
+  ConfirmBookingStep,
+} from '@reserve-booking-saga-domain/steps'
 
 import type { ReserveBookingDTO } from '@booking-controller/index'
 
-import type { TReserveBookingSagaRepository } from '@reserve-booking-saga-infra/repo'
-
 import type { UseCase } from '@libs/core'
+import type { TSagaRepository } from '@libs/shared/saga/repo/saga.repository'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
-  static reserveBookingSagaRepository: TReserveBookingSagaRepository
+  static reserveBookingSagaRepository: TSagaRepository<Booking>
 
   private constructor(private bookingDomainService: BookingDomainService) {}
 
-  static async initialize(
+  static initialize(
     bookingDomainService: BookingDomainService,
-    reserveBookingSagaRepository: TReserveBookingSagaRepository,
-  ): Promise<ReserveBookingUsecase> {
+    reserveBookingSagaRepository: TSagaRepository<Booking>,
+  ): ReserveBookingUsecase {
     ReserveBookingUsecase.reserveBookingSagaRepository = reserveBookingSagaRepository
 
     console.log('[ReserveBookingUsecase]: initialized')
 
-    return await Promise.resolve(new ReserveBookingUsecase(bookingDomainService))
+    return new ReserveBookingUsecase(bookingDomainService)
   }
 
   public async execute(
     dto: ReserveBookingDTO,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     // 1. Create saga instance
-    const reserveBookingSaga = ReserveBookingSaga.create({ booking: Booking.create(dto) })
+    const reserveBookingSaga = ReserveBookingSaga.create<Booking>(
+      { childAggregate: Booking.create(dto) },
+      {
+        completedEvent: ReserveBookingSagaCompletedDomainEvent,
+        failedEvent: ReserveBookingSagaFailedDomainEvent,
+      },
+      [
+        (eventBus: EventEmitter): CreateBookingStep => new CreateBookingStep(eventBus),
+        (eventBus: EventEmitter): AuthorizePaymentStep =>
+          new AuthorizePaymentStep(eventBus, ReserveBookingSaga.messageBroker),
+        (eventBus: EventEmitter): ConfirmBookingStep => new ConfirmBookingStep(eventBus),
+      ],
+      'ReserveBookingSaga',
+    )
 
     // 2. Save saga instance
-    await ReserveBookingUsecase.reserveBookingSagaRepository.saveReserveBookingSagaInDB(
-      reserveBookingSaga,
-      false,
-    )
+    await ReserveBookingUsecase.reserveBookingSagaRepository.saveSagaInDB(reserveBookingSaga, false)
 
     // 3. Run saga execution (RPC)
     return await this.bookingDomainService.reserveBooking(reserveBookingSaga)

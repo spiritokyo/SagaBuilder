@@ -1,3 +1,5 @@
+import type { PoolClient } from 'pg'
+
 import { ReserveBookingSagaCompletedDomainEvent } from '@reserve-booking-saga-domain/index'
 
 import { DomainEvents } from '@libs/domain/events'
@@ -8,19 +10,25 @@ import type { IDomainEvent, IHandle } from '@libs/domain/events'
  */
 // TODO: clear saga from database
 export class AfterSagaCompleted implements IHandle<ReserveBookingSagaCompletedDomainEvent> {
-  constructor() {
+  constructor(private client: PoolClient) {
     this.setupSubscriptions()
   }
 
   setupSubscriptions(): void {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     DomainEvents.register(
-      this.onSagaCompleted.bind(this) as (event: IDomainEvent) => void,
+      this.onSagaCompleted.bind(this) as (event: IDomainEvent) => Promise<void>,
       ReserveBookingSagaCompletedDomainEvent.name,
     )
   }
 
-  private onSagaCompleted(event: ReserveBookingSagaCompletedDomainEvent): void {
-    console.log(`[AfterSagaCompleted]:{${JSON.stringify(event.saga.getState())}}`)
+  private async onSagaCompleted(event: ReserveBookingSagaCompletedDomainEvent): Promise<void> {
+    console.log(`[AfterSagaCompleted]:{${JSON.stringify(event.sagaState)}}`)
+
+    await this.client.query(
+      `
+      DELETE FROM "ReserveBookingSaga" WHERE id = $1
+      `,
+      [event.sagaId.toString()],
+    )
   }
 }

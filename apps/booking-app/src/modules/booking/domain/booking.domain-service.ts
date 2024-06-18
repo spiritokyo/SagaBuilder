@@ -1,10 +1,10 @@
-import type {
-  ReserveBookingSaga,
-  ReserveBookingSagaResult,
-} from '@reserve-booking-saga-domain/index'
+import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 
 import type { ReserveBookingErrors } from '@booking-controller/index'
 
+import type { SagaManager, AbstractProps } from '@libs/shared/saga'
+
+import type { Booking } from './booking.aggregate'
 import type { DomainBookingErrors } from './booking.errors'
 
 export type MaybeErrorResponse =
@@ -31,10 +31,10 @@ export class BookingDomainService {
    * I'm not sure that this method belongs here, but idk where if not here
    */
   async reserveBooking(
-    reserveBookingSaga: ReserveBookingSaga,
+    reserveBookingSaga: SagaManager<Booking, AbstractProps<Booking>>,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     try {
-      return await reserveBookingSaga.execute()
+      return (await reserveBookingSaga.execute()) as ReserveBookingSagaResult
     } catch (err: unknown) {
       return err as MaybeErrorResponse
     }

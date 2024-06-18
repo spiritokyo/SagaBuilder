@@ -1,23 +1,23 @@
 /* eslint-disable no-restricted-syntax */
 
-import { ReserveBookingErrors } from '@booking-controller/index'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/index'
+
+import { ReserveBookingErrors } from '@booking-controller/index'
 
 import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 
 import { emulateChaosError } from '@libs/infra/error/utils'
+import type { TAbstractAggregateRepository } from '@libs/infra/repo'
 
-import type { TBookingRepository } from '../booking.repository'
-
-export class BookingRepositoryImplDatabase implements TBookingRepository {
+export class BookingRepositoryImplDatabase implements TAbstractAggregateRepository<Booking> {
   private mapper = new BookingMapper()
 
   constructor(public readonly client: PoolClient) {}
 
-  async saveBookingInDB(booking: Booking): Promise<void> {
+  async saveAggregateInDB(booking: Booking): Promise<void> {
     const bookingPersistenceEntity = this.mapper.toPersistence(booking)
 
     // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
@@ -50,7 +50,7 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
     // })
   }
 
-  async restoreBookingFromDB(bookingId: string): Promise<Booking | null> {
+  async restoreAggregateFromDB(bookingId: string): Promise<Booking | null> {
     // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 10)
 
     const res = await this.client.query(
@@ -65,7 +65,7 @@ export class BookingRepositoryImplDatabase implements TBookingRepository {
     return bookingPersistenceEntity ? this.mapper.toDomain(bookingPersistenceEntity) : null
   }
 
-  async deleteBookingById(bookingId: string): Promise<void> {
+  async deleteAggregateById(bookingId: string): Promise<void> {
     emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 90)
 
     await this.client.query(
