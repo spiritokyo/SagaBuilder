@@ -27,7 +27,7 @@ export function handleErrors(server: Server): void {
   function shutdownOne(typeException: string): (err: Error) => void {
     return (err: Error) => {
       console.error(
-        { name: err.name, message: err.message },
+        { name: err.name, message: err.message, trace: err.stack },
         `${typeException}! 💥 Shutting down...`,
       )
 

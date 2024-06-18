@@ -1,4 +1,5 @@
 import { BookingDomainService } from '@booking-domain/booking.domain-service'
+import type { Booking } from '@booking-domain/index'
 
 import { ReserveBookingSaga } from '@reserve-booking-saga-domain/index'
 
@@ -7,33 +8,42 @@ import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecase
 import { ReserveBookingController } from '@booking-controller/index'
 
 import { initializeBookingDomainSubscribers } from '@booking-infra/domain-subscriptions'
+import { BookingRepositoryImplDatabase } from '@booking-infra/repository-impls'
 
+import { RestoreFailedReserveBookingSagaCron } from '@reserve-booking-saga-infra/crons'
 import { initializeReserveBookingSagaDomainSubscribers } from '@reserve-booking-saga-infra/domain-subscriptions'
-import { ReserveBookingSagaRepositoryImplDatabase } from '@reserve-booking-saga-infra/repo/repository-impls'
 
 import { getConnection } from '@shared/infra/database/client'
 import { RabbitMQClient } from '@shared/infra/rabbit/client'
 
-export async function initializeInfra(): Promise<ReserveBookingController> {
-  // Initialize domain subscribers
-  initializeBookingDomainSubscribers()
-  initializeReserveBookingSagaDomainSubscribers()
+import { SagaRepositoryImplDatabase } from '@libs/shared/saga/repo'
 
+export async function initializeInfra(): Promise<ReserveBookingController> {
   // Initialize postgresql connection
   const connection = await getConnection()
 
   // Initialize message broker
   const messageBroker = await RabbitMQClient.initialize()
 
-  // Initialize repository implementation
-  const reserveBookingSagaRepository =
-    ReserveBookingSagaRepositoryImplDatabase.initialize(connection)
+  // Initialize domain subscribers
+  initializeBookingDomainSubscribers()
+  initializeReserveBookingSagaDomainSubscribers(connection)
+
+  // Initialize repository implementations
+  const bookingRepository = new BookingRepositoryImplDatabase(connection)
+  const reserveBookingSagaRepository = SagaRepositoryImplDatabase.initialize<Booking>(
+    connection,
+    bookingRepository,
+  )
+
+  // Initialize & run cron
+  RestoreFailedReserveBookingSagaCron.initialize(connection, reserveBookingSagaRepository).run()
 
   // Initialize ReserveBookingSaga aggregate
   ReserveBookingSaga.initialize(reserveBookingSagaRepository, messageBroker)
 
   // Initialize usecase
-  const reserveBookingUsecase = await ReserveBookingUsecase.initialize(
+  const reserveBookingUsecase = ReserveBookingUsecase.initialize(
     new BookingDomainService(),
     reserveBookingSagaRepository,
   )

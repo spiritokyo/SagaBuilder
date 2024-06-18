@@ -20,17 +20,24 @@ export class BookingCDCConsumerRabbitMQ {
           return
         }
 
-        const cdcData = JSON.parse(message.content.toString())
+        const cdcData =
+          message.content.toString() === 'default' ? null : JSON.parse(message.content.toString())
 
-        const schema = cdcData.schema
-        const payload = cdcData.payload.after
+        if (!cdcData) {
+          return
+        }
 
-        if (schema.name === 'cdc.public.ReserveBookingSaga.Envelope') {
-          const reserveBookingAggregateId = payload.id as string
-          DomainEvents.dispatchEventsForAggregate(new UniqueEntityID(reserveBookingAggregateId))
-        } else if (schema.name === 'cdc.public.Booking.Envelope') {
-          const bookingAggregateId = payload.id as string
-          DomainEvents.dispatchEventsForAggregate(new UniqueEntityID(bookingAggregateId))
+        const schema = cdcData.schema as { name: string }
+        const payload = cdcData.payload.after as null | Record<string, unknown>
+
+        if (payload) {
+          if (schema.name === 'cdc.public.ReserveBookingSaga.Envelope') {
+            const reserveBookingAggregateId = payload.id as string
+            DomainEvents.dispatchEventsForAggregate(new UniqueEntityID(reserveBookingAggregateId))
+          } else if (schema.name === 'cdc.public.Booking.Envelope') {
+            const bookingAggregateId = payload.id as string
+            DomainEvents.dispatchEventsForAggregate(new UniqueEntityID(bookingAggregateId))
+          }
         }
       },
       {
