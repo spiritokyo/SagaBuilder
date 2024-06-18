@@ -10,8 +10,10 @@ import type { TAbstractAggregateRepository } from '@libs/infra/repo'
 
 const BookingPersistenceEntitiesInMemory: BookingPersistenceEntity[] = []
 
-export class BookingRepositoryImplInMemory implements TAbstractAggregateRepository<Booking> {
-  private mapper = new BookingMapper()
+export class BookingRepositoryImplInMemory
+  implements TAbstractAggregateRepository<Booking, BookingPersistenceEntity>
+{
+  public mapper = new BookingMapper()
 
   async saveAggregateInDB(booking: Booking): Promise<void> {
     const bookingPersistenceEntity = this.mapper.toPersistence(booking)

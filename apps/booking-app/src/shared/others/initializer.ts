@@ -8,6 +8,7 @@ import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecase
 import { ReserveBookingController } from '@booking-controller/index'
 
 import { initializeBookingDomainSubscribers } from '@booking-infra/domain-subscriptions'
+import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 import { BookingRepositoryImplDatabase } from '@booking-infra/repository-impls'
 
 import { RestoreFailedReserveBookingSagaCron } from '@reserve-booking-saga-infra/crons'
@@ -31,10 +32,10 @@ export async function initializeInfra(): Promise<ReserveBookingController> {
 
   // Initialize repository implementations
   const bookingRepository = new BookingRepositoryImplDatabase(connection)
-  const reserveBookingSagaRepository = SagaRepositoryImplDatabase.initialize<Booking>(
-    connection,
-    bookingRepository,
-  )
+  const reserveBookingSagaRepository = SagaRepositoryImplDatabase.initialize<
+    Booking,
+    BookingPersistenceEntity
+  >(connection, bookingRepository)
 
   // Initialize & run cron
   RestoreFailedReserveBookingSagaCron.initialize(connection, reserveBookingSagaRepository).run()

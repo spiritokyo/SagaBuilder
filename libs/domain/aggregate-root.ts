@@ -7,7 +7,6 @@ import type { UniqueEntityID } from './unique-entity-id'
 export class AggregateRoot<T extends EntityProps> extends Entity<T> {
   private _domainEvents: IDomainEvent[] = []
 
-  // TODO: xz
   constructor(props: T, id?: UniqueEntityID) {
     super(props, id)
   }

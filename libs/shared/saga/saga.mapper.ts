@@ -12,10 +12,12 @@ import type {
   TSagaMapper,
 } from './saga.types'
 
-export class SagaMapper<A extends AggregateRoot<EntityProps>>
+export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
   implements TSagaMapper<SagaPersistenceEntity, SagaManager<A>>
 {
-  constructor(private childAggregateRepository: TAbstractAggregateRepository<A>) {}
+  constructor(
+    private childAggregateRepository: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
+  ) {}
 
   async toDomain(
     sagaPersistenceEntity: SagaPersistenceEntity,

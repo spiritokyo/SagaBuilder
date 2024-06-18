@@ -9,21 +9,23 @@ import { SagaMapper } from '../../saga.mapper'
 import type { AbstractProps, SagaPersistenceEntity, SagaStep, TEventClass } from '../../saga.types'
 import type { TSagaRepository } from '../saga.repository'
 
-export class SagaRepositoryImplDatabase<A extends AggregateRoot<EntityProps>>
-  implements TSagaRepository<A>
+export class SagaRepositoryImplDatabase<
+  A extends AggregateRoot<EntityProps>,
+  AbstractPersistenceEntity,
+> implements TSagaRepository<A>
 {
-  sagaMapper: SagaMapper<A>
+  sagaMapper: SagaMapper<A, AbstractPersistenceEntity>
 
   constructor(
     readonly client: PoolClient,
-    readonly childAggregateRepo: TAbstractAggregateRepository<A>,
+    readonly childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
   ) {
     this.sagaMapper = new SagaMapper(childAggregateRepo)
   }
 
-  static initialize<A extends AggregateRoot<EntityProps>>(
+  static initialize<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>(
     client: PoolClient,
-    childAggregateRepo: TAbstractAggregateRepository<A>,
+    childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
   ): TSagaRepository<A> {
     return new SagaRepositoryImplDatabase(client, childAggregateRepo)
   }

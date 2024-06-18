@@ -81,7 +81,17 @@ export class SagaManager<
   /**
    * @description create/reconstruct in-memory ReserveBookingSaga instance
    */
-  static buildInitState<A extends AggregateRoot<EntityProps>>(
+  static create<
+    A extends AggregateRoot<EntityProps>,
+    ReturnClass extends SagaManager<A> = SagaManager<A>,
+  >(
+    this: new (
+      props: AbstractProps<A>,
+      events: { completedEvent: TEventClass; failedEvent: TEventClass },
+      stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+      name: string,
+      additional?: { id?: UniqueEntityID },
+    ) => ReturnClass,
     props: {
       childAggregate: AbstractProps<A>['childAggregate']
       state?: GenericSagaStateProps['state']
@@ -92,13 +102,7 @@ export class SagaManager<
     additional?: {
       id?: UniqueEntityID
     },
-  ): {
-    props: AbstractProps<A>
-    events: { completedEvent: TEventClass; failedEvent: TEventClass }
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps<A>['childAggregate']>)[]
-    name: string
-    additional?: { id?: UniqueEntityID }
-  } {
+  ): ReturnClass {
     if (!SagaManager._isInitialized) {
       throw new Error('ReserveBookingSaga is not initialized')
     }
@@ -115,44 +119,12 @@ export class SagaManager<
       }
 
       //* Create brand new saga instance
-      return { props: { ...props, state: initialState }, events, stepCommands, name, additional }
+      return new this({ ...props, state: initialState }, events, stepCommands, name, additional)
     }
 
     //* Restore existing saga from DB
     console.log('[RESTORE EXISTING SAGA]', props, additional?.id)
-    return { props: { ...props, state: props.state }, events, stepCommands, name, additional }
-  }
-
-  static create<
-    A extends AggregateRoot<EntityProps>,
-    ReturnClass extends SagaManager<A> = SagaManager<A>,
-  >(
-    this: new (
-      props: AbstractProps<A>,
-      events: { completedEvent: TEventClass; failedEvent: TEventClass },
-      stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
-      name: string,
-      additional?: { id?: UniqueEntityID },
-    ) => ReturnClass,
-    _props: {
-      childAggregate: AbstractProps<A>['childAggregate']
-      state?: GenericSagaStateProps['state']
-    },
-    _events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    _stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps<A>['childAggregate']>)[],
-    _name: string,
-    _additional?: {
-      id?: UniqueEntityID
-    },
-  ): ReturnClass {
-    const { props, events, stepCommands, name, additional } = SagaManager.buildInitState(
-      _props,
-      _events,
-      _stepCommands,
-      _name,
-      _additional,
-    )
-    return new this(props, events, stepCommands, name, additional)
+    return new this({ ...props, state: props.state }, events, stepCommands, name, additional)
   }
 
   async freezeSaga(): Promise<void> {

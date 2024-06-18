@@ -12,8 +12,10 @@ import type { BookingPersistenceEntity } from '@booking-infra/persistence-entiti
 import { emulateChaosError } from '@libs/infra/error/utils'
 import type { TAbstractAggregateRepository } from '@libs/infra/repo'
 
-export class BookingRepositoryImplDatabase implements TAbstractAggregateRepository<Booking> {
-  private mapper = new BookingMapper()
+export class BookingRepositoryImplDatabase
+  implements TAbstractAggregateRepository<Booking, BookingPersistenceEntity>
+{
+  public mapper = new BookingMapper()
 
   constructor(public readonly client: PoolClient) {}
 

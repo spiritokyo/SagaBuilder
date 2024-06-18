@@ -12,10 +12,3 @@ export class ReserveBookingSaga extends SagaManager<Booking> {
     return this.props.childAggregate.getId()
   }
 }
-
-// ReserveBookingSagaCustom.initialize({
-//   infra: {
-//     repoImpl: ReserveBookingSagaRepository,
-//     messageBrokerImpl: RabbitMQClient,
-//   },
-// })

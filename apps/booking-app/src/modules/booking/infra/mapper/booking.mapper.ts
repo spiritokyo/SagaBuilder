@@ -5,7 +5,7 @@ import type { BookingPersistenceEntity } from '@booking-infra/persistence-entiti
 import { UniqueEntityID } from '@libs/domain/unique-entity-id'
 import type { TMapper } from '@libs/infra'
 
-export class BookingMapper implements TMapper<BookingPersistenceEntity, Booking> {
+export class BookingMapper implements TMapper<Booking, BookingPersistenceEntity> {
   public toDomain(bookingPersistenceEntity: BookingPersistenceEntity): Booking {
     return Booking.create(
       {
