@@ -24,7 +24,6 @@ export class BookingRepositoryImplDatabase
 
     // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
 
-    // @ts-expect-error for debug
     const res = await this.client.query(
       `
       INSERT INTO "Booking" ("id", "customer_id", "course_id", "payment_id", "email", "current_state") 
@@ -46,10 +45,10 @@ export class BookingRepositoryImplDatabase
       ],
     )
 
-    // console.log('DB SAVE BOOKING')
-    // console.table({
-    //   payload: res.rows[0],
-    // })
+    console.log('DB SAVE BOOKING')
+    console.table({
+      payload: res.rows[0],
+    })
   }
 
   async restoreAggregateFromDB(bookingId: string): Promise<Booking | null> {

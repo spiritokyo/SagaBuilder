@@ -6,7 +6,7 @@ import { DomainBookingErrors, BookingDomainService } from '@booking-domain/index
 import { ReserveBookingErrors } from '@booking-controller/index'
 
 import { buildCircuitBreaker } from '@libs/infra/error/utils'
-import type { SagaStep } from '@libs/shared/saga'
+import type { SagaStep } from '@libs/saga'
 
 export class CreateBookingStep implements SagaStep<Booking> {
   static STEP_NAME = 'CreateBookingStep' as const

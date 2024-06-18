@@ -5,15 +5,13 @@ import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/domain'
 import type { SagaManager } from '../saga.manager'
 import type { AbstractProps, SagaPersistenceEntity, SagaStep, TEventClass } from '../saga.types'
 
-export type TSagaRepository<
-  ChildAggregate extends AggregateRoot<EntityProps> = AggregateRoot<EntityProps>,
-> = {
+export type TSagaRepository<A extends AggregateRoot<EntityProps>> = {
   /**
    *
    * @param reserveBookingSaga
    * @param updateOnlySagaState - if true, only reserve booking saga state will be updated in DB
    */
-  saveSagaInDB(saga: SagaManager<ChildAggregate>, updateOnlySagaState: boolean): Promise<void>
+  saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void>
   /**
    * @description restore reserve booking aggregate from DB based on `sagaId`
    */
@@ -25,5 +23,5 @@ export type TSagaRepository<
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<ChildAggregate> | null>
+  ): Promise<SagaManager<A> | null>
 }

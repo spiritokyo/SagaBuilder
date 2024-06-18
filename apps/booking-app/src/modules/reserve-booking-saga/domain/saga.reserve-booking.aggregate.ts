@@ -1,6 +1,6 @@
 import type { Booking } from '@booking-domain/booking.aggregate'
 
-import { SagaManager } from '@libs/shared/saga'
+import { SagaManager } from '@libs/saga'
 
 export class ReserveBookingSaga extends SagaManager<Booking> {
   async freezeSaga(): Promise<void> {

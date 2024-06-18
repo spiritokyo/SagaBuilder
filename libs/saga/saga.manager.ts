@@ -14,18 +14,17 @@ import type {
   SagaStep,
   TEventClass,
 } from './saga.types'
-import type { RabbitMQClient } from '../../../apps/booking-app/src/shared/infra/rabbit/client'
+import type { RabbitMQClient } from '../../apps/booking-app/src/shared/infra/rabbit/client'
 
 export class SagaManager<
-    A extends AggregateRoot<EntityProps> = AggregateRoot<EntityProps>,
-    TCustomProps extends AbstractProps = AbstractProps<A>,
+    A extends AggregateRoot<EntityProps>,
+    TCustomProps extends AbstractProps<A> = AbstractProps<A>,
   >
   extends AggregateRoot<GenericSagaStateProps>
   implements ISagaManager
 {
-  static sagaRepository: TSagaRepository
   static messageBroker: RabbitMQClient
-
+  static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>>
   static _isInitialized = false
 
   readonly eventBus: EventEmitter
@@ -67,11 +66,11 @@ export class SagaManager<
    * @description Initialize ReserveBookingSagaRepository and RabbitMQ client
    */
   static initialize<A extends AggregateRoot<EntityProps>>(
-    repoImpl: TSagaRepository<A>,
-    messageBrokerImpl: RabbitMQClient,
+    sagaRepository: TSagaRepository<A>,
+    messageBroker: RabbitMQClient,
   ): void {
-    SagaManager.sagaRepository = repoImpl
-    SagaManager.messageBroker = messageBrokerImpl
+    SagaManager.messageBroker = messageBroker
+    SagaManager.sagaRepository = sagaRepository
 
     console.log('[ReserveBookingSaga]: initialized')
 

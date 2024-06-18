@@ -4,15 +4,17 @@
  */
 exports.up = async function (knex) {
   await knex.schema.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
-    .createTable('ReserveBookingSaga', (table) => {
+    .createTable('Saga', (table) => {
       table.uuid('id', { primaryKey: true }).defaultTo(knex.raw("uuid_generate_v4()"))
-      table.uuid('bookingId').nullable()
+      table.string('name').notNullable()
+      table.uuid('child_aggregate_id').nullable()
       table.jsonb('state').notNullable()
       /**
+       * is_error_saga: boolean
        * completed_step: TSagaStateUnion
        * is_compensating_direction: boolean
-       * is_error_saga: boolean
        * is_completed: boolean
+       * is_child_aggregate_persisted: boolean
        */
     })
 

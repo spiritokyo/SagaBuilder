@@ -35,6 +35,6 @@
       ]
     },
   },
-  "include": ["src/**/*", "../../libs/shared/saga/saga.types.ts", "../../libs/shared/saga/mapper", "../../libs/shared/saga/repo", "../../libs/shared/saga/saga.mapper.ts", "../../libs/infra/repo"],
+  "include": ["src/**/*", "../../libs/saga/saga.types.ts", "../../libs/saga/mapper", "../../libs/saga/repo", "../../libs/saga/saga.mapper.ts", "../../libs/infra/repo"],
   "exclude": ["node_modules", "dist"]
 }

@@ -18,7 +18,7 @@ import {
 import type { ReserveBookingDTO } from '@booking-controller/index'
 
 import type { UseCase } from '@libs/core'
-import type { TSagaRepository } from '@libs/shared/saga/repo/saga.repository'
+import type { TSagaRepository } from '@libs/saga/repo/saga.repository'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>

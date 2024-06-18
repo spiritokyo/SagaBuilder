@@ -37,7 +37,7 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
       throw new Error('Aggregate not found')
     }
 
-    return SagaManager.create<A, InstanceType<typeof SagaManager<A>>>(
+    return SagaManager.create<A>(
       {
         childAggregate: aggregate,
         state: {

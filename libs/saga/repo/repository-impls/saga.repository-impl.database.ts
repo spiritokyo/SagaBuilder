@@ -46,29 +46,31 @@ export class SagaRepositoryImplDatabase<
     const sagaPersistenceEntity = this.sagaMapper.toPersistence(saga)
 
     // 2
-    // @ts-expect-error for debug
     const res = await this.client.query(
       `
-        INSERT INTO "ReserveBookingSaga" ("id", "child_aggregate_id", "state") VALUES ($1, $2, $3)
+        INSERT INTO "Saga" ("id", "name", "child_aggregate_id", "state") VALUES ($1, $2, $3, $4)
         ON CONFLICT ("id")
         DO UPDATE
         SET
-          "child_aggregate_id" = $2,
-          "state" = $3
+          "child_aggregate_id" = $3,
+          "state" = $4
         RETURNING *
         `,
       [
         sagaPersistenceEntity.id,
-        saga.getState().isChildAggregatePersisted ? sagaPersistenceEntity.child_aggregate_id : null,
+        sagaPersistenceEntity.name,
+        sagaPersistenceEntity.state.is_child_aggregate_persisted
+          ? sagaPersistenceEntity.child_aggregate_id
+          : null,
         JSON.stringify(sagaPersistenceEntity.state),
       ],
     )
 
-    // console.log('SAVE SAGA DB')
-    // console.table({
-    //   isBookingPersisted: reserveBookingSaga.isBookingPersisted,
-    //   payload: JSON.stringify(res.rows[0], null, 2),
-    // })
+    console.log('SAVE SAGA DB')
+    console.table({
+      isChildAggregatePersisted: sagaPersistenceEntity.state.is_child_aggregate_persisted,
+      payload: JSON.stringify(res.rows[0], null, 2),
+    })
   }
 
   async restoreSaga(

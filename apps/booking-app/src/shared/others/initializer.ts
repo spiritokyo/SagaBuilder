@@ -17,7 +17,7 @@ import { initializeReserveBookingSagaDomainSubscribers } from '@reserve-booking-
 import { getConnection } from '@shared/infra/database/client'
 import { RabbitMQClient } from '@shared/infra/rabbit/client'
 
-import { SagaRepositoryImplDatabase } from '@libs/shared/saga/repo'
+import { SagaRepositoryImplDatabase } from '@libs/saga/repo'
 
 export async function initializeInfra(): Promise<ReserveBookingController> {
   // Initialize postgresql connection

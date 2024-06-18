@@ -2,7 +2,7 @@ import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/inde
 
 import type { ReserveBookingErrors } from '@booking-controller/index'
 
-import type { SagaManager, AbstractProps } from '@libs/shared/saga'
+import type { SagaManager, AbstractProps } from '@libs/saga'
 
 import type { Booking } from './booking.aggregate'
 import type { DomainBookingErrors } from './booking.errors'
