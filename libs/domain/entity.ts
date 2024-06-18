@@ -5,8 +5,8 @@ export type EntityProps = Record<string, unknown>
 const isEntity = <T extends EntityProps = EntityProps>(v: unknown): v is Entity<T> =>
   v instanceof Entity
 
-export abstract class Entity<T extends EntityProps> {
-  public readonly props: T
+export class Entity<T extends EntityProps> {
+  public props: T
   protected readonly _id: UniqueEntityID
 
   constructor(props: T, id?: UniqueEntityID) {

@@ -4,8 +4,13 @@ import type { IDomainEvent } from './events/domain-event.type'
 import { DomainEvents } from './events/domain-events'
 import type { UniqueEntityID } from './unique-entity-id'
 
-export abstract class AggregateRoot<T extends EntityProps> extends Entity<T> {
+export class AggregateRoot<T extends EntityProps> extends Entity<T> {
   private _domainEvents: IDomainEvent[] = []
+
+  // TODO: xz
+  constructor(props: T, id?: UniqueEntityID) {
+    super(props, id)
+  }
 
   get id(): UniqueEntityID {
     return this._id
@@ -19,7 +24,7 @@ export abstract class AggregateRoot<T extends EntityProps> extends Entity<T> {
     this._domainEvents.splice(0, this._domainEvents.length)
   }
 
-  protected addDomainEvent(domainEvent: IDomainEvent): void {
+  public addDomainEvent(domainEvent: IDomainEvent): void {
     // Add the domain event to this aggregate's zlist of domain events
     this._domainEvents.push(domainEvent)
     // Add this aggregate instance to the domain event's list of aggregates who's
