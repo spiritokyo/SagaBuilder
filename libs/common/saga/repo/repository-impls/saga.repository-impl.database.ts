@@ -1,8 +1,8 @@
 import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
-import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/domain'
-import type { TAbstractAggregateRepository } from '@libs/infra/repo'
+import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
+import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
 import type { SagaManager } from '../../saga.manager'
 import { SagaMapper } from '../../saga.mapper'

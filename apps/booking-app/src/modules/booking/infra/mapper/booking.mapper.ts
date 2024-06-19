@@ -2,8 +2,8 @@ import { Booking } from '@booking-domain/index'
 
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 
-import { UniqueEntityID } from '@libs/domain/unique-entity-id'
-import type { TMapper } from '@libs/infra'
+import { UniqueEntityID } from '@libs/common/domain/unique-entity-id'
+import type { TMapper } from '@libs/common/infra'
 
 export class BookingMapper implements TMapper<Booking, BookingPersistenceEntity> {
   public toDomain(bookingPersistenceEntity: BookingPersistenceEntity): Booking {

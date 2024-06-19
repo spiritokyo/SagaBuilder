@@ -3,10 +3,10 @@ import type EventEmitter from 'node:events'
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@booking-controller/index'
+import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 
-import { buildCircuitBreaker } from '@libs/infra/error/utils'
-import type { SagaStep } from '@libs/saga'
+import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
+import type { SagaStep } from '@libs/common/saga'
 
 export class ConfirmBookingStep implements SagaStep<Booking> {
   static STEP_NAME = 'ConfirmBookingStep' as const

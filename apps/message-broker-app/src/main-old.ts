@@ -1,14 +1,14 @@
 import { connect } from 'amqplib'
 import type { Channel, Connection, Replies } from 'amqplib'
 
-import type { TChannelsUnion } from '@libs/shared'
+import type { TChannelsUnion } from '@libs/common/shared'
 import {
   rabbitMQConfig,
   CONTRACTS_QUEUES,
   bindings,
   CONTRACTS_EXCHANGES,
   CONTRACTS_ROUTING_KEYS,
-} from '@libs/shared'
+} from '@libs/common/shared'
 
 class RabbitMQServer {
   static connection: Connection

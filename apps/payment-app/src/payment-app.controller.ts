@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
-import { PaymentAppService } from './payment-app.service';
+import { Controller, Get } from '@nestjs/common'
+
+import { PaymentAppService } from './payment-app.service'
 
 @Controller()
 export class PaymentAppController {
@@ -7,6 +8,6 @@ export class PaymentAppController {
 
   @Get()
   getHello(): string {
-    return this.paymentAppService.getHello();
+    return this.paymentAppService.getHello()
   }
 }

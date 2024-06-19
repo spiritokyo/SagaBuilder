@@ -1,7 +1,7 @@
 import { connect } from 'amqplib'
 import type { Channel, Connection } from 'amqplib'
 
-import { rabbitMQConfig } from '@libs/shared/constants'
+import { rabbitMQConfig } from '@libs/common/shared/constants'
 
 import { CommandMessagePublisherRabbitMQ } from './command-message.publisher'
 import { PaymentConsumerRabbitMQ } from './payment.consumer'

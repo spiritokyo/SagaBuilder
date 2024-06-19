@@ -1,29 +1,27 @@
 module.exports = {
-  root: true,
-  env: {
-    node: true,
-    jest: true,
-    es6: true
-  },
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: './tsconfig.json',
+    project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
-    extraFileExtensions: 'json',
   },
-  parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint','import'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'import'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
   ],
+  root: true,
+  env: {
+    node: true,
+    jest: true,
+  },
   overrides: [
     {
       files: ["./apps/booking-app/**/*.ts"],
       parserOptions: {
-        project: './apps/booking-app/tsconfig.json',
+        project: './apps/booking-app/tsconfig.app.json',
         tsconfigRootDir: __dirname,
         sourceType: 'module',
         extraFileExtensions: 'json',
@@ -34,7 +32,7 @@ module.exports = {
     {
       files: ["./apps/message-broker-app/**/*.ts"],
       parserOptions: {
-        project: './apps/message-broker-app/tsconfig.json',
+        project: './apps/message-broker-app/tsconfig.app.json',
         tsconfigRootDir: __dirname,
         sourceType: 'module',
         extraFileExtensions: 'json',
@@ -45,7 +43,7 @@ module.exports = {
     {
       files: ["./apps/payment-app/**/*.ts"],
       parserOptions: {
-        project: './apps/payment-app/tsconfig.json',
+        project: './apps/payment-app/tsconfig.app.json',
         tsconfigRootDir: __dirname,
         sourceType: 'module',
         extraFileExtensions: 'json',
@@ -674,5 +672,5 @@ module.exports = {
     '@typescript-eslint/space-infix-ops': 'off',
     '@typescript-eslint/type-annotation-spacing': 'off',
   },
-  ignorePatterns: ['.eslintrc.js', 'tsconfig.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js'],
+  ignorePatterns: ['.eslintrc.js', '**/tsconfig.*.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js'],
 };

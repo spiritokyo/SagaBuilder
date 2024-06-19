@@ -1,7 +1,7 @@
 import type { EventEmitter } from 'node:stream'
 
-import type { AggregateRoot, UniqueEntityID } from '@libs/domain'
-import type { IDomainEvent } from '@libs/domain/events'
+import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
+import type { IDomainEvent } from '@libs/common/domain/events'
 
 export type SagaStep<Params> = {
   name: string

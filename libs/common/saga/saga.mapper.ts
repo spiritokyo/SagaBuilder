@@ -1,7 +1,7 @@
 import type { EventEmitter } from 'node:events'
 
-import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/domain'
-import type { TAbstractAggregateRepository } from '@libs/infra/repo'
+import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
+import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
 import { SagaManager } from './saga.manager'
 import type {

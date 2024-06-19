@@ -1,21 +1,30 @@
-import type { Request, Response } from 'express'
+import { Controller, Post, Req, Res } from '@nestjs/common'
+import { Request, Response } from 'express'
 
+// import {} from ''
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import type { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
+import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
+// import { UsecasesProxyModule } from '@reserve-booking-saga-application/usecases-proxy.module'
 
-import { BaseController } from '@libs/infra'
+import { BaseController } from '@libs/common/infra'
 
 import type { ReserveBookingDTO } from './reserve-booking.dto'
 import { ReserveBookingErrors } from './reserve-booking.errors'
 
+@Controller()
 export class ReserveBookingController extends BaseController {
-  constructor(private usecase: ReserveBookingUsecase) {
+  constructor(
+    /* @Inject(UsecasesProxyModule.RESERVE_BOOKING_USECASE) */ private usecase: ReserveBookingUsecase,
+  ) {
     super()
   }
 
-  async executeImpl(req: Request, res: Response): Promise<Response> {
-    // TODO: add validation 1
+  @Post('/reserve-booking')
+  async reserveBooking(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<Response> {
     const dto: ReserveBookingDTO = {
       customerId: req.body.customerId,
       courseId: req.body.courseId,

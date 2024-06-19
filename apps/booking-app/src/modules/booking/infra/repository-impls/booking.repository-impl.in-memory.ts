@@ -1,12 +1,12 @@
 import type { Booking } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@booking-controller/index'
 
 import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 
-import { emulateChaosError } from '@libs/infra/error/utils'
-import type { TAbstractAggregateRepository } from '@libs/infra/repo'
+import { emulateChaosError } from '@libs/common/infra/error/utils'
+import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
+import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
 
 const BookingPersistenceEntitiesInMemory: BookingPersistenceEntity[] = []
 

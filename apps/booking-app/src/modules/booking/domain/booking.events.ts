@@ -1,5 +1,5 @@
-import { UniqueEntityID } from '@libs/domain'
-import type { IDomainEvent } from '@libs/domain/events/domain-event.type'
+import { UniqueEntityID } from '@libs/common/domain'
+import type { IDomainEvent } from '@libs/common/domain/events/domain-event.type'
 
 import type { BookingDetailsVO } from './booking.value-objects'
 

@@ -1,8 +1,18 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { NestFactory } from '@nestjs/core'
+import type { Server } from 'http'
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+import { handleErrors, initializeInfra } from '@shared/others'
+
+import { AppModule } from './app.module'
+
+async function bootstrap(): Promise<void> {
+  const app = await NestFactory.create(AppModule)
+  const server: Server = await app.listen(3000, () => {
+    console.log('Server is listening on port 3000 (Booking service)...')
+  })
+
+  handleErrors(server)
+  await initializeInfra()
 }
-bootstrap();
+
+void bootstrap()

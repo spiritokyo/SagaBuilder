@@ -3,35 +3,7 @@
   "compilerOptions": {
     "declaration": false,
     "outDir": "../../dist/apps/booking-app",
-    "paths": {
-      "@booking-domain/*": [
-        "src/modules/booking/domain/*"
-      ],
-      "@booking-application/*": [
-        "src/modules/booking/application/*"
-      ],
-      "@booking-controller/*": [
-        "src/modules/booking/controller/*"
-      ],
-      "@booking-infra/*": [
-        "src/modules/booking/infra/*"
-      ],
-      //
-      "@reserve-booking-saga-domain/*": [
-        "src/modules/reserve-booking-saga/domain/*"
-      ],
-      "@reserve-booking-saga-application/*": [
-        "src/modules/reserve-booking-saga/application/*"
-      ],
-      "@reserve-booking-saga-infra/*": [
-        "src/modules/reserve-booking-saga/infra/*"
-      ],
-      //
-      "@shared/*": [
-        "src/shared/*"
-      ],
-    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

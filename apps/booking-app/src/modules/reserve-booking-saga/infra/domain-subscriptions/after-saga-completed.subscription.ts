@@ -2,8 +2,8 @@ import type { PoolClient } from 'pg'
 
 import { ReserveBookingSagaCompletedDomainEvent } from '@reserve-booking-saga-domain/index'
 
-import { DomainEvents } from '@libs/domain/events'
-import type { IDomainEvent, IHandle } from '@libs/domain/events'
+import { DomainEvents } from '@libs/common/domain/events'
+import type { IDomainEvent, IHandle } from '@libs/common/domain/events'
 
 /**
  * We can inject here f.e usecases

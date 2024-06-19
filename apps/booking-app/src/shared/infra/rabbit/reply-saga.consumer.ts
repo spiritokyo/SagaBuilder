@@ -1,10 +1,13 @@
 import type { Channel, ConsumeMessage } from 'amqplib'
 import type { EventEmitter } from 'node:stream'
 
-import { CONTRACTS_QUEUES } from '@libs/shared'
+import { CONTRACTS_QUEUES } from '@libs/common/shared'
 
 export class ReplyCreatingBookingSagaConsumerRabbitMQ {
-  constructor(private channelBookingSagaReplyTo: Channel, private eventEmitter: EventEmitter) {}
+  constructor(
+    private channelBookingSagaReplyTo: Channel,
+    private eventEmitter: EventEmitter,
+  ) {}
 
   async consumeSuccessPaymentBooking(): Promise<void> {
     await this.channelBookingSagaReplyTo.consume(

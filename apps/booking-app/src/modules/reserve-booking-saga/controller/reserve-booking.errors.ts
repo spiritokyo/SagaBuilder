@@ -1,16 +1,8 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import type { BookingDetailsVO } from '@booking-domain/index'
+import type { BookingDetailsVO, IBookingDetailsExtractor, IPaymentDetailsExtractor } from '@booking-domain/index'
+import { UseCaseError } from '@libs/common/core'
 
-import { UseCaseError } from '@libs/core'
-
-export type IBookingDetailsExtractor = {
-  extractBookingInfo(): Partial<BookingDetailsVO>
-}
-
-export type IPaymentDetailsExtractor = {
-  extractPaymentInfo(): { paymentId: number }
-}
 
 export namespace ReserveBookingErrors {
   export class BookingRepoInfraError extends UseCaseError implements IBookingDetailsExtractor {

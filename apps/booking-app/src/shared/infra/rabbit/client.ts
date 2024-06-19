@@ -3,8 +3,8 @@ import { connect } from 'amqplib'
 import type { Channel, Connection } from 'amqplib'
 import EventEmitter from 'events'
 
-import type { AuthorizePaymentCardCommand, TChannelsUnion } from '@libs/shared'
-import { rabbitMQConfig } from '@libs/shared/constants'
+import type { AuthorizePaymentCardCommand, TChannelsUnion } from '@libs/common/shared'
+import { rabbitMQConfig } from '@libs/common/shared/constants'
 
 import { BookingCDCConsumerRabbitMQ } from './booking-cdc.consumer'
 import { CommandMessagePublisherRabbitMQ } from './command-message.publisher'

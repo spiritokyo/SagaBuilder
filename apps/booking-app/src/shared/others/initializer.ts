@@ -1,11 +1,11 @@
+import { ReserveBookingController } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
+
 import { BookingDomainService } from '@booking-domain/booking.domain-service'
 import type { Booking } from '@booking-domain/index'
 
 import { ReserveBookingSaga } from '@reserve-booking-saga-domain/index'
 
 import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
-
-import { ReserveBookingController } from '@booking-controller/index'
 
 import { initializeBookingDomainSubscribers } from '@booking-infra/domain-subscriptions'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
@@ -17,7 +17,7 @@ import { initializeReserveBookingSagaDomainSubscribers } from '@reserve-booking-
 import { getConnection } from '@shared/infra/database/client'
 import { RabbitMQClient } from '@shared/infra/rabbit/client'
 
-import { SagaRepositoryImplDatabase } from '@libs/saga/repo'
+import { SagaRepositoryImplDatabase } from '@libs/common/saga/repo'
 
 export async function initializeInfra(): Promise<ReserveBookingController> {
   // Initialize postgresql connection
@@ -30,8 +30,9 @@ export async function initializeInfra(): Promise<ReserveBookingController> {
   initializeBookingDomainSubscribers()
   initializeReserveBookingSagaDomainSubscribers(connection)
 
-  // Initialize repository implementations
+  // Initialize repository implementations (X)
   const bookingRepository = new BookingRepositoryImplDatabase(connection)
+
   const reserveBookingSagaRepository = SagaRepositoryImplDatabase.initialize<
     Booking,
     BookingPersistenceEntity

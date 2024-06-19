@@ -1,23 +1,23 @@
-import type { Request, Response } from 'express'
+import type { Response } from 'express'
 
-export abstract class BaseController {
+export class BaseController {
   public static jsonResponse(res: Response, code: number, message: string): Response {
     return res.status(code).json({ message })
   }
 
-  public async execute(req: Request, res: Response): Promise<void> {
-    try {
-      await this.executeImpl(req, res)
-    } catch (err) {
-      console.error(
-        '[BaseController]: Uncaught controller error',
-        (err as Error).constructor.name,
-        (err as Error).stack,
-      )
+  // public async execute(req: Request, res: Response): Promise<void> {
+  //   try {
+  //     await this.executeImpl(req, res)
+  //   } catch (err) {
+  //     console.error(
+  //       '[BaseController]: Uncaught controller error',
+  //       (err as Error).constructor.name,
+  //       (err as Error).stack,
+  //     )
 
-      this.fail(res, err as Error)
-    }
-  }
+  //     this.fail(res, err as Error)
+  //   }
+  // }
 
   public ok<T>(res: Response, dto?: T): Response {
     if (dto) {
@@ -67,6 +67,4 @@ export abstract class BaseController {
   public fail(res: Response, error: Error | string): Response {
     return BaseController.jsonResponse(res, 500, error.toString())
   }
-
-  protected abstract executeImpl(req: Request, res: Response): Promise<Response>
 }

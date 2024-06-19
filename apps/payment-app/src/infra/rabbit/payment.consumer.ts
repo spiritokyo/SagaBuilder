@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { PaymentService } from '@payment-application/index'
 import type { Channel, ConsumeMessage } from 'amqplib'
 
-import { PaymentService } from '@application/payment.service'
-
-import { CONTRACTS_QUEUES } from '@libs/shared'
-import type { AuthorizePaymentCardCommand } from '@libs/shared'
+import { CONTRACTS_QUEUES } from '@libs/common/shared'
+import type { AuthorizePaymentCardCommand } from '@libs/common/shared'
 
 import type { CommandMessagePublisherRabbitMQ } from './command-message.publisher'
 

@@ -3,13 +3,13 @@ import type { EventEmitter } from 'node:events'
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@booking-controller/index'
+import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 
 import type { RabbitMQClient } from '@shared/infra/rabbit/client'
 
-import { buildCircuitBreaker } from '@libs/infra/error/utils'
-import type { SagaStep } from '@libs/saga'
-import { AuthorizePaymentCardCommand } from '@libs/shared'
+import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
+import type { SagaStep } from '@libs/common/saga'
+import { AuthorizePaymentCardCommand } from '@libs/common/shared'
 
 export class AuthorizePaymentStep implements SagaStep<Booking> {
   static STEP_NAME = 'AuthorizePaymentStep' as const

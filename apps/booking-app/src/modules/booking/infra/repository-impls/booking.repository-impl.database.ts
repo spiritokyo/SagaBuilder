@@ -4,13 +4,13 @@ import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/index'
 
-import { ReserveBookingErrors } from '@booking-controller/index'
+import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 
 import { BookingMapper } from '@booking-infra/mapper'
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 
-import { emulateChaosError } from '@libs/infra/error/utils'
-import type { TAbstractAggregateRepository } from '@libs/infra/repo'
+import { emulateChaosError } from '@libs/common/infra/error/utils'
+import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
 export class BookingRepositoryImplDatabase
   implements TAbstractAggregateRepository<Booking, BookingPersistenceEntity>

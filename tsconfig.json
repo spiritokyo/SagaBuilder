@@ -3,7 +3,7 @@
     "module": "commonjs",
     "target": "ES2021",
     // "moduleResolution": "Bundler",
-    "types": ["node"],
+    "types": ["node", "jest"],
     // Strict options 
     "strictNullChecks": true, // Ensure all nullable types are explicitly handled
     "strictFunctionTypes": true, // Ensure function types are checked more strictly
@@ -54,7 +54,40 @@
       ],
       "@libs/common/*": [
         "libs/common/*"
-      ]
+      ],
+      //
+      "@payment-application/*": [
+        "apps/payment-app/src/application/*"
+      ],
+      "@payment-infra/*": [
+        "apps/payment-app/src/infra/*"
+      ],      
+      //
+      "@booking-domain/*": [
+        "apps/booking-app/src/modules/booking/domain/*"
+      ],
+      "@booking-application/*": [
+        "apps/booking-app/src/modules/booking/application/*"
+      ],
+      "@booking-infra/*": [
+        "apps/booking-app/src/modules/booking/infra/*"
+      ],
+      //
+      "@reserve-booking-saga-domain/*": [
+        "apps/booking-app/src/modules/reserve-booking-saga/domain/*"
+      ],
+      "@reserve-booking-saga-application/*": [
+        "apps/booking-app/src/modules/reserve-booking-saga/application/*"
+      ],
+      "@reserve-booking-saga-controller/*": [
+        "apps/booking-app/src/modules/reserve-booking-saga/controller/*"
+      ],
+      "@reserve-booking-saga-infra/*": [
+        "apps/booking-app/src/modules/reserve-booking-saga/infra/*"
+      ],
+      "@shared/*": [
+        "apps/booking-app/src/shared/*"
+      ],
     }
   }
 }

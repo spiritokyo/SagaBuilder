@@ -1,6 +1,6 @@
 import type EventEmitter from 'node:events'
 
-import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/domain'
+import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 
 import type { SagaManager } from '../saga.manager'
 import type { AbstractProps, SagaPersistenceEntity, SagaStep, TEventClass } from '../saga.types'

@@ -1,9 +1,15 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import type { IBookingDetailsExtractor } from '@booking-controller/index'
-
 import type { BookingState } from './booking.state-machine'
 import type { BookingDetailsVO } from './booking.value-objects'
+
+export type IBookingDetailsExtractor = {
+  extractBookingInfo(): Partial<BookingDetailsVO>
+}
+
+export type IPaymentDetailsExtractor = {
+  extractPaymentInfo(): { paymentId: number }
+}
 
 export namespace DomainBookingErrors {
   export class BookingCreatedFailureDomainError extends Error implements IBookingDetailsExtractor {

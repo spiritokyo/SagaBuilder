@@ -1,8 +1,8 @@
 import type { Channel, ConsumeMessage } from 'amqplib'
 
-import { UniqueEntityID } from '@libs/domain'
-import { DomainEvents } from '@libs/domain/events'
-import { CONTRACTS_QUEUES } from '@libs/shared'
+import { UniqueEntityID } from '@libs/common/domain'
+import { DomainEvents } from '@libs/common/domain/events'
+import { CONTRACTS_QUEUES } from '@libs/common/shared'
 
 export class BookingCDCConsumerRabbitMQ {
   constructor(private channelBookingCDC: Channel) {}

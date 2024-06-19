@@ -1,4 +1,4 @@
-import type { AggregateRoot, EntityProps } from '@libs/domain'
+import type { AggregateRoot, EntityProps } from '@libs/common/domain'
 
 import type { TMapper } from '../types'
 

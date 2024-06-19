@@ -1,8 +1,8 @@
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 
-import type { ReserveBookingErrors } from '@booking-controller/index'
+import type { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 
-import type { SagaManager, AbstractProps } from '@libs/saga'
+import type { SagaManager, AbstractProps } from '@libs/common/saga'
 
 import type { Booking } from './booking.aggregate'
 import type { DomainBookingErrors } from './booking.errors'
