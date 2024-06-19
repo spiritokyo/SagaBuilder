@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "Bundler",
-    // "moduleResolution": "Node",
+    "module": "commonjs",
+    "target": "ES2021",
+    // "moduleResolution": "Bundler",
     "types": ["node"],
     // Strict options 
     "strictNullChecks": true, // Ensure all nullable types are explicitly handled
@@ -48,22 +47,14 @@
       "ES6",
       "ESNext"
     ],
+    //////////////////////////////////////////////
     "paths": {
-      "@libs/*": [
-      "./libs/*"
-     ]
+      "@libs/common": [
+        "libs/common"
+      ],
+      "@libs/common/*": [
+        "libs/common/*"
+      ]
     }
-  },
-  "include": [
-    "libs/**/*",
-  ],
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node",
-    "require": ["tsconfig-paths/register"]
-  },
-  "tsc-alias": {
-    "verbose": true,
-    "resolveFullPaths": true,
   }
 }

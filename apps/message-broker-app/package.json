@@ -1,9 +1,8 @@
 {
   "name": "message-broker-app",
-  "type": "module",
+  "type": "commonjs",
   "version": "1.0.0",
   "description": "",
-  "exports": "./dist/apps/message-broker-app/main.js",
   "engines": {
     "node": ">=20"
   },

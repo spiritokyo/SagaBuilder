@@ -1,7 +1,7 @@
 {
   "name": "booking-app",
   "version": "1.0.0",
-  "type": "module",
+  "type": "commonjs",
   "description": "",
   "scripts": {
     "dev": "tsx watch ./src/main.ts",

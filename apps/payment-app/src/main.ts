@@ -1,5 +1,8 @@
-import { RabbitMQClient } from './infra/rabbit/client'
+import { NestFactory } from '@nestjs/core';
+import { PaymentAppModule } from './payment-app.module';
 
-void RabbitMQClient.initialize().then(() => {
-  console.log('Server RabbitMQ was initialized (payment)...')
-})
+async function bootstrap() {
+  const app = await NestFactory.create(PaymentAppModule);
+  await app.listen(3000);
+}
+bootstrap();

@@ -1,6 +1,6 @@
 {
   "name": "payment-app",
-  "type": "module",
+  "type": "commonjs",
   "version": "1.0.0",
   "description": "",
   "scripts": {
