@@ -57,11 +57,6 @@
   "include": [
     "libs/**/*",
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "*.mjs"
-  ],
   "ts-node": {
     "esm": true,
     "experimentalSpecifierResolution": "node",

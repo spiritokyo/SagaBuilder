@@ -1,6 +1,6 @@
 import { UniqueEntityID } from '@libs/domain'
 import type { IDomainEvent } from '@libs/domain/events/domain-event.type'
-import type { AbstractProps } from '@libs/shared/saga/saga.types'
+import type { AbstractProps } from '@libs/saga'
 
 export abstract class ReserveBookingSagaDomainEvent implements IDomainEvent {
   public dateTimeOccurred: Date
