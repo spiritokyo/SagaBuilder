@@ -27,7 +27,7 @@
     "booking:lint:fix": "pnpm --filter booking-app lint:fix",
     "-------------------------------------------------------------------------------------------": "",
     "message-broker-migration:dev": "nest start message-broker-migration --watch",
-    "message-broker-migration:prod": "node dist/scripts/message-broker-migration/main",
+    "message-broker-migration:prod": "node dist/scripts/message-broker-migration/init-rabbitmq-server",
     "message-broker-migration:build": "nest build message-broker-migration",
     "message-broker-migration:typecheck": "pnpm --filter message-broker-migration run typecheck",
     "message-broker-migration:typecheck:watch": "pnpm --filter message-broker-migration run typecheck:watch",

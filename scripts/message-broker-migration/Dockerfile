@@ -33,8 +33,9 @@ WORKDIR /usr/src/app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-COPY --from=build /usr/src/app/apps/message-broker-migration/dist ./
+COPY --from=build /usr/src/app/dist/scripts/message-broker-migration/ ./dist/scripts/message-broker-migration
 
 RUN npm install -g pnpm
 
+# CMD ["sleep", "infinite"]
 ENTRYPOINT ["pnpm", "run", "message-broker-migration:prod"]
