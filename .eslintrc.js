@@ -30,17 +30,6 @@ module.exports = {
       plugins: ['@typescript-eslint','import'],
     },
     {
-      files: ["./apps/message-broker-app/**/*.ts"],
-      parserOptions: {
-        project: './apps/message-broker-app/tsconfig.app.json',
-        tsconfigRootDir: __dirname,
-        sourceType: 'module',
-        extraFileExtensions: 'json',
-      },
-      parser: '@typescript-eslint/parser',
-      plugins: ['@typescript-eslint','import'],
-    },
-    {
       files: ["./apps/payment-app/**/*.ts"],
       parserOptions: {
         project: './apps/payment-app/tsconfig.app.json',

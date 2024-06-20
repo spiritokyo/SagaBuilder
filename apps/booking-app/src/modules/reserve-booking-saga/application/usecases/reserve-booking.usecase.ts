@@ -1,4 +1,4 @@
-import type { ReserveBookingDTO } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
 import type { EventEmitter } from 'node:events'
 
 import { Booking } from '@booking-domain/index'
@@ -17,7 +17,7 @@ import {
 } from '@reserve-booking-saga-domain/steps'
 
 import type { UseCase } from '@libs/common/core'
-import type { TSagaRepository } from '@libs/common/saga/repo/saga.repository'
+import type { TSagaRepository } from '@libs/saga/repo'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>

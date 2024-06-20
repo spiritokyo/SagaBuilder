@@ -4,7 +4,7 @@ import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
 
-import type { TSagaRepository } from '@libs/common/saga/repo'
+import type { TSagaRepository } from '@libs/saga/repo'
 
 export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient

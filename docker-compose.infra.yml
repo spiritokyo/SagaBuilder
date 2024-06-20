@@ -16,12 +16,11 @@ services:
       - reverseproxy-nw
 
   # RabbitMQ migrator
-  # TODO: turn into build version
-  message-broker-app:
+  message-broker-migration:
     build:
-      dockerfile: ./apps/message-broker-app/Dockerfile
+      dockerfile: ./scripts/message-broker-migration/Dockerfile
       context: .
-      target: development
+      target: production
     container_name: message-broker-service
     restart: on-failure:10
     depends_on:
@@ -32,7 +31,7 @@ services:
     volumes:
       - .:/usr/src/app
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
     networks:
       - reverseproxy-nw
 
@@ -70,7 +69,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_started
-      message-broker-app:
+      message-broker-migration:
         condition: service_completed_successfully
       booking-db:
         condition: service_healthy

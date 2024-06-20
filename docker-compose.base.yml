@@ -5,7 +5,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_started
-      message-broker-app:
+      message-broker-migration:
         condition: service_completed_successfully
       booking-db:
         condition: service_started
@@ -13,7 +13,7 @@ services:
         condition: service_healthy
     links:
       - rabbitmq
-      - message-broker-app
+      - message-broker-migration
       - booking-db
       - debezium
     ports:
@@ -27,11 +27,11 @@ services:
     depends_on:
       rabbitmq:
         condition: service_started
-      message-broker-app:
+      message-broker-migration:
         condition: service_completed_successfully
     links:
       - rabbitmq
-      - message-broker-app
+      - message-broker-migration
     networks:
       - reverseproxy-nw
 

@@ -1,7 +1,8 @@
+import { handleErrors, initializeInfra } from '@booking-shared/others'
 import { NestFactory } from '@nestjs/core'
 import type { Server } from 'http'
 
-import { handleErrors, initializeInfra } from '@shared/others'
+// import { handleErrors, initializeInfra } from '@shared/others'
 
 import { AppModule } from './app.module'
 
@@ -11,6 +12,7 @@ async function bootstrap(): Promise<void> {
     console.log('Server is listening on port 3000 (Booking service)...')
   })
 
+  // TODO: FIX
   handleErrors(server)
   await initializeInfra()
 }

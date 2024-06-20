@@ -1,9 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "declaration": false,
-    "outDir": "../../dist/apps/message-broker-app"
-  },
-  "include": ["src/**/*", "test/**/*"], 
-  "exclude": ["node_modules", "dist"]
-}

@@ -26,14 +26,13 @@
     "booking:lint:check": "pnpm --filter booking-app lint:check",
     "booking:lint:fix": "pnpm --filter booking-app lint:fix",
     "-------------------------------------------------------------------------------------------": "",
-    "message-broker:dev": "nest start message-broker-app --watch",
-    "message-broker:debug": "nest start message-broker-app --debug --watch",
-    "message-broker:prod": "node dist/apps/message-broker-app/main",
-    "message-broker:build": "nest build message-broker-app",
-    "message-broker:typecheck": "pnpm --filter message-broker-app run typecheck",
-    "message-broker:typecheck:watch": "pnpm --filter message-broker-app run typecheck:watch",
-    "message-broker:lint:check": "pnpm --filter message-broker-app run lint:check",
-    "message-broker:lint:fix": "pnpm --filter message-broker-app run lint:fix",
+    "message-broker-migration:dev": "nest start message-broker-migration --watch",
+    "message-broker-migration:prod": "node dist/scripts/message-broker-migration/main",
+    "message-broker-migration:build": "nest build message-broker-migration",
+    "message-broker-migration:typecheck": "pnpm --filter message-broker-migration run typecheck",
+    "message-broker-migration:typecheck:watch": "pnpm --filter message-broker-migration run typecheck:watch",
+    "message-broker-migration:lint:check": "pnpm --filter message-broker-migration run lint:check",
+    "message-broker-migration:lint:fix": "pnpm --filter message-broker-migration run lint:fix",
     "-----------------------------------------------------------------------------------------------": "",
     "payment:dev": "nest start payment-app --watch",
     "payment:debug": "nest start payment-app --debug --watch",
@@ -45,14 +44,14 @@
     "payment:lint:fix": "pnpm --filter payment-app run lint:fix",
     "---------------------------------------------------------------------------------": "",
     "docker:debug:run": "DOCKER_BUILDKIT=0 docker-compose -f docker-compose.debug.yml up --force-recreate",
-    "docker:debug:stop": "docker-compose -f docker-compose.debug.yml down message-broker-app booking-app payment-app",
+    "docker:debug:stop": "docker-compose -f docker-compose.debug.yml down message-broker-migration booking-app payment-app",
     "docker:dev:run": "DOCKER_BUILDKIT=0 docker-compose -f docker-compose.dev.yml up --force-recreate",
-    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml down message-broker-app booking-app payment-app",
+    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml down message-broker-migration booking-app payment-app",
     "docker:prod": "DOCKER_BUILDKIT=0 docker-compose -f docker-compose.prod.yml up --force-recreate",
     "----------------------------------------------------------------------------------": "",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "format": "prettier --write \"{src,apps,libs,test}/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "clean:dist": "rimraf apps/**/dist",
@@ -126,7 +125,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@libs/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+      "^@libs/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^saga/saga(|/.*)$": "<rootDir>/libs/saga/src/$1"
     }
   }
 }

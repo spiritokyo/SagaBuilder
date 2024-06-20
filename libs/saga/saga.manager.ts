@@ -1,7 +1,4 @@
-/* eslint-disable @typescript-eslint/method-signature-style */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import type { RabbitMQClient } from 'apps/booking-app/src/shared/infra/rabbit/client'
+import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
 import EventEmitter from 'node:events'
 
 import type { EntityProps, UniqueEntityID } from '@libs/common/domain'
@@ -15,7 +12,6 @@ import type {
   SagaStep,
   TEventClass,
 } from './saga.types'
-// import type { RabbitMQClient } from '../../../../apps/booking-app/src/shared/infra/rabbit/client'
 
 export class SagaManager<
     A extends AggregateRoot<EntityProps>,

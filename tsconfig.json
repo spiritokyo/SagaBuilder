@@ -1,28 +1,25 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    // "target": "ES2021",
-    // "moduleResolution": "Bundler",
-    "types": ["node", "jest"],
-    // Strict options 
-    "strictNullChecks": true, // Ensure all nullable types are explicitly handled
-    "strictFunctionTypes": true, // Ensure function types are checked more strictly
-    "strictBindCallApply": true, // Ensure that `bind`, `call`, and `apply` methods are strictly checked
-    "strictPropertyInitialization": true, // Ensure class properties are initialized in the constructor
-    "noImplicitAny": true, // Raise errors on expressions and declarations with an implied `any` type
-    "noImplicitThis": true, // Raise error on `this` expressions with an implied `any` type
-    "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
+    "types": [
+      "node",
+      "jest"
+    ],
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    // "noUnusedLocals": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "isolatedModules": true, // Ensure that each file can be safely transpiled without relying on other imports
-    // End of strict options
-    // "verbatimModuleSyntax": true,
+    "isolatedModules": true,
     "declaration": false,
     "removeComments": true,
     "emitDecoratorMetadata": true,
@@ -47,13 +44,12 @@
       "ES6",
       "ESNext"
     ],
-    //////////////////////////////////////////////
     "paths": {
-      "@libs/common": [
-        "libs/common"
-      ],
       "@libs/common/*": [
         "libs/common/*"
+      ],
+      "@libs/saga/*": [
+        "libs/saga/*"
       ],
       //
       "@payment-application/*": [
@@ -61,7 +57,7 @@
       ],
       "@payment-infra/*": [
         "apps/payment-app/src/infra/*"
-      ],      
+      ],
       //
       "@booking-domain/*": [
         "apps/booking-app/src/modules/booking/domain/*"
@@ -71,6 +67,9 @@
       ],
       "@booking-infra/*": [
         "apps/booking-app/src/modules/booking/infra/*"
+      ],
+      "@booking-shared/*": [
+        "apps/booking-app/src/shared/*"
       ],
       //
       "@reserve-booking-saga-domain/*": [
@@ -84,9 +83,6 @@
       ],
       "@reserve-booking-saga-infra/*": [
         "apps/booking-app/src/modules/reserve-booking-saga/infra/*"
-      ],
-      "@shared/*": [
-        "apps/booking-app/src/shared/*"
       ],
     }
   }

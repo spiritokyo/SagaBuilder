@@ -26,13 +26,13 @@
         "tsConfigPath": "apps/payment-app/tsconfig.app.json"
       }
     },
-    "message-broker-app": {
+    "message-broker-migration": {
       "type": "application",
-      "root": "apps/message-broker-app",
-      "entryFile": "main",
-      "sourceRoot": "apps/message-broker-app/src",
+      "root": "scripts/message-broker-migration",
+      "entryFile": "init-rabbitmq-server",
+      "sourceRoot": "scripts/message-broker-migration",
       "compilerOptions": {
-        "tsConfigPath": "apps/message-broker-app/tsconfig.app.json"
+        "tsConfigPath": "scripts/message-broker-migration/tsconfig.app.json"
       }
     },
     "common": {
@@ -42,6 +42,15 @@
       "sourceRoot": "libs/common/src",
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
+      }
+    },
+    "saga": {
+      "type": "library",
+      "root": "libs/saga",
+      "entryFile": "index",
+      "sourceRoot": "libs/saga/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/saga/tsconfig.lib.json"
       }
     }
   }

@@ -1,3 +1,4 @@
+# Development, debug or testing mode
 FROM node:20-alpine AS development
 
 WORKDIR /usr/src/app
@@ -19,13 +20,16 @@ FROM node:20-alpine AS build
 
 WORKDIR /usr/src/app
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml tsconfig.json tsconfig.build.json ./
+COPY pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml ./
+COPY tsconfig.json tsconfig.build.json nest-cli.json ./
+
 COPY libs libs
 COPY apps/booking-app apps/booking-app
 
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile --recursive
-RUN pnpm run message-broker:build
+RUN pnpm run booking-app:build
 
 COPY apps/booking-app/package.json apps/booking-app/dist/apps/booking-app/
 

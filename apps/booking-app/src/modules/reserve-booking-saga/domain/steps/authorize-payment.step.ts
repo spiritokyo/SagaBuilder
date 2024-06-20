@@ -1,14 +1,15 @@
-import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
+import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
+import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
 import type { EventEmitter } from 'node:events'
 
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import type { RabbitMQClient } from '@shared/infra/rabbit/client'
+// import type { RabbitMQClient } from '@shared/infra/rabbit/client'
 
 import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
-import type { SagaStep } from '@libs/common/saga'
 import { AuthorizePaymentCardCommand } from '@libs/common/shared'
+import type { SagaStep } from '@libs/saga/index'
 
 export class AuthorizePaymentStep implements SagaStep<Booking> {
   static STEP_NAME = 'AuthorizePaymentStep' as const
