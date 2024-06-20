@@ -1,9 +1,8 @@
+import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 import type { EventEmitter } from 'node:events'
 
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
-
-import { ReserveBookingErrors } from 'apps/booking-app/src/modules/reserve-booking-saga/controller/index'
 
 import type { RabbitMQClient } from '@shared/infra/rabbit/client'
 
@@ -20,7 +19,10 @@ export class AuthorizePaymentStep implements SagaStep<Booking> {
     AuthorizePaymentStep.STEP_NAME,
   )
 
-  constructor(public eventBus: EventEmitter, public readonly messageBroker: RabbitMQClient) {}
+  constructor(
+    public eventBus: EventEmitter,
+    public readonly messageBroker: RabbitMQClient,
+  ) {}
 
   get name(): string {
     return AuthorizePaymentStep.STEP_NAME

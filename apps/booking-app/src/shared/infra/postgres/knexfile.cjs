@@ -1,13 +1,13 @@
-const { dbConfig } = require("./config.cjs")
+const { dbConfig } = require("./config.js")
 
 const config = {
   client: 'postgresql',
   connection: {
-    host: dbConfig.POSTGRES_HOST,
-    port: dbConfig.POSTGRES_PORT,
-    user: dbConfig.POSTGRES_USER,
-    password: dbConfig.POSTGRES_PASSWORD,
-    database: dbConfig.POSTGRES_DB,
+    host: dbConfig.host,
+    port: dbConfig.port,
+    user: dbConfig.user,
+    password: dbConfig.password,
+    database: dbConfig.database,
   },
   migrations: {
     tableName: 'knex_migrations',

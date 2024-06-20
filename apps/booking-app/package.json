@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "tsx watch ./src/main.ts",
     "build": "tsc && tsc-alias",
-    "debug": "tsc && copyfiles -u 1 ./src/infra/database/config.cjs dist/apps/booking-app/src/ && (concurrently --kill-others \"tsc -w\" \"tsc-alias -w\" \"nodemon --inspect=0.0.0.0:9229 ./dist/apps/booking-app/src/main.js\")",
+    "debug": "tsc && copyfiles -u 1 ./src/infra/postgres/config.js dist/apps/booking-app/src/ && (concurrently --kill-others \"tsc -w\" \"tsc-alias -w\" \"nodemon --inspect=0.0.0.0:9229 ./dist/apps/booking-app/src/main.js\")",
     "debug:ts": "node --inspect=0.0.0.0:9229 --experimental-specifier-resolution=node --loader ./loader.js ./src/main.ts",
-    "knex-js": "npx knex --knexfile ./src/shared/infra/database/knexfile.cjs",
+    "knex-js": "npx knex --knexfile ./src/shared/infra/postgres/knexfile.cjs",
     "migrate:create-only": "npm run knex-js -- migrate:make $npm_config_name",
     "migrate:run-migrations": "npm run knex-js -- migrate:latest",
     "migrate:rollback": "npm run knex-js -- migrate:rollback",

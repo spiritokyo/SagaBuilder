@@ -22,6 +22,7 @@ export class RabbitMQClient {
     public connection: Connection,
   ) {}
 
+  // TODO: extract rabbitmq config here
   static async initialize(): Promise<RabbitMQClient> {
     try {
       if (RabbitMQClient.instance) {

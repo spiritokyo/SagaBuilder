@@ -1,11 +1,10 @@
-import { Controller, Post, Req, Res } from '@nestjs/common'
+import { Controller, Inject, Post, Req, Res } from '@nestjs/common'
 import { Request, Response } from 'express'
 
-// import {} from ''
 import { DomainBookingErrors } from '@booking-domain/index'
 
 import { ReserveBookingUsecase } from '@reserve-booking-saga-application/usecases'
-// import { UsecasesProxyModule } from '@reserve-booking-saga-application/usecases-proxy.module'
+import { UsecasesProxyModule } from '@reserve-booking-saga-application/usecases-proxy.module'
 
 import { BaseController } from '@libs/common/infra'
 
@@ -15,7 +14,7 @@ import { ReserveBookingErrors } from './reserve-booking.errors'
 @Controller()
 export class ReserveBookingController extends BaseController {
   constructor(
-    /* @Inject(UsecasesProxyModule.RESERVE_BOOKING_USECASE) */ private usecase: ReserveBookingUsecase,
+    @Inject(UsecasesProxyModule.RESERVE_BOOKING_USECASE) private usecase: ReserveBookingUsecase,
   ) {
     super()
   }
