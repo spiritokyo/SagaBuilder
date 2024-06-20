@@ -6,10 +6,12 @@ RUN apk update && apk add bash
 RUN npm install -g pnpm
 
 COPY ./wait-for-it.sh ./wait-for-it.sh
+COPY ./scripts/message-broker-migration/entrypoint.sh ./entrypoint.sh
 
 RUN chmod +x ./wait-for-it.sh
+RUN chmod +x ./entrypoint.sh
 
-ENTRYPOINT ["./wait-for-it.sh", "rabbitmq:5672", "-s", "--timeout=30", "--", "pnpm run message-broker-migration:dev" ]
+ENTRYPOINT [ "./wait-for-it.sh", "rabbitmq:5672", "-s", "--timeout=30", "--", "./entrypoint.sh"]
 
 #############################################
 
@@ -31,11 +33,16 @@ FROM node:20-alpine AS production
 
 WORKDIR /usr/src/app
 
+RUN apk update && apk add bash
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 COPY --from=build /usr/src/app/dist/scripts/message-broker-migration/ ./dist/scripts/message-broker-migration
 
-RUN npm install -g pnpm
+COPY ./scripts/message-broker-migration/entrypoint.sh ./entrypoint.sh
+COPY ./wait-for-it.sh ./wait-for-it.sh
 
-# CMD ["sleep", "infinite"]
-ENTRYPOINT ["pnpm", "run", "message-broker-migration:prod"]
+RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./wait-for-it.sh
+
+ENTRYPOINT [ "./wait-for-it.sh", "rabbitmq:5672", "-s", "--timeout=30", "--", "./entrypoint.sh" ]

@@ -28,8 +28,8 @@ services:
         condition: service_started
     links:
       - rabbitmq
-    volumes:
-      - .:/usr/src/app
+    # volumes:
+    #   - .:/usr/src/app
     environment:
       NODE_ENV: production
     networks:

@@ -4,9 +4,9 @@ import type { Channel, Connection, Replies } from 'amqplib'
 import type { TChannelsUnion } from '@libs/common/shared'
 import {
   rabbitMQConfig,
-  CONTRACTS_QUEUES,
   bindings,
   CONTRACTS_EXCHANGES,
+  CONTRACTS_QUEUES,
   CONTRACTS_ROUTING_KEYS,
 } from '@libs/common/shared'
 
