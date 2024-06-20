@@ -1,0 +1,36 @@
+{
+  "name": "message-broker-migration",
+  "type": "commonjs",
+  "version": "1.0.0",
+  "description": "",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "tsx ./main.ts",
+    "build": "tsc && tsc-alias",
+    "lint:check": "eslint \"**/*.ts\"",
+    "lint:fix": "eslint \"**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "typecheck:watch": "tsc --noEmit --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "*"
+  },
+  "devDependencies": {
+    "@types/amqplib": "*",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "eslint-config-prettier": "*",
+    "eslint-import-resolver-typescript": "*",
+    "eslint-plugin-import": "*",
+    "eslint-plugin-prettier": "*",
+    "ts-loader": "*",
+    "tsconfig-paths": "*",
+    "typescript": "*"
+  }
+}
