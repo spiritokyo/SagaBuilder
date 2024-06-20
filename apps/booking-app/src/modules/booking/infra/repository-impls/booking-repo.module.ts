@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common'
 import type { PoolClient } from 'pg'
 
-import { dbConfig } from '@shared/infra/postgres/config'
-
 import { getConnectionToken } from '@libs/common/dynamic-modules/postgres/postgres.helpers'
 
 import { BookingRepositoryImplDatabase } from './booking.repository-impl.database'
+import { dbConfig } from '../../../../shared/infra/postgres/config'
 
 @Module({
   providers: [

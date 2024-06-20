@@ -4,10 +4,11 @@
   "type": "commonjs",
   "description": "",
   "scripts": {
-    "dev": "tsx watch ./src/main.ts",
-    "build": "tsc && tsc-alias",
-    "debug": "tsc && copyfiles -u 1 ./src/infra/postgres/config.js dist/apps/booking-app/src/ && (concurrently --kill-others \"tsc -w\" \"tsc-alias -w\" \"nodemon --inspect=0.0.0.0:9229 ./dist/apps/booking-app/src/main.js\")",
-    "debug:ts": "node --inspect=0.0.0.0:9229 --experimental-specifier-resolution=node --loader ./loader.js ./src/main.ts",
+    "dev:tsc": "tsx watch ./src/main.ts",
+    "build:tsc": "tsc && tsc-alias",
+    "debug:tsc": "tsc && copyfiles -u 1 ./src/infra/postgres/config.js dist/apps/booking-app/src/ && (concurrently --kill-others \"tsc -w\" \"tsc-alias -w\" \"nodemon --inspect=0.0.0.0:9229 ./dist/apps/booking-app/src/main.js\")",
+    "debug": "node --inspect=0.0.0.0:9229 --experimental-specifier-resolution=node --loader ./loader.js ./src/main.ts",
+    "----------------------------------------------------------------------------------------------------------------------": "",
     "knex-js": "npx knex --knexfile ./src/shared/infra/postgres/knexfile.cjs",
     "migrate:create-only": "npm run knex-js -- migrate:make $npm_config_name",
     "migrate:run-migrations": "npm run knex-js -- migrate:latest",
@@ -20,9 +21,9 @@
     "typecheck": "tsc --noEmit",
     "typecheck:watch": "tsc --noEmit --watch",
     "---------------------------------------------------------------------------------------------------------------------": "",
-    "graph:deps:generate:v1": "npx depcruise src --include-only '^src' --config .dependency-cruiser.cjs --output-type dot | dot -T svg > ./docs/dependency-graph-v1.svg",
-    "graph:deps:generate:v2": "npx depcruise src --include-only '^src' --progress  --config .dependency-cruiser.cjs --output-type dot | dot -T svg -Grankdir=TD | tee docs/dependency-graph-v2.svg | node node_modules/dependency-cruiser/bin/wrap-stream-in-html.mjs > docs/dependency-graph-v2.html",
-    "graph:deps:generate:top-level": "npx depcruise src --include-only '^src' --config .dependency-cruiser.cjs --output-type ddot | dot -T svg -Grankdir=TD | tee docs/dependency-graph-top-level.svg | node node_modules/dependency-cruiser/bin/wrap-stream-in-html.mjs > docs/dependency-graph-top-level.html",
+    "graph:deps:generate:v1": "npx depcruise src --include-only '^src' --config .dependency-cruiser.cjs --ts-config ./tsconfig.app.json --output-type dot | dot -T svg > ./docs/dependency-graph-v1.svg",
+    "graph:deps:generate:v2": "npx depcruise src --include-only '^src' --progress  --config .dependency-cruiser.cjs --ts-config ./tsconfig.app.json --output-type dot | dot -T svg -Grankdir=TD | tee docs/dependency-graph-v2.svg | node node_modules/dependency-cruiser/bin/wrap-stream-in-html.mjs > docs/dependency-graph-v2.html",
+    "graph:deps:generate:top-level": "npx depcruise src --include-only '^src' --config .dependency-cruiser.cjs --ts-config ./tsconfig.app.json --output-type ddot | dot -T svg -Grankdir=TD | tee docs/dependency-graph-top-level.svg | node node_modules/dependency-cruiser/bin/wrap-stream-in-html.mjs > docs/dependency-graph-top-level.html",
     "graph:deps:generate:all": "npm run graph:deps:generate:v1 && npm run graph:deps:generate:v2 && npm run graph:deps:generate:top-level",
     "graph:deps:check": "npx depcruise src"
   },
@@ -30,12 +31,12 @@
   "license": "ISC",
   "devDependencies": {
     "@types/amqplib": "*",
-    "@types/cron": "^2.4.0",
+    "@types/pg": "*",
     "@types/express": "*",
+    "@types/node": "*",
+    "@types/cron": "^2.4.0",
     "@types/express-serve-static-core": "^4.19.0",
     "@types/knex": "^0.16.1",
-    "@types/node": "*",
-    "@types/pg": "^8.11.6",
     "@types/qs": "^6.9.15",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
@@ -60,7 +61,6 @@
     "cockatiel": "*",
     "cron": "^3.1.7",
     "express": "^4.19.2",
-    "knex": "^3.1.0",
-    "pg": "^8.11.5"
+    "knex": "^3.1.0"
   }
 }

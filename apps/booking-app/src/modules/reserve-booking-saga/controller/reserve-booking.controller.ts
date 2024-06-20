@@ -1,4 +1,4 @@
-import { Controller, Inject, Post, Req, Res } from '@nestjs/common'
+import { Controller, Inject, Post, Req, Res, forwardRef } from '@nestjs/common'
 import { Request, Response } from 'express'
 
 import { DomainBookingErrors } from '@booking-domain/index'
@@ -14,7 +14,8 @@ import { ReserveBookingErrors } from './reserve-booking.errors'
 @Controller()
 export class ReserveBookingController extends BaseController {
   constructor(
-    @Inject(UsecasesProxyModule.RESERVE_BOOKING_USECASE) private usecase: ReserveBookingUsecase,
+    @Inject(forwardRef(() => UsecasesProxyModule.RESERVE_BOOKING_USECASE))
+    private usecase: ReserveBookingUsecase,
   ) {
     super()
   }

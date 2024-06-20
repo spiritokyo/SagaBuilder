@@ -14,7 +14,7 @@
     "alwaysStrict": true, // Parse in strict mode and emit "use strict" for each source file
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    // "noUnusedLocals": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,

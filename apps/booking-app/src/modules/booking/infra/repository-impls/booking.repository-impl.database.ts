@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
+import { ReserveBookingErrors } from '@reserve-booking-saga-controller/reserve-booking.errors'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/index'

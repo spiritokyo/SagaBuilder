@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import type { BookingDetailsVO, IBookingDetailsExtractor, IPaymentDetailsExtractor } from '@booking-domain/index'
-import { UseCaseError } from '@libs/common/core'
+import type {
+  BookingDetailsVO,
+  IBookingDetailsExtractor,
+  IPaymentDetailsExtractor,
+} from '@booking-domain/index'
 
+import { UseCaseError } from '@libs/common/core'
 
 export namespace ReserveBookingErrors {
   export class BookingRepoInfraError extends UseCaseError implements IBookingDetailsExtractor {
