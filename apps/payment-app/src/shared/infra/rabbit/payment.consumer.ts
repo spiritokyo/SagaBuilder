@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { PaymentService } from '@payment-application/index'
+import type { PaymentService } from '@payment-application/index'
 import type { Channel, ConsumeMessage } from 'amqplib'
 
 import { CONTRACTS_QUEUES } from '@libs/common/shared'
@@ -8,9 +8,8 @@ import type { AuthorizePaymentCardCommand } from '@libs/common/shared'
 import type { CommandMessagePublisherRabbitMQ } from './command-message.publisher'
 
 export class PaymentConsumerRabbitMQ {
-  paymentService = new PaymentService()
-
   constructor(
+    private readonly paymentService: typeof PaymentService,
     private readonly channelPayment: Channel,
     private readonly clientProducer: CommandMessagePublisherRabbitMQ,
   ) {}

@@ -5,12 +5,13 @@ set -e
 echo "...Run app in [${NODE_ENV}] mode..."
 
 echo "[...Running migrations for booking app database...]"
+
 npm run booking:migrate:run-migrations
 
 if [ "${NODE_ENV}" = "development" ]; then
-    cd ../../ && npm run booking:dev
+    npm run booking:dev
 elif [ "${NODE_ENV}" = "debug" ]; then
-    cd ../../ && npm run booking:debug
+    npm run booking:debug
 elif [ "${NODE_ENV}" = "testing" ]; then
     echo "[...Just sleep...]"
     # Sleep container, because we don't need to start application, 

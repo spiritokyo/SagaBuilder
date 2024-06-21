@@ -1,7 +1,7 @@
-import type { AuthorizePaymentCardCommand } from '@libs/common/shared/commands'
+import type { AuthorizePaymentCardCommand } from '@libs/common/shared'
 
 export class PaymentService {
-  async runPayment(_cmd: AuthorizePaymentCardCommand): Promise<{
+  static async runPayment(_cmd: AuthorizePaymentCardCommand): Promise<{
     authorizedPayment: boolean
     paymentId: number | null
   }> {

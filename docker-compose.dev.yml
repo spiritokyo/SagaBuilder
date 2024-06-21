@@ -16,18 +16,18 @@ services:
     volumes:
       - .:/usr/src/app
 
-  # payment-app:
-  #   extends:
-  #     file: ./docker-compose.base.yml
-  #     service: payment-app
-  #   build:
-  #     dockerfile: ./apps/payment-app/Dockerfile
-  #     context: .
-  #     target: development
-  #   environment:
-  #     NODE_ENV: development
-  #   volumes:
-  #     - .:/usr/src/app
+  payment-app:
+    extends:
+      file: ./docker-compose.base.yml
+      service: payment-app
+    build:
+      dockerfile: ./apps/payment-app/Dockerfile
+      context: .
+      target: development
+    environment:
+      NODE_ENV: development
+    volumes:
+      - .:/usr/src/app
 
 networks:
   reverseproxy-nw:

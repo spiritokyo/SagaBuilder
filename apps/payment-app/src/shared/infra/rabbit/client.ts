@@ -1,7 +1,8 @@
+import { PaymentService } from '@payment-application/payment.service'
 import { connect } from 'amqplib'
 import type { Channel, Connection } from 'amqplib'
 
-import { rabbitMQConfig } from '@libs/common/shared/constants'
+import { rabbitMQConfig } from '@libs/common/shared'
 
 import { CommandMessagePublisherRabbitMQ } from './command-message.publisher'
 import { PaymentConsumerRabbitMQ } from './payment.consumer'
@@ -29,7 +30,11 @@ export class RabbitMQClient {
       const channelBookingSagaReplyTo = await connection.createChannel()
 
       const clientProducer = new CommandMessagePublisherRabbitMQ(channelBookingSagaReplyTo)
-      const clientConsumer = new PaymentConsumerRabbitMQ(channelPayment, clientProducer)
+      const clientConsumer = new PaymentConsumerRabbitMQ(
+        PaymentService,
+        channelPayment,
+        clientProducer,
+      )
 
       RabbitMQClient.instance = new RabbitMQClient(
         clientProducer,
@@ -43,6 +48,8 @@ export class RabbitMQClient {
        * Register consumer handlers
        */
       await RabbitMQClient.instance.consumePaymentForBooking()
+
+      console.log('[RabbitMQClient]: initialized')
 
       return RabbitMQClient.instance
     } catch (err) {

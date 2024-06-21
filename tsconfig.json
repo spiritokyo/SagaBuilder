@@ -56,7 +56,7 @@
         "apps/payment-app/src/application/*"
       ],
       "@payment-infra/*": [
-        "apps/payment-app/src/infra/*"
+        "apps/payment-app/src/shared/infra/*"
       ],
       //
       "@booking-domain/*": [
