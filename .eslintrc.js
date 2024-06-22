@@ -1,9 +1,10 @@
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: 'tsconfig.json',
+    project: './tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    extraFileExtensions: "json"
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'import'],
   extends: [
@@ -661,5 +662,5 @@ module.exports = {
     '@typescript-eslint/space-infix-ops': 'off',
     '@typescript-eslint/type-annotation-spacing': 'off',
   },
-  ignorePatterns: ['.eslintrc.js', '**/tsconfig.*.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js'],
+  ignorePatterns: ['.eslintrc.js', '**/tsconfig.*.json', 'tsconfig.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js'],
 };

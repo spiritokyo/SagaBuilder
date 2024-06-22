@@ -34,6 +34,8 @@ export class ReserveBookingController extends BaseController {
     const result = await this.usecase.execute(dto)
     console.log('🚀 ~ ReserveBookingController ~ result:', result)
 
+    debugger
+
     if (result instanceof Error) {
       // Saga successfully was compensated
       if (

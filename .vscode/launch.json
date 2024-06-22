@@ -8,23 +8,28 @@
         "type": "node",
         "request": "attach",
         "name": "Debug booking-app",
-        "remoteRoot": "/apps/booking-app/dist/apps/booking-app",
-        "localRoot": "${workspaceFolder}/apps/booking-app/dist/apps/booking-app",
+        "address": "localhost",
+        "sourceMaps": true,
+        "localRoot": "${workspaceFolder}/dist/apps/booking-app",
+        "remoteRoot": "/usr/src/app/dist/apps/booking-app",
         "skipFiles": [
           "<node_modules>/**"
         ],
+        "restart": true, // the debugger will try to reattach upon disconnection
         "port": 9229,
       },
       {
         "type": "node",
         "request": "attach",
         "name": "Debug payment-app",
-        "remoteRoot": "/apps/payment-app/dist/apps/payment-app",
-        "localRoot": "${workspaceFolder}/apps/payment-app/dist/apps/payment-app",
+        "address": "localhost",
+        "sourceMaps": true,
+        "localRoot": "${workspaceFolder}/dist/apps/payment-app",
+        "remoteRoot": "/usr/src/app/dist/apps/payment-app",
         "skipFiles": [
           "<node_modules>/**"
         ],
-        "cwd": "${workspaceRoot}",
+        "restart": true, // the debugger will try to reattach upon disconnection
         "port": 9230,
     }
     // {
