@@ -1,4 +1,4 @@
-import { handleErrors, initializeInfra } from '@booking-shared/others'
+import { handleErrors } from '@booking-shared/others'
 import { NestFactory } from '@nestjs/core'
 import type { Server } from 'http'
 
@@ -14,7 +14,6 @@ async function bootstrap(): Promise<void> {
 
   // TODO: FIX
   handleErrors(server)
-  await initializeInfra()
 }
 
 void bootstrap()

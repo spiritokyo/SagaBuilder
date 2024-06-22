@@ -6,7 +6,7 @@ import { RabbitMQClient } from './client'
   providers: [
     {
       provide: RabbitMQModule.RABBITMQ_BOOKING_TOKEN,
-      useFactory: async (): Promise<RabbitMQModule> => await RabbitMQClient.initialize(),
+      useFactory: async (): Promise<RabbitMQClient> => await RabbitMQClient.initialize(),
       scope: Scope.DEFAULT,
     },
   ],

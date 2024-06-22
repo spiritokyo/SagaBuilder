@@ -1,4 +1,3 @@
-import type { DynamicModule } from '@nestjs/common'
 import { Module } from '@nestjs/common'
 
 import type { Booking } from '@booking-domain/booking.aggregate'

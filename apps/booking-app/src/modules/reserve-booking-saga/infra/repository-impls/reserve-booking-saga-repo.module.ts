@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
@@ -12,9 +12,10 @@ import type { TSagaRepository } from '@libs/saga/repo'
 import { SagaRepositoryImplDatabase } from '@libs/saga/repo'
 
 import { dbConfig } from '../../../../shared/infra/postgres/config'
+import { BookingModule } from '../../../booking/booking.module'
 
 @Module({
-  imports: [BookingRepoModule],
+  imports: [BookingModule],
   providers: [
     {
       inject: [getConnectionToken(dbConfig.name), BookingRepoModule.BOOKING_REPO_TOKEN],
