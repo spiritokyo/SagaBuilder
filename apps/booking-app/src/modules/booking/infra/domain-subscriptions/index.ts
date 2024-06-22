@@ -11,5 +11,5 @@ export function initializeBookingDomainSubscribers(): void {
   new AfterBookingCreated()
   new AfterBookingConfirmed()
 
-  console.log('Initialize subscription listeners')
+  console.log('[Booking domain subscribers]: Initialized')
 }

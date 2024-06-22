@@ -10,5 +10,5 @@ export function initializeReserveBookingSagaDomainSubscribers(connection: PoolCl
   new AfterSagaCompleted(connection)
   new AfterSagaFailed()
 
-  console.log('Initialize subscription listeners')
+  console.log('[ReserveBookingSaga domain subscribers]: Initialized')
 }

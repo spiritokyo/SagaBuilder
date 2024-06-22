@@ -31,7 +31,7 @@ export class BookingCDCConsumerRabbitMQ {
         const payload = cdcData.payload.after as null | Record<string, unknown>
 
         if (payload) {
-          if (schema.name === 'cdc.public.ReserveBookingSaga.Envelope') {
+          if (schema.name === 'cdc.public.Saga.Envelope') {
             const reserveBookingAggregateId = payload.id as string
             DomainEvents.dispatchEventsForAggregate(new UniqueEntityID(reserveBookingAggregateId))
           } else if (schema.name === 'cdc.public.Booking.Envelope') {

@@ -8,7 +8,6 @@ import type { IDomainEvent, IHandle } from '@libs/common/domain/events'
 /**
  * We can inject here f.e usecases
  */
-// TODO: clear saga from database
 export class AfterSagaCompleted implements IHandle<ReserveBookingSagaCompletedDomainEvent> {
   constructor(private client: PoolClient) {
     this.setupSubscriptions()
@@ -26,7 +25,7 @@ export class AfterSagaCompleted implements IHandle<ReserveBookingSagaCompletedDo
 
     await this.client.query(
       `
-      DELETE FROM "ReserveBookingSaga" WHERE id = $1
+      DELETE FROM "Saga" WHERE id = $1
       `,
       [event.sagaId.toString()],
     )

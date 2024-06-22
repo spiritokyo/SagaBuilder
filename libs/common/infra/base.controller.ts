@@ -20,7 +20,6 @@ export class BaseController {
   // }
 
   public ok<T>(res: Response, dto?: T): Response {
-    console.log('OK!', dto)
     if (dto) {
       res.type('application/json')
       return res.status(200).json(dto)

@@ -23,7 +23,7 @@ export class ReserveBookingController extends BaseController {
   @Post('/reserve-booking')
   async reserveBooking(
     @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: false }) res: Response,
   ): Promise<Response> {
     const dto: ReserveBookingDTO = {
       customerId: req.body.customerId,
@@ -32,9 +32,6 @@ export class ReserveBookingController extends BaseController {
     }
 
     const result = await this.usecase.execute(dto)
-    console.log('🚀 ~ ReserveBookingController ~ result:', result)
-
-    debugger
 
     if (result instanceof Error) {
       // Saga successfully was compensated
