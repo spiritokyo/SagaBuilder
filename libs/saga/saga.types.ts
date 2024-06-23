@@ -3,13 +3,18 @@ import type { EventEmitter } from 'node:stream'
 import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
 import type { IDomainEvent } from '@libs/common/domain/events'
 
-export type SagaStep<Params> = {
+export type SagaStep<Params = AggregateRoot<Record<string, unknown>>> = {
   name: string
   eventBus: EventEmitter
 
   invoke(params: Params): Promise<void>
   withCompensation(params: Params): Promise<void>
 }
+
+export type SagaStepClass<Params = AggregateRoot<Record<string, unknown>>> = new (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+) => SagaStep<Params>
 
 export type SagaPersistenceEntity = {
   id: string
@@ -29,7 +34,8 @@ export type TEventClass = new (...args: any[]) => IDomainEvent
 
 export type GenericSagaStateProps = {
   state: {
-    completedStep: string
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+    completedStep: 'INITIAL' | string
     isCompensatingDirection: boolean
     isErrorSaga: boolean
     isCompleted: boolean
@@ -48,7 +54,7 @@ export type TSagaMapper<PersistenceEntity, DomainEntity> = {
   toDomain(
     persistenceEntity: PersistenceEntity,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID
@@ -59,8 +65,8 @@ export type TSagaMapper<PersistenceEntity, DomainEntity> = {
 
 export type ISagaManager = {
   props: GenericSagaStateProps
-  successfulSteps: SagaStep<AbstractProps['childAggregate']>[]
-  steps: SagaStep<AbstractProps['childAggregate']>[]
+  successfulSteps: InstanceType<SagaStepClass>[]
+  steps: InstanceType<SagaStepClass>[]
 
   readonly eventBus: EventEmitter
   readonly completedEvent: TEventClass

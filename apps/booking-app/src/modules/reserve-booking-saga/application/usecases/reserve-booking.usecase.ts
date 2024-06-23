@@ -1,20 +1,10 @@
 import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
-import type { EventEmitter } from 'node:events'
 
 import { Booking } from '@booking-domain/index'
 import type { MaybeErrorResponse, BookingDomainService } from '@booking-domain/index'
 
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
-import {
-  ReserveBookingSaga,
-  ReserveBookingSagaCompletedDomainEvent,
-  ReserveBookingSagaFailedDomainEvent,
-} from '@reserve-booking-saga-domain/index'
-import {
-  CreateBookingStep,
-  AuthorizePaymentStep,
-  ConfirmBookingStep,
-} from '@reserve-booking-saga-domain/steps'
+import { ReserveBookingSaga, reserveBookingSagaConfig } from '@reserve-booking-saga-domain/index'
 
 import type { UseCase } from '@libs/common/core'
 import type { TSagaRepository } from '@libs/saga/repo'
@@ -43,18 +33,9 @@ export class ReserveBookingUsecase
     // 1. Create saga instance
     const reserveBookingSaga = ReserveBookingSaga.create<Booking>(
       { childAggregate: Booking.create(dto) },
-      {
-        completedEvent: ReserveBookingSagaCompletedDomainEvent,
-        failedEvent: ReserveBookingSagaFailedDomainEvent,
-      },
-      [
-        (eventBus: EventEmitter): CreateBookingStep => new CreateBookingStep(eventBus),
-        (eventBus: EventEmitter): AuthorizePaymentStep =>
-          new AuthorizePaymentStep(eventBus, ReserveBookingSaga.messageBroker),
-        (eventBus: EventEmitter): ConfirmBookingStep => new ConfirmBookingStep(eventBus),
-      ],
-      'ReserveBookingSaga',
+      ...reserveBookingSagaConfig,
     )
+    console.log('🚀 ~ reserveBookingSaga:', reserveBookingSaga)
 
     // 2. Save saga instance
     await ReserveBookingUsecase.reserveBookingSagaRepository.saveSagaInDB(reserveBookingSaga, false)

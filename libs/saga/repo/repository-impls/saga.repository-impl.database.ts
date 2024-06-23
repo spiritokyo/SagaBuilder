@@ -1,12 +1,19 @@
+import { ReserveBookingErrors } from '@reserve-booking-saga-controller/reserve-booking.errors'
 import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
+import { emulateChaosError } from '@libs/common/infra/error'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
 import type { SagaManager } from '../../saga.manager'
 import { SagaMapper } from '../../saga.mapper'
-import type { AbstractProps, SagaPersistenceEntity, SagaStep, TEventClass } from '../../saga.types'
+import type {
+  AbstractProps,
+  SagaPersistenceEntity,
+  SagaStepClass,
+  TEventClass,
+} from '../../saga.types'
 import type { TSagaRepository } from '../saga.repository'
 
 export class SagaRepositoryImplDatabase<
@@ -76,7 +83,9 @@ export class SagaRepositoryImplDatabase<
   async restoreSaga(
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps<A>['childAggregate']>)[],
+    stepCommands: ((
+      eventBus: EventEmitter,
+    ) => InstanceType<SagaStepClass<AbstractProps<A>['childAggregate']>>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID

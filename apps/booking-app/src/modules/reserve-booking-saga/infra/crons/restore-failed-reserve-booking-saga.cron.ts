@@ -1,10 +1,25 @@
 /* eslint-disable no-restricted-syntax */
 import { CronJob } from 'cron'
+import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
 
+import { reserveBookingSagaConfig } from '@reserve-booking-saga-domain/index'
+import { ReserveBookingSaga } from '@reserve-booking-saga-domain/saga.reserve-booking.aggregate'
+import {
+  ReserveBookingSagaCompletedDomainEvent,
+  ReserveBookingSagaFailedDomainEvent,
+} from '@reserve-booking-saga-domain/saga.reserve-booking.events'
+import {
+  CreateBookingStep,
+  AuthorizePaymentStep,
+  ConfirmBookingStep,
+} from '@reserve-booking-saga-domain/steps'
+
+import { UniqueEntityID } from '@libs/common/domain'
 import type { TSagaRepository } from '@libs/saga/repo'
+import type { SagaPersistenceEntity } from '@libs/saga/saga.types'
 
 export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient
@@ -24,24 +39,29 @@ export class RestoreFailedReserveBookingSagaCron {
         const { rows: failedReserveBookingSagas } = await this.client.query(
           `
           SELECT * FROM "Saga"
-          WHERE state ->> 'is_error_saga' = 'true'
+          WHERE state ->> 'is_completed' = 'false'
           LIMIT 1
           `,
         )
-        console.log(
-          '🚀 ~ RestoreFailedReserveBookingSagaCron ~ failedReserveBookingSagas:',
-          failedReserveBookingSagas,
-        )
-        // for (const saga of failedReserveBookingSagas) {
-        //   const reserveBookingSaga = await this.reserveBookingSagaRepository.restoreSaga(
-        //     saga as ReserveBookingSagaPersistenceEntity,
-        //   )
-        //   if (!reserveBookingSaga) {
-        //     continue
-        //   }
-        //   await reserveBookingSaga.execute()
-        // }
-        // console.log(failedReserveBookingSagas)
+
+        for (const saga of failedReserveBookingSagas) {
+          const reserveBookingSaga = await this.reserveBookingSagaRepository.restoreSaga(
+            saga as SagaPersistenceEntity,
+            ...reserveBookingSagaConfig,
+            { id: new UniqueEntityID((saga as SagaPersistenceEntity).id) },
+          )
+
+          console.log(
+            '🚀 ~ RestoreFailedReserveBookingSagaCron ~ reserveBookingSaga:',
+            reserveBookingSaga,
+          )
+
+          if (!reserveBookingSaga) {
+            continue
+          }
+
+          await reserveBookingSaga.execute()
+        }
       }, // onTick
       null, // onComplete
       true, // start

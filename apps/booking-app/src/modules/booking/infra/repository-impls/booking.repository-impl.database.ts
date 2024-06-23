@@ -21,7 +21,7 @@ export class BookingRepositoryImplDatabase
   async saveAggregateInDB(booking: Booking): Promise<void> {
     const bookingPersistenceEntity = this.mapper.toPersistence(booking)
 
-    emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 10)
+    emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError(bookingPersistenceEntity), 30)
 
     const res = await this.client.query(
       `
@@ -51,11 +51,11 @@ export class BookingRepositoryImplDatabase
   }
 
   async restoreAggregateFromDB(bookingId: string): Promise<Booking | null> {
-    emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 10)
+    // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 10)
 
     const res = await this.client.query(
       `
-      SELECT * FROM "Booking" WHERE id = "$1"
+      SELECT * FROM "Booking" WHERE id = $1
       `,
       [bookingId],
     )
@@ -66,7 +66,7 @@ export class BookingRepositoryImplDatabase
   }
 
   async deleteAggregateById(bookingId: string): Promise<void> {
-    emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 90)
+    // emulateChaosError(new ReserveBookingErrors.BookingRepoInfraError({ id: bookingId }), 90)
 
     await this.client.query(
       `

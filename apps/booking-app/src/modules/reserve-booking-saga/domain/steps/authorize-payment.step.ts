@@ -5,13 +5,11 @@ import type { EventEmitter } from 'node:events'
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-// import type { RabbitMQClient } from '@shared/infra/rabbit/client'
-
 import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
 import { AuthorizePaymentCardCommand } from '@libs/common/shared'
-import type { SagaStep } from '@libs/saga/index'
+import type { SagaStepClass } from '@libs/saga/saga.types'
 
-export class AuthorizePaymentStep implements SagaStep<Booking> {
+export class AuthorizePaymentStep implements InstanceType<SagaStepClass<Booking>> {
   static STEP_NAME = 'AuthorizePaymentStep' as const
   static STEP_NAME_COMPENSATION = 'AuthorizePaymentStepCompensation' as const
 

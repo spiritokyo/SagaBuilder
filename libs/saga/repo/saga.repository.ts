@@ -3,7 +3,7 @@ import type EventEmitter from 'node:events'
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 
 import type { SagaManager } from '../saga.manager'
-import type { AbstractProps, SagaPersistenceEntity, SagaStep, TEventClass } from '../saga.types'
+import type { SagaPersistenceEntity, SagaStepClass, TEventClass } from '../saga.types'
 
 export type TSagaRepository<A extends AggregateRoot<EntityProps>> = {
   /**
@@ -18,7 +18,7 @@ export type TSagaRepository<A extends AggregateRoot<EntityProps>> = {
   restoreSaga(
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID

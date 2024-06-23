@@ -4,13 +4,7 @@ import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/do
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
 import { SagaManager } from './saga.manager'
-import type {
-  AbstractProps,
-  SagaPersistenceEntity,
-  SagaStep,
-  TEventClass,
-  TSagaMapper,
-} from './saga.types'
+import type { SagaPersistenceEntity, SagaStepClass, TEventClass, TSagaMapper } from './saga.types'
 
 export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
   implements TSagaMapper<SagaPersistenceEntity, SagaManager<A>>
@@ -22,14 +16,13 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
   async toDomain(
     sagaPersistenceEntity: SagaPersistenceEntity,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID
     },
   ): Promise<SagaManager<A>> {
     const { child_aggregate_id, state } = sagaPersistenceEntity
-    console.log('🚀 ~ child_aggregate_id:', child_aggregate_id)
 
     const aggregate = await this.childAggregateRepository.restoreAggregateFromDB(child_aggregate_id)
 

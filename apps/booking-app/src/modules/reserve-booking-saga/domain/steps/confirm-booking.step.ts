@@ -5,9 +5,9 @@ import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
 import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
-import type { SagaStep } from '@libs/saga/index'
+import type { SagaStepClass } from '@libs/saga/saga.types'
 
-export class ConfirmBookingStep implements SagaStep<Booking> {
+export class ConfirmBookingStep implements InstanceType<SagaStepClass<Booking>> {
   static STEP_NAME = 'ConfirmBookingStep' as const
   circutBreaker = buildCircuitBreaker(
     [ReserveBookingErrors.BookingRepoInfraError],

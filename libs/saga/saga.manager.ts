@@ -1,5 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+/* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
 import EventEmitter from 'node:events'
+
+import { CreateBookingStep } from '@reserve-booking-saga-domain/steps'
 
 import type { EntityProps, UniqueEntityID } from '@libs/common/domain'
 import { AggregateRoot } from '@libs/common/domain'
@@ -9,7 +13,7 @@ import type {
   AbstractProps,
   GenericSagaStateProps,
   ISagaManager,
-  SagaStep,
+  SagaStepClass,
   TEventClass,
 } from './saga.types'
 
@@ -29,8 +33,9 @@ export class SagaManager<
   readonly failedEvent: TEventClass
 
   name: string
-  successfulSteps: SagaStep<AggregateRoot<Record<string, unknown>>>[]
-  steps: SagaStep<AggregateRoot<Record<string, unknown>>>[]
+  successfulSteps: InstanceType<SagaStepClass>[]
+  steps: InstanceType<SagaStepClass>[]
+  stepsMap: Record<string, InstanceType<SagaStepClass>>
 
   public props: TCustomProps
 
@@ -40,7 +45,7 @@ export class SagaManager<
   public constructor(
     props: TCustomProps,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
     name: string,
     additional?: { id?: UniqueEntityID },
   ) {
@@ -54,7 +59,13 @@ export class SagaManager<
 
     this.name = name
     this.steps = stepCommands.map((stepCommand) => stepCommand(this.eventBus))
-    this.successfulSteps = []
+    this.stepsMap = SagaManager.initializeStepsMap(this.steps)
+
+    this.successfulSteps = SagaManager.restoreSuccessfullSteps(
+      this.steps,
+      this.stepsMap,
+      this.props.state.completedStep,
+    )
 
     this.listenUpdateSagaState()
   }
@@ -74,6 +85,48 @@ export class SagaManager<
     SagaManager._isInitialized = true
   }
 
+  static initializeStepsMap(
+    steps: InstanceType<SagaStepClass>[],
+  ): Record<string, InstanceType<SagaStepClass>> {
+    return steps.reduce(
+      (acc, cur) => {
+        // @ts-expect-error ...
+        if (cur.constructor?.STEP_NAME) {
+          // @ts-expect-error ...
+          acc[(cur.constructor as SagaStepClass).STEP_NAME] = cur
+        }
+
+        // @ts-expect-error ...
+        if (cur.constructor?.STEP_NAME_COMPENSATION) {
+          // @ts-expect-error ...
+          acc[(cur.constructor as SagaStepClass).STEP_NAME_COMPENSATION] = cur
+        }
+
+        return acc
+      },
+      {} as Record<string, InstanceType<SagaStepClass>>,
+    )
+  }
+
+  static restoreSuccessfullSteps(
+    steps: InstanceType<SagaStepClass>[],
+    stepsMap: Record<string, InstanceType<SagaStepClass>>,
+    lastSuccessfullStep: keyof typeof SagaManager.prototype.stepsMap,
+  ): InstanceType<SagaStepClass>[] {
+    const lastSuccessfullStepClass = stepsMap[lastSuccessfullStep] as
+      | InstanceType<SagaStepClass>
+      | undefined
+
+    if (!lastSuccessfullStepClass) {
+      return []
+    }
+
+    return steps.slice(
+      0,
+      steps.findIndex((stepClass) => stepClass instanceof lastSuccessfullStepClass.constructor),
+    )
+  }
+
   /**
    * @description create/reconstruct in-memory ReserveBookingSaga instance
    */
@@ -84,7 +137,7 @@ export class SagaManager<
     this: new (
       props: AbstractProps<A>,
       events: { completedEvent: TEventClass; failedEvent: TEventClass },
-      stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps['childAggregate']>)[],
+      stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
       name: string,
       additional?: { id?: UniqueEntityID },
     ) => ReturnClass,
@@ -93,7 +146,9 @@ export class SagaManager<
       state?: GenericSagaStateProps['state']
     },
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => SagaStep<AbstractProps<A>['childAggregate']>)[],
+    stepCommands: ((
+      eventBus: EventEmitter,
+    ) => InstanceType<SagaStepClass<AbstractProps<A>['childAggregate']>>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID
@@ -133,6 +188,11 @@ export class SagaManager<
   }
 
   async switchToCompensatingDirection(): Promise<void> {
+    // We already are in compensation mode
+    if (this.props.state.isCompensatingDirection) {
+      return
+    }
+
     console.log('[Saga]: switchToCompensatingDirection')
     this.props.state.isCompensatingDirection = true
 
@@ -141,6 +201,7 @@ export class SagaManager<
 
   async compeleteSaga(): Promise<void> {
     this.props.state.isCompleted = true
+    this.props.state.isErrorSaga = false
 
     const event = new this.completedEvent(this.getId(), this.getState())
     this.addDomainEvent(event)
@@ -179,10 +240,15 @@ export class SagaManager<
    * @throws `BookingConfirmFailureDomainError` - error during booking confirmation - THROW ERROR
    */
   async execute(): Promise<unknown> {
-    console.log('Start new booking saga!')
+    console.log('Start booking saga!')
 
     for (const step of this.steps) {
       try {
+        // Start to restore saga
+        if (this.getState().isErrorSaga) {
+          throw new Error('Back to compensation mode')
+        }
+
         console.info(`[Invoking]: ${step.name} ...`)
 
         await step.invoke(this.props.childAggregate)
@@ -193,11 +259,11 @@ export class SagaManager<
       } catch (invokeError) {
         console.log('🚀[Reason to run compensation flow]:', (invokeError as Error).message)
 
-        await this.switchToCompensatingDirection()
-
-        console.error(`[Failed Step]: ${step.name} !!`)
-
         try {
+          await this.switchToCompensatingDirection()
+
+          console.error(`[Failed Step]: ${step.name} !!`)
+
           for (const successfulStep of this.successfulSteps) {
             console.info(`[Rollbacking]: ${successfulStep.name} ...`)
 
@@ -217,11 +283,11 @@ export class SagaManager<
           await this.freezeSaga()
 
           // Original error that has became the reason of failing compensation flow
-          throw compensateError
+          // throw compensateError
         }
 
         // Original error that has became the reason of failing invoking flow
-        throw invokeError
+        // throw invokeError
       }
     }
 

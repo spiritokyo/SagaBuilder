@@ -28,7 +28,7 @@ export namespace ReserveBookingErrors {
     static message = 'Saga booking repository error'
 
     constructor(message?: string) {
-      super(message || BookingRepoInfraError.message)
+      super(message || SagaBookingRepoInfraError.message)
     }
   }
 
