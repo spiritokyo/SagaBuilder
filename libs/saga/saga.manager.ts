@@ -61,7 +61,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
   }
 
   /**
-   * @description create/reconstruct in-memory ReserveBookingSaga instance
+   * @description create/reconstruct in-memory ReserveBookingSaga
    */
   static create<
     A extends AggregateRoot<EntityProps>,
@@ -117,6 +117,19 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
     )
 
     return new this(sagaManagerControl, stepCommands)
+  }
+
+  /**
+   * @description create/reconstruct in-memory ReserveBookingSaga and then to persist it
+   */
+  static async createAndPersist<A extends AggregateRoot<EntityProps>>(
+    args: Parameters<typeof SagaManager.create<A>>,
+  ): Promise<SagaManager<A>> {
+    const sagaInstance: SagaManager<A> = SagaManager.create(...args)
+
+    await SagaManager.sagaRepo.saveSagaInDB(sagaInstance, false)
+
+    return sagaInstance
   }
 
   static initializeStepsMap<A extends AggregateRoot<Record<string, unknown>>>(

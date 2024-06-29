@@ -22,9 +22,6 @@ import type { TSagaRepo } from '@libs/saga/repo'
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
-  static reserveBookingSagaRepository: TSagaRepo<Booking>
-  static messageBroker: RabbitMQClient
-
   constructor(
     readonly reserveBookingSagaRepository: TSagaRepo<Booking>,
     readonly messageBroker: RabbitMQClient,
@@ -35,7 +32,7 @@ export class ReserveBookingUsecase
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     try {
       // 1. Create saga instance
-      const reserveBookingSaga = ReserveBookingSaga.create<Booking>(
+      const reserveBookingSaga = await ReserveBookingSaga.createAndPersist<Booking>([
         // Means that child aggregate doesn't exist yet (will be initialized later)
         { childAggregate: null },
         {
@@ -64,7 +61,7 @@ export class ReserveBookingUsecase
         ],
         // Saga name
         'ReserveBookingSaga',
-      )
+      ])
 
       // 2. Save saga instance
       // await ReserveBookingUsecase.reserveBookingSagaRepository.saveSagaInDB(reserveBookingSaga, false)

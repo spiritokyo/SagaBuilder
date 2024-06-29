@@ -26,22 +26,17 @@ export class ReserveBookingSagaModule implements OnModuleInit {
   constructor(
     @Inject(getConnectionToken(dbConfig.name)) private readonly connection: PoolClient,
     @Inject(RabbitMQModule.RABBITMQ_BOOKING_TOKEN) private readonly messageBroker: RabbitMQClient,
-    @Inject(ReserveBookingSagaRepoModule.RESERVE_BOOKING_SAGA_REPO_TOKEN)
-    private readonly reserveBookingSagaRepository: TSagaRepo<Booking>,
   ) {}
 
   onModuleInit(): void {
     // Initialize domain subscribers
     initializeReserveBookingSagaDomainSubscribers(this.connection)
 
-    // Initialize saga aggregate
-    ReserveBookingSaga.initialize(this.reserveBookingSagaRepository)
-
     // Initialize & run cron
-    RestoreFailedReserveBookingSagaCron.initialize(
-      this.connection,
-      this.reserveBookingSagaRepository,
-      this.messageBroker,
-    ).run()
+    // RestoreFailedReserveBookingSagaCron.initialize(
+    //   this.connection,
+    //   this.reserveBookingSagaRepository,
+    //   this.messageBroker,
+    // ).run()
   }
 }

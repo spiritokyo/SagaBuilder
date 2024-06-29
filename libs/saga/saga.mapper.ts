@@ -1,6 +1,9 @@
+import type { Booking } from '@booking-domain/booking.aggregate'
+
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
+import type { TSagaRepo } from './repo'
 import type { SagaStepClassInheritor } from './saga-step'
 import { SagaManager } from './saga.manager'
 import type { SagaPersistenceEntity, TEventClass, TSagaMapper } from './saga.types'
@@ -17,7 +20,8 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
       stepClass: SagaStepClassInheritor<A>
-      additionalArguments?: unknown[]
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      additionalArguments?: any[]
     }[],
     name: string,
     additional?: {

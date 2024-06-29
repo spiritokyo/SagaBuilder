@@ -23,13 +23,6 @@ export class SagaRepositoryImplDatabase<
     this.sagaMapper = new SagaMapper(childAggregateRepo)
   }
 
-  static initialize<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>(
-    client: PoolClient,
-    childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
-  ): TSagaRepo<A> {
-    return new SagaRepositoryImplDatabase(client, childAggregateRepo)
-  }
-
   async saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void> {
     // emulateChaosError(new ReserveBookingErrors.SagaBookingRepoInfraError(), 10)
 

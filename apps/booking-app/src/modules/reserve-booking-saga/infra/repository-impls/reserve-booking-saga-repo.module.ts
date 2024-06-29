@@ -24,7 +24,7 @@ import { BookingModule } from '../../../booking/booking.module'
         connection: PoolClient,
         bookingRepository: TAbstractAggregateRepository<Booking, BookingPersistenceEntity>,
       ): TSagaRepo<Booking> =>
-        SagaRepositoryImplDatabase.initialize<Booking, BookingPersistenceEntity>(
+        new SagaRepositoryImplDatabase<Booking, BookingPersistenceEntity>(
           connection,
           bookingRepository,
         ),
