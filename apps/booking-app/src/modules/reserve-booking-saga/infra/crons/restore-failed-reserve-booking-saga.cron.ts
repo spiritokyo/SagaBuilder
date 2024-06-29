@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 import { CronJob } from 'cron'
 import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
@@ -6,16 +7,6 @@ import type { PoolClient } from 'pg'
 import type { Booking } from '@booking-domain/booking.aggregate'
 
 import { reserveBookingSagaConfig } from '@reserve-booking-saga-domain/index'
-import { ReserveBookingSaga } from '@reserve-booking-saga-domain/saga.reserve-booking.aggregate'
-import {
-  ReserveBookingSagaCompletedDomainEvent,
-  ReserveBookingSagaFailedDomainEvent,
-} from '@reserve-booking-saga-domain/saga.reserve-booking.events'
-import {
-  CreateBookingStep,
-  AuthorizePaymentStep,
-  ConfirmBookingStep,
-} from '@reserve-booking-saga-domain/steps'
 
 import { UniqueEntityID } from '@libs/common/domain'
 import type { TSagaRepository } from '@libs/saga/repo'
@@ -24,11 +15,11 @@ import type { SagaPersistenceEntity } from '@libs/saga/saga.types'
 export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient
   public static job: CronJob
-  public static reserveBookingSagaRepository: TSagaRepository<Booking>
+  public static reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>
 
   static initialize(
     client: PoolClient,
-    reserveBookingSagaRepository: TSagaRepository<Booking>,
+    reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>,
   ): typeof RestoreFailedReserveBookingSagaCron {
     this.client = client
     this.reserveBookingSagaRepository = reserveBookingSagaRepository
@@ -60,7 +51,7 @@ export class RestoreFailedReserveBookingSagaCron {
             continue
           }
 
-          await reserveBookingSaga.execute()
+          // await reserveBookingSaga.execute()
         }
       }, // onTick
       null, // onComplete

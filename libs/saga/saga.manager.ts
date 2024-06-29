@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 import EventEmitter from 'node:events'
-
-import { CreateBookingStep } from '@reserve-booking-saga-domain/steps'
 
 import type { EntityProps, UniqueEntityID } from '@libs/common/domain'
 import { AggregateRoot } from '@libs/common/domain'
@@ -19,13 +18,14 @@ import type {
 
 export class SagaManager<
     A extends AggregateRoot<EntityProps>,
+    DTO extends Record<string, unknown>,
     TCustomProps extends AbstractProps<A> = AbstractProps<A>,
   >
   extends AggregateRoot<GenericSagaStateProps>
   implements ISagaManager
 {
   static messageBroker: RabbitMQClient
-  static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>>
+  static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>, Record<string, unknown>>
   static _isInitialized = false
 
   readonly eventBus: EventEmitter
@@ -73,8 +73,8 @@ export class SagaManager<
   /**
    * @description Initialize ReserveBookingSagaRepository and RabbitMQ client
    */
-  static initialize<A extends AggregateRoot<EntityProps>>(
-    sagaRepository: TSagaRepository<A>,
+  static initialize<A extends AggregateRoot<EntityProps>, DTO extends Record<string, unknown>>(
+    sagaRepository: TSagaRepository<A, DTO>,
     messageBroker: RabbitMQClient,
   ): void {
     SagaManager.messageBroker = messageBroker
@@ -132,7 +132,8 @@ export class SagaManager<
    */
   static create<
     A extends AggregateRoot<EntityProps>,
-    ReturnClass extends SagaManager<A> = SagaManager<A>,
+    DTO extends Record<string, unknown>,
+    ReturnClass extends SagaManager<A, DTO> = SagaManager<A, DTO>,
   >(
     this: new (
       props: AbstractProps<A>,
@@ -142,13 +143,13 @@ export class SagaManager<
       additional?: { id?: UniqueEntityID },
     ) => ReturnClass,
     props: {
-      childAggregate: AbstractProps<A>['childAggregate']
+      childAggregate: AbstractProps<A>['childAggregate'] | null
       state?: GenericSagaStateProps['state']
     },
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: ((
       eventBus: EventEmitter,
-    ) => InstanceType<SagaStepClass<AbstractProps<A>['childAggregate']>>)[],
+    ) => InstanceType<SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID
@@ -166,16 +167,28 @@ export class SagaManager<
         isCompensatingDirection: false,
         isErrorSaga: false,
         isCompleted: false,
-        isChildAggregatePersisted: false,
+        // isChildAggregatePersisted: false,
       }
 
       //* Create brand new saga instance
-      return new this({ ...props, state: initialState }, events, stepCommands, name, additional)
+      return new this(
+        { childAggregate: null, state: initialState },
+        events,
+        stepCommands,
+        name,
+        additional,
+      )
     }
 
     //* Restore existing saga from DB
     console.log('[RESTORE EXISTING SAGA]', props, additional?.id)
-    return new this({ ...props, state: props.state }, events, stepCommands, name, additional)
+    return new this(
+      { childAggregate: props.childAggregate, state: props.state },
+      events,
+      stepCommands,
+      name,
+      additional,
+    )
   }
 
   async freezeSaga(): Promise<void> {
@@ -214,8 +227,8 @@ export class SagaManager<
       this.props.state.completedStep = newState
     })
 
-    this.eventBus.on('update:child-aggregate-persistence', (isChildAggregatePersisted) => {
-      this.props.state.isChildAggregatePersisted = isChildAggregatePersisted
+    this.eventBus.on('update:child-aggregate-persistence', (childAggregate: A) => {
+      this.props.childAggregate = childAggregate
     })
   }
 
@@ -239,7 +252,7 @@ export class SagaManager<
    * @throws `BookingCreatedFailureDomainError` - course is not available - THROWS ERROR
    * @throws `BookingConfirmFailureDomainError` - error during booking confirmation - THROW ERROR
    */
-  async execute(): Promise<unknown> {
+  async execute(dto: ReserveBookingDTO): Promise<unknown> {
     console.log('Start booking saga!')
 
     for (const step of this.steps) {
@@ -249,9 +262,12 @@ export class SagaManager<
           throw new Error('Back to compensation mode')
         }
 
-        console.info(`[Invoking]: ${step.name} ...`)
+        console.info(`[Invoking]: ${step.stepName} ...`)
 
-        await step.invoke(this.props.childAggregate)
+        await step.invokeUpgraded({
+          dto,
+          childAggregate: this.props.childAggregate,
+        })
 
         await this.saveSagaInDB(false)
 
@@ -262,12 +278,15 @@ export class SagaManager<
         try {
           await this.switchToCompensatingDirection()
 
-          console.error(`[Failed Step]: ${step.name} !!`)
+          console.error(`[Failed Step]: ${step.stepName} !!`)
 
           for (const successfulStep of this.successfulSteps) {
-            console.info(`[Rollbacking]: ${successfulStep.name} ...`)
+            console.info(`[Rollbacking]: ${successfulStep.stepName} ...`)
 
-            await successfulStep.withCompensation(this.props.childAggregate)
+            await successfulStep.withCompensationUpgraded({
+              dto,
+              childAggregate: this.props.childAggregate,
+            })
 
             await this.saveSagaInDB(false)
           }
@@ -295,8 +314,8 @@ export class SagaManager<
     console.info('Order Creation Transaction ended successfuly')
 
     return {
-      childAggregate: this.props.childAggregate.id.toString(),
-      ...this.props.childAggregate.props,
+      childAggregate: this.props.childAggregate?.id.toString() || null,
+      ...(this.props.childAggregate?.props || {}),
     }
   }
 

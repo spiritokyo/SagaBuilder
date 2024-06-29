@@ -8,6 +8,6 @@ export type TAbstractAggregateRepository<
 > = {
   mapper: TMapper<A, AbstractPersistenceEntity>
   saveAggregateInDB(aggregate: A): Promise<void>
-  restoreAggregateFromDB(aggregateId: string): Promise<A | null>
+  restoreAggregateFromDB(aggregateId: string | null): Promise<A | null>
   deleteAggregateById(aggregateId: string): Promise<void>
 }

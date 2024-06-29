@@ -662,5 +662,5 @@ module.exports = {
     '@typescript-eslint/space-infix-ops': 'off',
     '@typescript-eslint/type-annotation-spacing': 'off',
   },
-  ignorePatterns: ['.eslintrc.js', '**/tsconfig.*.json', 'tsconfig.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js'],
+  ignorePatterns: ['.eslintrc.js', '**/tsconfig.*.json', 'tsconfig.json', 'package.json', '**/*.mjs', '**/*.cjs','**/*.js', "**/*.md"],
 };

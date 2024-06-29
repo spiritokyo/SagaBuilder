@@ -1,7 +1,6 @@
 import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
 
-import { Booking } from '@booking-domain/index'
-import type { MaybeErrorResponse, BookingDomainService } from '@booking-domain/index'
+import type { Booking, MaybeErrorResponse, BookingDomainService } from '@booking-domain/index'
 
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 import { ReserveBookingSaga, reserveBookingSagaConfig } from '@reserve-booking-saga-domain/index'
@@ -12,13 +11,13 @@ import type { TSagaRepository } from '@libs/saga/repo'
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
-  static reserveBookingSagaRepository: TSagaRepository<Booking>
+  static reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>
 
   private constructor(private bookingDomainService: BookingDomainService) {}
 
   static initialize(
     bookingDomainService: BookingDomainService,
-    reserveBookingSagaRepository: TSagaRepository<Booking>,
+    reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>,
   ): ReserveBookingUsecase {
     ReserveBookingUsecase.reserveBookingSagaRepository = reserveBookingSagaRepository
 
@@ -31,8 +30,8 @@ export class ReserveBookingUsecase
     dto: ReserveBookingDTO,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     // 1. Create saga instance
-    const reserveBookingSaga = ReserveBookingSaga.create<Booking>(
-      { childAggregate: Booking.create(dto) },
+    const reserveBookingSaga = ReserveBookingSaga.create<Booking, ReserveBookingDTO>(
+      { childAggregate: null },
       ...reserveBookingSagaConfig,
     )
     console.log('🚀 ~ reserveBookingSaga:', reserveBookingSaga)
@@ -41,6 +40,6 @@ export class ReserveBookingUsecase
     await ReserveBookingUsecase.reserveBookingSagaRepository.saveSagaInDB(reserveBookingSaga, false)
 
     // 3. Run saga execution (RPC)
-    return await this.bookingDomainService.reserveBooking(reserveBookingSaga)
+    return await this.bookingDomainService.reserveBooking(reserveBookingSaga, dto)
   }
 }

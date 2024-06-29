@@ -1,6 +1,11 @@
-export type TChannelsUnion = 'channelPayment' | 'channelBookingSagaReplyTo' | 'channelBookingCDC'
+export type TChannelsUnion =
+  | 'channelCourse'
+  | 'channelPayment'
+  | 'channelBookingSagaReplyTo'
+  | 'channelBookingCDC'
 
 export const CONTRACTS_QUEUES = {
+  Q_COURSE: 'q.course',
   Q_PAYMENT: 'q.payment',
   Q_NOTIFICATION: 'q.notification',
   Q_BOOKING_CDC: 'q.booking.cdc',
@@ -13,6 +18,7 @@ export const CONTRACTS_EXCHANGES = {
 } as const
 
 export const CONTRACTS_ROUTING_KEYS = {
+  CMD_CHECK_COURSE_AVAILABILITY: 'cmd.check-course-availability',
   CMD_PAYMENT_AUTHORIZE_CARD: 'cmd.payment.authorize-card',
   CMD_NOTIFICATION_SUCCESS_BOOKING: 'cmd.notification.success-booking',
   CMD_SAGA_REPLY_TO_SUCCESS_PAYMENT: 'cmd.saga-reply-to.succcess-payment',
@@ -22,24 +28,20 @@ export const CONTRACTS_ROUTING_KEYS = {
 
 export const bindings: { channel: TChannelsUnion; queue: string }[] = [
   {
+    channel: 'channelCourse',
+    queue: CONTRACTS_QUEUES.Q_COURSE,
+  },
+  {
     channel: 'channelPayment',
-    // exchange: this.exchangePayment.exchange,
     queue: CONTRACTS_QUEUES.Q_PAYMENT,
-    // routingKey: Q_CONTRACTS_ROUTING_KEYS.CMD_PAYMENT_AUTHORIZE_CARD,
   },
-  // TODO: add refund payment
-  // Saga
   {
     channel: 'channelBookingSagaReplyTo',
-    // exchange: this.exchangeBookingSagaReplyTo.exchange,
     queue: CONTRACTS_QUEUES.Q_BOOKING_SAGA_REPLY_TO_SUCCESS_PAYMENT,
-    // routingKey: Q_CONTRACTS_ROUTING_KEYS.CMD_SAGA_REPLY_TO_SUCCESS_PAYMENT,
   },
   {
     channel: 'channelBookingSagaReplyTo',
-    // exchange: this.exchangeBookingSagaReplyTo.exchange,
     queue: CONTRACTS_QUEUES.Q_BOOKING_SAGA_REPLY_TO_FAILED_PAYMENT,
-    // routingKey: Q_CONTRACTS_ROUTING_KEYS.CMD_SAGA_REPLY_TO_FAILED_PAYMENT,
   },
   {
     channel: 'channelBookingCDC',

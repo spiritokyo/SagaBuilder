@@ -6,8 +6,11 @@ import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 import { SagaManager } from './saga.manager'
 import type { SagaPersistenceEntity, SagaStepClass, TEventClass, TSagaMapper } from './saga.types'
 
-export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
-  implements TSagaMapper<SagaPersistenceEntity, SagaManager<A>>
+export class SagaMapper<
+  A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
+  AbstractPersistenceEntity,
+> implements TSagaMapper<SagaPersistenceEntity, SagaManager<A, DTO>>
 {
   constructor(
     private childAggregateRepository: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
@@ -21,7 +24,7 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A>> {
+  ): Promise<SagaManager<A, DTO>> {
     const { child_aggregate_id, state } = sagaPersistenceEntity
 
     const aggregate = await this.childAggregateRepository.restoreAggregateFromDB(child_aggregate_id)
@@ -30,7 +33,7 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
       throw new Error('Aggregate not found')
     }
 
-    return SagaManager.create<A>(
+    return SagaManager.create<A, DTO>(
       {
         childAggregate: aggregate,
         state: {
@@ -38,7 +41,6 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
           completedStep: state.completed_step,
           isCompensatingDirection: state.is_compensating_direction,
           isCompleted: state.is_completed,
-          isChildAggregatePersisted: state.is_child_aggregate_persisted,
         },
       },
       events,
@@ -48,17 +50,16 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
     )
   }
 
-  toPersistence(domainEntity: SagaManager<A>): SagaPersistenceEntity {
+  toPersistence(domainEntity: SagaManager<A, DTO>): SagaPersistenceEntity {
     return {
       id: domainEntity.getId(),
       name: domainEntity.getName(),
-      child_aggregate_id: domainEntity.props.childAggregate.id.toString(),
+      child_aggregate_id: domainEntity.props.childAggregate?.id.toString() || null,
       state: {
         is_error_saga: domainEntity.getState().isErrorSaga,
         completed_step: domainEntity.getState().completedStep,
         is_compensating_direction: domainEntity.getState().isCompensatingDirection,
         is_completed: domainEntity.getState().isCompleted,
-        is_child_aggregate_persisted: domainEntity.getState().isChildAggregatePersisted,
       },
     }
   }

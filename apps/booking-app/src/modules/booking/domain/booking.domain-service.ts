@@ -1,4 +1,7 @@
-import type { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
+import type {
+  ReserveBookingDTO,
+  ReserveBookingErrors,
+} from '@reserve-booking-saga-controller/index'
 
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 
@@ -32,9 +35,10 @@ export class BookingDomainService {
    */
   async reserveBooking(
     reserveBookingSaga: SagaManager<Booking, AbstractProps<Booking>>,
+    dto: ReserveBookingDTO,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     try {
-      return (await reserveBookingSaga.execute()) as ReserveBookingSagaResult
+      return (await reserveBookingSaga.execute(dto)) as ReserveBookingSagaResult
     } catch (err: unknown) {
       return err as MaybeErrorResponse
     }

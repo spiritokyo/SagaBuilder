@@ -8,7 +8,8 @@ import {
   ReserveBookingSagaCompletedDomainEvent,
   ReserveBookingSagaFailedDomainEvent,
 } from './saga.reserve-booking.events'
-import { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'
+import { AuthorizePaymentStep, ConfirmBookingStep } from './steps'
+import { RegisterTicketOnBookingCourseStep } from './steps/register-ticket-on-booking-course.step'
 
 export const reserveBookingSagaConfig: [
   events: { completedEvent: TEventClass; failedEvent: TEventClass },
@@ -20,10 +21,11 @@ export const reserveBookingSagaConfig: [
     failedEvent: ReserveBookingSagaFailedDomainEvent,
   },
   [
-    (eventBus: EventEmitter): CreateBookingStep => new CreateBookingStep(eventBus),
-    (eventBus: EventEmitter): AuthorizePaymentStep =>
-      new AuthorizePaymentStep(eventBus, ReserveBookingSaga.messageBroker),
-    (eventBus: EventEmitter): ConfirmBookingStep => new ConfirmBookingStep(eventBus),
+    (eventBus: EventEmitter): RegisterTicketOnBookingCourseStep =>
+      new RegisterTicketOnBookingCourseStep(eventBus),
+    // (eventBus: EventEmitter): AuthorizePaymentStep =>
+    //   new AuthorizePaymentStep(eventBus, ReserveBookingSaga.messageBroker),
+    // (eventBus: EventEmitter): ConfirmBookingStep => new ConfirmBookingStep(eventBus),
   ],
   'ReserveBookingSaga',
 ]

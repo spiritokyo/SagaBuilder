@@ -18,10 +18,11 @@ import type { TSagaRepository } from '../saga.repository'
 
 export class SagaRepositoryImplDatabase<
   A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
   AbstractPersistenceEntity,
-> implements TSagaRepository<A>
+> implements TSagaRepository<A, DTO>
 {
-  sagaMapper: SagaMapper<A, AbstractPersistenceEntity>
+  sagaMapper: SagaMapper<A, DTO, AbstractPersistenceEntity>
 
   constructor(
     readonly client: PoolClient,
@@ -30,14 +31,18 @@ export class SagaRepositoryImplDatabase<
     this.sagaMapper = new SagaMapper(childAggregateRepo)
   }
 
-  static initialize<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>(
+  static initialize<
+    A extends AggregateRoot<EntityProps>,
+    DTO extends Record<string, unknown>,
+    AbstractPersistenceEntity,
+  >(
     client: PoolClient,
     childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
-  ): TSagaRepository<A> {
+  ): TSagaRepository<A, DTO> {
     return new SagaRepositoryImplDatabase(client, childAggregateRepo)
   }
 
-  async saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void> {
+  async saveSagaInDB(saga: SagaManager<A, DTO>, updateOnlySagaState: boolean): Promise<void> {
     // emulateChaosError(new ReserveBookingErrors.SagaBookingRepoInfraError(), 10)
 
     /**
@@ -46,7 +51,7 @@ export class SagaRepositoryImplDatabase<
      */
 
     // 1
-    if (saga.getState().isChildAggregatePersisted && !updateOnlySagaState) {
+    if (!updateOnlySagaState && saga.props.childAggregate) {
       await this.childAggregateRepo.saveAggregateInDB(saga.props.childAggregate)
     }
 
@@ -66,16 +71,13 @@ export class SagaRepositoryImplDatabase<
       [
         sagaPersistenceEntity.id,
         sagaPersistenceEntity.name,
-        sagaPersistenceEntity.state.is_child_aggregate_persisted
-          ? sagaPersistenceEntity.child_aggregate_id
-          : null,
+        sagaPersistenceEntity.child_aggregate_id,
         JSON.stringify(sagaPersistenceEntity.state),
       ],
     )
 
     console.log('SAVE SAGA DB')
     console.table({
-      isChildAggregatePersisted: sagaPersistenceEntity.state.is_child_aggregate_persisted,
       payload: JSON.stringify(res.rows[0], null, 2),
     })
   }
@@ -85,12 +87,12 @@ export class SagaRepositoryImplDatabase<
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: ((
       eventBus: EventEmitter,
-    ) => InstanceType<SagaStepClass<AbstractProps<A>['childAggregate']>>)[],
+    ) => InstanceType<SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>>)[],
     name: string,
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A> | null> {
+  ): Promise<SagaManager<A, DTO> | null> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     return reserveBookingSagaPersistenceEntity

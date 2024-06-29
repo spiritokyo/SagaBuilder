@@ -1,39 +1,38 @@
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
 import type EventEmitter from 'node:events'
 
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
-import type { SagaStepClass } from '@libs/saga/saga.types'
+import { SagaStep } from '@libs/saga/saga-step'
+import type { TSagaStepContext } from '@libs/saga/saga.types'
 
-export class ConfirmBookingStep implements InstanceType<SagaStepClass<Booking>> {
+export class ConfirmBookingStep extends SagaStep<Booking, ReserveBookingDTO> {
   static STEP_NAME = 'ConfirmBookingStep' as const
-  circutBreaker = buildCircuitBreaker(
-    [ReserveBookingErrors.BookingRepoInfraError],
-    ConfirmBookingStep.STEP_NAME,
-  )
+  static STEP_COMPENSATION_NAME = 'ConfirmBookingStepCompensation' as const
 
-  constructor(public eventBus: EventEmitter) {}
-
-  get name(): string {
-    return ConfirmBookingStep.STEP_NAME
+  constructor(public eventBus: EventEmitter) {
+    super(eventBus, {
+      stepName: ConfirmBookingStep.STEP_NAME,
+      stepCompensationName: ConfirmBookingStep.STEP_COMPENSATION_NAME,
+    })
   }
 
-  async invoke(booking: Booking): Promise<void> {
-    const isBookingConfirmedSuccess = (await this.circutBreaker.execute(() =>
-      booking.confirmBooking(),
-    )) as boolean
-
-    if (!isBookingConfirmedSuccess) {
-      throw new DomainBookingErrors.BookingConfirmFailureDomainError(booking.getDetails())
+  invoke(ctx: TSagaStepContext<Booking, ReserveBookingDTO>): void | Promise<void> {
+    if (!ctx.childAggregate) {
+      return
     }
 
-    this.eventBus.emit('update:saga-state', ConfirmBookingStep.STEP_NAME)
+    const isBookingConfirmedSuccess = ctx.childAggregate.confirmBooking()
+
+    if (!isBookingConfirmedSuccess) {
+      throw new DomainBookingErrors.BookingConfirmFailureDomainError(
+        ctx.childAggregate.getDetails(),
+      )
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async withCompensation(_booking: Booking): Promise<void> {
+  withCompensation(_ctx: TSagaStepContext<Booking, ReserveBookingDTO>): void | Promise<void> {
     // ! We don't have compensation transaction here, because it's the lastest saga's step
   }
 }

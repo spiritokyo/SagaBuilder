@@ -1,70 +1,73 @@
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
 import { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
 import type { EventEmitter } from 'node:events'
 
 import type { Booking } from '@booking-domain/index'
 import { DomainBookingErrors } from '@booking-domain/index'
 
-import { buildCircuitBreaker } from '@libs/common/infra/error/utils'
 import { AuthorizePaymentCardCommand } from '@libs/common/shared'
-import type { SagaStepClass } from '@libs/saga/saga.types'
+import { SagaStep } from '@libs/saga/saga-step'
+import type { TSagaStepContext } from '@libs/saga/saga.types'
 
-export class AuthorizePaymentStep implements InstanceType<SagaStepClass<Booking>> {
+export class AuthorizePaymentStep extends SagaStep<Booking, ReserveBookingDTO> {
   static STEP_NAME = 'AuthorizePaymentStep' as const
-  static STEP_NAME_COMPENSATION = 'AuthorizePaymentStepCompensation' as const
-
-  circutBreaker = buildCircuitBreaker(
-    [ReserveBookingErrors.BookingRepoInfraError],
-    AuthorizePaymentStep.STEP_NAME,
-  )
+  static STEP_COMPENSATION_NAME = 'AuthorizePaymentStepCompensation' as const
 
   constructor(
     public eventBus: EventEmitter,
     public readonly messageBroker: RabbitMQClient,
-  ) {}
-
-  get name(): string {
-    return AuthorizePaymentStep.STEP_NAME
+  ) {
+    super(eventBus, {
+      stepName: AuthorizePaymentStep.STEP_NAME,
+      stepCompensationName: AuthorizePaymentStep.STEP_COMPENSATION_NAME,
+    })
   }
 
-  get nameCompensation(): string {
-    return AuthorizePaymentStep.STEP_NAME_COMPENSATION
-  }
+  async invoke(ctx: TSagaStepContext<Booking, ReserveBookingDTO>): Promise<void> {
+    if (!ctx.childAggregate) {
+      return
+    }
 
-  async invoke(booking: Booking): Promise<void> {
     const result = await this.messageBroker.sendAuthorizeCardCommand(
-      new AuthorizePaymentCardCommand(booking.getId(), booking.getDetails().customerId),
+      new AuthorizePaymentCardCommand(
+        ctx.childAggregate.getId(),
+        ctx.childAggregate.getDetails().customerId,
+      ),
     )
 
     if (!result.authorizedPayment) {
       throw new ReserveBookingErrors.BookingPaymentInfraError(
         { paymentId: result.paymentId },
-        booking.getDetails(),
+        ctx.childAggregate.getDetails(),
       )
     }
 
-    await this.circutBreaker.execute(() => booking.approvePayment(result.paymentId))
-
-    this.eventBus.emit('update:saga-state', AuthorizePaymentStep.STEP_NAME)
+    ctx.childAggregate.approvePayment(result.paymentId)
   }
 
-  async withCompensation(booking: Booking): Promise<void> {
+  async withCompensation(ctx: TSagaStepContext<Booking, ReserveBookingDTO>): Promise<void> {
+    if (!ctx.childAggregate) {
+      return
+    }
+
     try {
       // Make refund payment
       const paymentResult = await this.messageBroker.sendAuthorizeRefundCardCommand(
-        new AuthorizePaymentCardCommand(booking.getId(), booking.getDetails().customerId),
+        new AuthorizePaymentCardCommand(
+          ctx.childAggregate.getId(),
+          ctx.childAggregate.getDetails().customerId,
+        ),
       )
 
       if (!paymentResult.authorizedPayment) {
         throw new ReserveBookingErrors.BookingPaymentInfraError(
           { paymentId: paymentResult.paymentId },
-          booking.getDetails(),
+          ctx.childAggregate.getDetails(),
         )
       }
 
-      await this.circutBreaker.execute(() => booking.refundPayment(paymentResult.paymentId))
-
-      this.eventBus.emit('update:saga-state', AuthorizePaymentStep.STEP_NAME_COMPENSATION)
+      ctx.childAggregate.refundPayment(paymentResult.paymentId)
     } catch (err) {
       throw new DomainBookingErrors.ExceptionAbortCreateBookingTransaction(
         (err as ReserveBookingErrors.BookingRepoInfraError).message,

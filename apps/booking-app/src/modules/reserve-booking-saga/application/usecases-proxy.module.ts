@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
 import { BookingDomainService } from '@booking-domain/index'
@@ -18,7 +19,11 @@ import { ReserveBookingUsecase } from './usecases/reserve-booking.usecase'
       inject: [ReserveBookingSagaRepoModule.RESERVE_BOOKING_SAGA_REPO_TOKEN],
       provide: UsecasesProxyModule.RESERVE_BOOKING_USECASE,
       useFactory: (
-        reserveBookingSagaRepository: SagaRepositoryImplDatabase<Booking, BookingPersistenceEntity>,
+        reserveBookingSagaRepository: SagaRepositoryImplDatabase<
+          Booking,
+          ReserveBookingDTO,
+          BookingPersistenceEntity
+        >,
       ): ReserveBookingUsecase =>
         ReserveBookingUsecase.initialize(new BookingDomainService(), reserveBookingSagaRepository),
     },

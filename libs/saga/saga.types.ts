@@ -3,29 +3,46 @@ import type { EventEmitter } from 'node:stream'
 import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
 import type { IDomainEvent } from '@libs/common/domain/events'
 
-export type SagaStep<Params = AggregateRoot<Record<string, unknown>>> = {
-  name: string
-  eventBus: EventEmitter
-
-  invoke(params: Params): Promise<void>
-  withCompensation(params: Params): Promise<void>
+export type TSagaStepContext<
+  ChildAggregate extends AggregateRoot<Record<string, unknown>>,
+  DTO extends Record<string, unknown>,
+> = {
+  dto: DTO
+  childAggregate: ChildAggregate | null
 }
 
-export type SagaStepClass<Params = AggregateRoot<Record<string, unknown>>> = new (
+export type SagaStep<
+  ChildAggregate extends AggregateRoot<Record<string, unknown>>,
+  DTO extends Record<string, unknown>,
+> = {
+  stepName: string
+  stepCompensationName: string
+  eventBus: EventEmitter
+
+  invoke(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+  withCompensation(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+
+  invokeUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+  withCompensationUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+}
+
+export type SagaStepClass<
+  Params extends AggregateRoot<Record<string, unknown>> = AggregateRoot<Record<string, unknown>>,
+  DTO extends Record<string, unknown> = Record<string, unknown>,
+> = new (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ...args: any[]
-) => SagaStep<Params>
+) => SagaStep<Params, DTO>
 
 export type SagaPersistenceEntity = {
   id: string
   name: string
-  child_aggregate_id: string
+  child_aggregate_id: string | null
   state: {
     completed_step: string
     is_compensating_direction: boolean
     is_error_saga: boolean
     is_completed: boolean
-    is_child_aggregate_persisted: boolean
   }
 }
 
@@ -39,14 +56,13 @@ export type GenericSagaStateProps = {
     isCompensatingDirection: boolean
     isErrorSaga: boolean
     isCompleted: boolean
-    isChildAggregatePersisted: boolean
   }
 }
 
 export type AbstractProps<
   A extends AggregateRoot<Record<string, unknown>> = AggregateRoot<Record<string, unknown>>,
 > = {
-  childAggregate: A
+  childAggregate: A | null
   state: GenericSagaStateProps['state']
 }
 

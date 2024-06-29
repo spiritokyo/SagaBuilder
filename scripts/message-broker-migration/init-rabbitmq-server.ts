@@ -14,6 +14,7 @@ class RabbitMQServer {
   static connection: Connection
 
   static channels: Record<TChannelsUnion, Channel | null> = {
+    channelCourse: null,
     channelBookingCDC: null,
     channelBookingSagaReplyTo: null,
     channelPayment: null,

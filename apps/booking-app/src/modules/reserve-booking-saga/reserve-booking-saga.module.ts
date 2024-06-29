@@ -14,6 +14,7 @@ import { getConnectionToken } from '@libs/common/dynamic-modules/postgres/postgr
 import { TSagaRepository } from '@libs/saga/repo'
 
 import { UsecasesProxyModule } from './application/usecases-proxy.module'
+import type { ReserveBookingDTO } from './controller'
 import { ReserveBookingController } from './controller'
 import { ReserveBookingSaga } from './domain'
 import { dbConfig } from '../../shared/infra/postgres/config'
@@ -27,7 +28,7 @@ export class ReserveBookingSagaModule implements OnModuleInit {
     @Inject(getConnectionToken(dbConfig.name)) private readonly connection: PoolClient,
     @Inject(RabbitMQModule.RABBITMQ_BOOKING_TOKEN) private readonly messageBroker: RabbitMQClient,
     @Inject(ReserveBookingSagaRepoModule.RESERVE_BOOKING_SAGA_REPO_TOKEN)
-    private readonly reserveBookingSagaRepository: TSagaRepository<Booking>,
+    private readonly reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>,
   ) {}
 
   onModuleInit(): void {

@@ -26,7 +26,9 @@ export class RabbitMQClient {
 
       const connection = await connect(rabbitMQConfig.rabbitMQ.credentials)
 
+      // Input channel
       const channelPayment = await connection.createChannel()
+      // Output channel
       const channelBookingSagaReplyTo = await connection.createChannel()
 
       const clientProducer = new CommandMessagePublisherRabbitMQ(channelBookingSagaReplyTo)

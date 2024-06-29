@@ -9,7 +9,7 @@ export class BookingCDCConsumerRabbitMQ {
 
   /**
    * @description consume booking CDC &
-   * publish assosiated (with booking aggregate) domain events
+   * publish assossiated (with booking aggregate) domain events
    * from `DomainEvents` class
    */
   async publishDomainEvents(): Promise<void> {

@@ -1,10 +1,15 @@
 import type { BookingDetailsVO } from '@booking-domain/booking.value-objects'
 
-import type { CreateBookingStep, AuthorizePaymentStep, ConfirmBookingStep } from './steps'
+import type {
+  AuthorizePaymentStep,
+  CheckCourseAvailabilityStep,
+  ConfirmBookingStep,
+  RegisterTicketOnBookingCourseStep,
+} from './steps'
 
 export type TSagaStateUnion =
-  | 'INITIAL'
-  | typeof CreateBookingStep.STEP_NAME
+  | typeof RegisterTicketOnBookingCourseStep.STEP_NAME
+  | typeof CheckCourseAvailabilityStep.STEP_COMPENSATION_NAME
   | typeof AuthorizePaymentStep.STEP_NAME
   | typeof ConfirmBookingStep.STEP_NAME
 

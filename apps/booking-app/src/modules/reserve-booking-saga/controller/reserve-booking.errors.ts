@@ -32,6 +32,12 @@ export namespace ReserveBookingErrors {
     }
   }
 
+  export class BookingCourseIsNotAvailableError extends UseCaseError {
+    constructor(courseId: number) {
+      super(`Booking course with id = ${courseId} is not available`)
+    }
+  }
+
   export class BookingPaymentInfraError
     extends UseCaseError
     implements IPaymentDetailsExtractor, IBookingDetailsExtractor
