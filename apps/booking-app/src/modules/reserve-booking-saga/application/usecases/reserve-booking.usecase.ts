@@ -19,17 +19,17 @@ import {
 } from '@reserve-booking-saga-domain/steps'
 
 import type { UseCase } from '@libs/common/core'
-import type { TSagaRepository } from '@libs/saga/repo'
+import type { TSagaRepo } from '@libs/saga/repo'
 import type { SagaStepClass } from '@libs/saga/saga.types'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
-  static reserveBookingSagaRepository: TSagaRepository<Booking>
+  static reserveBookingSagaRepository: TSagaRepo<Booking>
   static messageBroker: RabbitMQClient
 
   constructor(
-    readonly reserveBookingSagaRepository: TSagaRepository<Booking>,
+    readonly reserveBookingSagaRepository: TSagaRepo<Booking>,
     readonly messageBroker: RabbitMQClient,
   ) {}
 

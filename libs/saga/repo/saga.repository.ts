@@ -5,7 +5,7 @@ import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/do
 import type { SagaManager } from '../saga.manager'
 import type { SagaPersistenceEntity, SagaStepClass, TEventClass } from '../saga.types'
 
-export type TSagaRepository<A extends AggregateRoot<EntityProps>> = {
+export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
   /**
    *
    * @param reserveBookingSaga

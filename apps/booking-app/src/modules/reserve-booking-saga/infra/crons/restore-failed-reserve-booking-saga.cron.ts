@@ -19,18 +19,18 @@ import {
 } from '@reserve-booking-saga-domain/steps'
 
 import { UniqueEntityID } from '@libs/common/domain'
-import type { TSagaRepository } from '@libs/saga/repo'
+import type { TSagaRepo } from '@libs/saga/repo'
 import type { SagaPersistenceEntity } from '@libs/saga/saga.types'
 
 export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient
   public static messageBroker: RabbitMQClient
   public static job: CronJob
-  public static reserveBookingSagaRepository: TSagaRepository<Booking>
+  public static reserveBookingSagaRepository: TSagaRepo<Booking>
 
   static initialize(
     client: PoolClient,
-    reserveBookingSagaRepository: TSagaRepository<Booking>,
+    reserveBookingSagaRepository: TSagaRepo<Booking>,
     messageBroker: RabbitMQClient,
   ): typeof RestoreFailedReserveBookingSagaCron {
     this.client = client

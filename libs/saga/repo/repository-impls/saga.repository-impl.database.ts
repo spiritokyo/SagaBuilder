@@ -14,12 +14,12 @@ import type {
   AbstractProps,
 } from '../..'
 import { SagaMapper } from '../..'
-import type { TSagaRepository } from '../saga.repository'
+import type { TSagaRepo } from '../saga.repository'
 
 export class SagaRepositoryImplDatabase<
   A extends AggregateRoot<EntityProps>,
   AbstractPersistenceEntity,
-> implements TSagaRepository<A>
+> implements TSagaRepo<A>
 {
   sagaMapper: SagaMapper<A, AbstractPersistenceEntity>
 
@@ -33,7 +33,7 @@ export class SagaRepositoryImplDatabase<
   static initialize<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>(
     client: PoolClient,
     childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
-  ): TSagaRepository<A> {
+  ): TSagaRepo<A> {
     return new SagaRepositoryImplDatabase(client, childAggregateRepo)
   }
 

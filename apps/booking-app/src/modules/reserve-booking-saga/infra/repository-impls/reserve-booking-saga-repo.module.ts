@@ -9,7 +9,7 @@ import { BookingRepoModule } from '@booking-infra/repository-impls'
 
 import { getConnectionToken } from '@libs/common/dynamic-modules/postgres/postgres.helpers'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
-import type { TSagaRepository } from '@libs/saga/repo'
+import type { TSagaRepo } from '@libs/saga/repo'
 import { SagaRepositoryImplDatabase } from '@libs/saga/repo'
 
 import { dbConfig } from '../../../../shared/infra/postgres/config'
@@ -24,7 +24,7 @@ import { BookingModule } from '../../../booking/booking.module'
       useFactory: (
         connection: PoolClient,
         bookingRepository: TAbstractAggregateRepository<Booking, BookingPersistenceEntity>,
-      ): TSagaRepository<Booking> =>
+      ): TSagaRepo<Booking> =>
         SagaRepositoryImplDatabase.initialize<Booking, BookingPersistenceEntity>(
           connection,
           bookingRepository,
