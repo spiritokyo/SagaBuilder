@@ -5,8 +5,8 @@ import type { Booking } from '@booking-domain/booking.aggregate'
 import { SagaManager } from '@libs/saga/index'
 
 export class ReserveBookingSaga extends SagaManager<Booking> {
-  async freezeSaga(): Promise<void> {
-    this.props.childAggregate?.freezeBooking()
-    await super.freezeSaga()
-  }
+  // async freezeSaga(): Promise<void> {
+  //   this.props.childAggregate?.freezeBooking()
+  //   await super.freezeSaga()
+  // }
 }

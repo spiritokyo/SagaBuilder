@@ -5,14 +5,9 @@ import type { PoolClient } from 'pg'
 
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
+import type { SagaStep } from '@libs/saga/saga-step'
 
-import type {
-  SagaManager,
-  SagaPersistenceEntity,
-  TEventClass,
-  SagaStepClass,
-  AbstractProps,
-} from '../..'
+import type { SagaManager, SagaPersistenceEntity, TEventClass, AbstractProps } from '../..'
 import { SagaMapper } from '../..'
 import type { TSagaRepo } from '../saga.repository'
 
@@ -46,8 +41,10 @@ export class SagaRepositoryImplDatabase<
      */
 
     // 1
-    if (!updateOnlySagaState && saga.props.childAggregate) {
-      await this.childAggregateRepo.saveAggregateInDB(saga.props.childAggregate)
+    if (!updateOnlySagaState) {
+      await this.childAggregateRepo.saveAggregateInDB(
+        saga.sagaManagerControl.props.childAggregate as A,
+      )
     }
 
     const sagaPersistenceEntity = this.sagaMapper.toPersistence(saga)
@@ -81,7 +78,7 @@ export class SagaRepositoryImplDatabase<
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: SagaStepClass
+      stepClass: typeof SagaStep
       additionalArguments?: any[]
     }[],
     name: string,

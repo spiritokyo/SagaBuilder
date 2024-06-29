@@ -12,28 +12,28 @@ export type TSagaStepContext<
   childAggregate: ChildAggregate | null
 }
 
-export type SagaStep<
-  ChildAggregate extends AggregateRoot<Record<string, unknown>>,
-  DTO extends Record<string, unknown>,
-> = {
-  stepName: string
-  stepCompensationName: string
-  eventBus: EventEmitter
+// export type SagaStep<
+//   ChildAggregate extends AggregateRoot<Record<string, unknown>>,
+//   DTO extends Record<string, unknown>,
+// > = {
+//   stepName: string
+//   stepCompensationName: string
+//   eventBus: EventEmitter
 
-  invoke(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
-  withCompensation(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+//   invoke(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+//   withCompensation(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
 
-  invokeUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
-  withCompensationUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
-}
+//   invokeUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+//   withCompensationUpgraded(ctx: TSagaStepContext<ChildAggregate, DTO>): Promise<void> | void
+// }
 
-export type SagaStepClass<
-  Params extends AggregateRoot<Record<string, unknown>> = AggregateRoot<Record<string, unknown>>,
-  DTO extends Record<string, unknown> = Record<string, unknown>,
-> = new (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ...args: any[]
-) => SagaStep<Params, DTO>
+// export type SagaStepClass<
+//   Params extends AggregateRoot<Record<string, unknown>> = AggregateRoot<Record<string, unknown>>,
+//   DTO extends Record<string, unknown> = Record<string, unknown>,
+// > = new (
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   ...args: any[]
+// ) => SagaStep<Params, DTO>
 
 export type SagaPersistenceEntity = {
   id: string
@@ -52,8 +52,7 @@ export type TEventClass = new (...args: any[]) => IDomainEvent
 
 export type GenericSagaStateProps = {
   state: {
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-    completedStep: 'INITIAL' | string
+    completedStep: string
     isCompensatingDirection: boolean
     isErrorSaga: boolean
     isCompleted: boolean

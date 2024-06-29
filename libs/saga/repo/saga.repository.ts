@@ -3,7 +3,12 @@ import type EventEmitter from 'node:events'
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 
 import type { SagaManager } from '../saga.manager'
-import type { SagaPersistenceEntity, SagaStepClass, TEventClass } from '../saga.types'
+import type {
+  AbstractProps,
+  SagaPersistenceEntity,
+  SagaStepClass,
+  TEventClass,
+} from '../saga.types'
 
 export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
   /**

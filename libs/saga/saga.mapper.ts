@@ -53,14 +53,16 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
 
   toPersistence(domainEntity: SagaManager<A>): SagaPersistenceEntity {
     return {
-      id: domainEntity.getId(),
-      name: domainEntity.getName(),
-      child_aggregate_id: domainEntity.props.childAggregate?.id.toString() || null,
+      id: domainEntity.sagaManagerControl.getId(),
+      name: domainEntity.sagaManagerControl.getName(),
+      child_aggregate_id:
+        domainEntity.sagaManagerControl.props.childAggregate?.id.toString() || null,
       state: {
-        is_error_saga: domainEntity.getState().isErrorSaga,
-        completed_step: domainEntity.getState().completedStep,
-        is_compensating_direction: domainEntity.getState().isCompensatingDirection,
-        is_completed: domainEntity.getState().isCompleted,
+        is_error_saga: domainEntity.sagaManagerControl.getState().isErrorSaga,
+        completed_step: domainEntity.sagaManagerControl.getState().completedStep,
+        is_compensating_direction:
+          domainEntity.sagaManagerControl.getState().isCompensatingDirection,
+        is_completed: domainEntity.sagaManagerControl.getState().isCompleted,
       },
     }
   }
