@@ -9,8 +9,4 @@ export class ReserveBookingSaga extends SagaManager<Booking> {
     this.props.childAggregate?.freezeBooking()
     await super.freezeSaga()
   }
-
-  getBookingId(): string | undefined {
-    return this.props.childAggregate?.getId()
-  }
 }

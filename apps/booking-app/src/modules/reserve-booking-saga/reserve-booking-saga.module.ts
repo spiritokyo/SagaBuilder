@@ -36,12 +36,13 @@ export class ReserveBookingSagaModule implements OnModuleInit {
     initializeReserveBookingSagaDomainSubscribers(this.connection)
 
     // Initialize saga aggregate
-    ReserveBookingSaga.initialize(this.reserveBookingSagaRepository, this.messageBroker)
+    ReserveBookingSaga.initialize(this.reserveBookingSagaRepository)
 
     // Initialize & run cron
     RestoreFailedReserveBookingSagaCron.initialize(
       this.connection,
       this.reserveBookingSagaRepository,
+      this.messageBroker,
     ).run()
   }
 }

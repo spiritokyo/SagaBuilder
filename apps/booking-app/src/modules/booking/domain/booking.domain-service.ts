@@ -29,18 +29,4 @@ export class BookingDomainService {
 
     return await Promise.resolve(false)
   }
-
-  /**
-   * I'm not sure that this method belongs here, but idk where if not here
-   */
-  async reserveBooking(
-    reserveBookingSaga: SagaManager<Booking, AbstractProps<Booking>>,
-    dto: ReserveBookingDTO,
-  ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
-    try {
-      return (await reserveBookingSaga.execute(dto)) as ReserveBookingSagaResult
-    } catch (err: unknown) {
-      return err as MaybeErrorResponse
-    }
-  }
 }

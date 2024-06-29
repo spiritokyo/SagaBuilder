@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { EventEmitter } from 'node:stream'
 
 import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
@@ -70,7 +71,10 @@ export type TSagaMapper<PersistenceEntity, DomainEntity> = {
   toDomain(
     persistenceEntity: PersistenceEntity,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
+    stepCommands: {
+      stepClass: SagaStepClass
+      additionalArguments?: any[]
+    }[],
     name: string,
     additional?: {
       id?: UniqueEntityID

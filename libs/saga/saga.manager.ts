@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
@@ -23,7 +24,6 @@ export class SagaManager<
   extends AggregateRoot<GenericSagaStateProps>
   implements ISagaManager
 {
-  static messageBroker: RabbitMQClient
   static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>>
   static _isInitialized = false
 
@@ -44,7 +44,10 @@ export class SagaManager<
   public constructor(
     props: TCustomProps,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
+    stepCommands: {
+      stepClass: SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>
+      additionalArguments?: any[]
+    }[],
     name: string,
     additional?: { id?: UniqueEntityID },
   ) {
@@ -57,7 +60,12 @@ export class SagaManager<
     this.failedEvent = events.failedEvent
 
     this.name = name
-    this.steps = stepCommands.map((stepCommand) => stepCommand(this.eventBus))
+    this.steps = stepCommands.map(({ stepClass, additionalArguments }) =>
+      additionalArguments
+        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          new stepClass(this.eventBus, ...additionalArguments)
+        : new stepClass(this.eventBus),
+    )
     this.stepsMap = SagaManager.initializeStepsMap(this.steps)
 
     this.successfulSteps = SagaManager.restoreSuccessfullSteps(
@@ -74,9 +82,8 @@ export class SagaManager<
    */
   static initialize<A extends AggregateRoot<EntityProps>>(
     sagaRepository: TSagaRepository<A>,
-    messageBroker: RabbitMQClient,
+    // messageBroker: RabbitMQClient,
   ): void {
-    SagaManager.messageBroker = messageBroker
     SagaManager.sagaRepository = sagaRepository
 
     console.log('[ReserveBookingSaga]: initialized')
@@ -136,7 +143,10 @@ export class SagaManager<
     this: new (
       props: AbstractProps<A>,
       events: { completedEvent: TEventClass; failedEvent: TEventClass },
-      stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
+      stepCommands: {
+        stepClass: SagaStepClass
+        additionalArguments?: any[]
+      }[],
       name: string,
       additional?: { id?: UniqueEntityID },
     ) => ReturnClass,
@@ -145,9 +155,10 @@ export class SagaManager<
       state?: GenericSagaStateProps['state']
     },
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((
-      eventBus: EventEmitter,
-    ) => InstanceType<SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>>)[],
+    stepCommands: {
+      stepClass: SagaStepClass
+      additionalArguments?: any[]
+    }[],
     name: string,
     additional?: {
       id?: UniqueEntityID
@@ -165,7 +176,6 @@ export class SagaManager<
         isCompensatingDirection: false,
         isErrorSaga: false,
         isCompleted: false,
-        // isChildAggregatePersisted: false,
       }
 
       //* Create brand new saga instance

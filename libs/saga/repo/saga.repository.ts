@@ -18,7 +18,11 @@ export type TSagaRepository<A extends AggregateRoot<EntityProps>> = {
   restoreSaga(
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((eventBus: EventEmitter) => InstanceType<SagaStepClass>)[],
+    stepCommands: {
+      stepClass: SagaStepClass
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      additionalArguments?: any[]
+    }[],
     name: string,
     additional?: {
       id?: UniqueEntityID

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReserveBookingErrors } from '@reserve-booking-saga-controller/reserve-booking.errors'
 import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
@@ -79,9 +80,10 @@ export class SagaRepositoryImplDatabase<
   async restoreSaga(
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: ((
-      eventBus: EventEmitter,
-    ) => InstanceType<SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>>)[],
+    stepCommands: {
+      stepClass: SagaStepClass
+      additionalArguments?: any[]
+    }[],
     name: string,
     additional?: {
       id?: UniqueEntityID
