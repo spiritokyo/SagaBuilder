@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { EventEmitter } from 'node:events'
-
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
+import type { SagaStepClassInheritor } from './saga-step'
 import { SagaManager } from './saga.manager'
-import type { SagaPersistenceEntity, SagaStepClass, TEventClass, TSagaMapper } from './saga.types'
+import type { SagaPersistenceEntity, TEventClass, TSagaMapper } from './saga.types'
 
 export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
-  implements TSagaMapper<SagaPersistenceEntity, SagaManager<A>>
+  implements TSagaMapper<A, SagaPersistenceEntity, SagaManager<A>>
 {
   constructor(
     private childAggregateRepository: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
@@ -18,8 +16,8 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
     sagaPersistenceEntity: SagaPersistenceEntity,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: SagaStepClass
-      additionalArguments?: any[]
+      stepClass: SagaStepClassInheritor<A>
+      additionalArguments?: unknown[]
     }[],
     name: string,
     additional?: {

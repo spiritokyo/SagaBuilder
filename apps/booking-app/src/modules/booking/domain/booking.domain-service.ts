@@ -1,13 +1,5 @@
-import type {
-  ReserveBookingDTO,
-  ReserveBookingErrors,
-} from '@reserve-booking-saga-controller/index'
+import type { ReserveBookingErrors } from '@reserve-booking-saga-controller/index'
 
-import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
-
-import type { AbstractProps, SagaManager } from '@libs/saga/index'
-
-import type { Booking } from './booking.aggregate'
 import type { DomainBookingErrors } from './booking.errors'
 
 export type MaybeErrorResponse =

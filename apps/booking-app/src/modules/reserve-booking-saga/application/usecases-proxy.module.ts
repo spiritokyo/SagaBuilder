@@ -1,10 +1,8 @@
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
 import { Module } from '@nestjs/common'
 import { RabbitMQModule } from '@payment-infra/rabbit'
-import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
-import { BookingDomainService } from '@booking-domain/index'
 
 import type { BookingPersistenceEntity } from '@booking-infra/persistence-entities'
 

@@ -1,13 +1,12 @@
 import type { EventEmitter } from 'node:events'
 
 import type { AggregateRoot } from '@libs/common/domain'
-import type { SagaStepClass, TSagaStepContext } from '@libs/saga/saga.types'
+import type { TSagaStepContext } from '@libs/saga/saga.types'
 
 export abstract class SagaStep<
   A extends AggregateRoot<Record<string, unknown>>,
-  DTO extends Record<string, unknown>,
-> implements InstanceType<SagaStepClass<A, DTO>>
-{
+  DTO extends Record<string, unknown> = Record<string, unknown>,
+> {
   stepName: string
   stepCompensationName: string
 
@@ -36,3 +35,9 @@ export abstract class SagaStep<
   abstract invoke(ctx: TSagaStepContext<A, DTO>): Promise<void> | void
   abstract withCompensation(ctx: TSagaStepContext<A, DTO>): Promise<void> | void
 }
+
+export type SagaStepClassInheritor<A extends AggregateRoot<Record<string, unknown>>> = new (
+  eventBus: EventEmitter,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...additionalArgs: any[]
+) => SagaStep<A>

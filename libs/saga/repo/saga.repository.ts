@@ -1,14 +1,8 @@
-import type EventEmitter from 'node:events'
-
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 
+import type { SagaStepClassInheritor } from '../saga-step'
 import type { SagaManager } from '../saga.manager'
-import type {
-  AbstractProps,
-  SagaPersistenceEntity,
-  SagaStepClass,
-  TEventClass,
-} from '../saga.types'
+import type { SagaPersistenceEntity, TEventClass } from '../saga.types'
 
 export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
   /**
@@ -24,7 +18,7 @@ export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: SagaStepClass
+      stepClass: SagaStepClassInheritor<A>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       additionalArguments?: any[]
     }[],

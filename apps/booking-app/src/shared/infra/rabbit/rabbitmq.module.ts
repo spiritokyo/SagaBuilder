@@ -1,5 +1,5 @@
 import type { DynamicModule, Provider } from '@nestjs/common'
-import { Global, Module, Scope } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 
 import { RabbitMQClient } from './client'
 

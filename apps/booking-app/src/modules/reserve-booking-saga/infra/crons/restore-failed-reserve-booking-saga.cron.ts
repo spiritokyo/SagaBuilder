@@ -1,8 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
-import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 import { CronJob } from 'cron'
-import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'

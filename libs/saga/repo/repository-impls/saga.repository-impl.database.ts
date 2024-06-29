@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ReserveBookingErrors } from '@reserve-booking-saga-controller/reserve-booking.errors'
-import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
-import type { SagaStep } from '@libs/saga/saga-step'
+import type { SagaStepClassInheritor } from '@libs/saga/saga-step'
 
-import type { SagaManager, SagaPersistenceEntity, TEventClass, AbstractProps } from '../..'
+import type { SagaManager, SagaPersistenceEntity, TEventClass } from '../..'
 import { SagaMapper } from '../..'
 import type { TSagaRepo } from '../saga.repository'
 
@@ -78,7 +76,7 @@ export class SagaRepositoryImplDatabase<
     reserveBookingSagaPersistenceEntity: SagaPersistenceEntity | null,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: typeof SagaStep
+      stepClass: SagaStepClassInheritor<A>
       additionalArguments?: any[]
     }[],
     name: string,

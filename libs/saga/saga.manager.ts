@@ -6,14 +6,9 @@ import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve
 import type { EntityProps, UniqueEntityID, AggregateRoot } from '@libs/common/domain'
 
 import type { TSagaRepo } from './repo/saga.repository'
+import type { SagaStep, SagaStepClassInheritor } from './saga-step'
 import { SagaManagerControl } from './saga.manager-control'
-import type {
-  AbstractProps,
-  GenericSagaStateProps,
-  ISagaManager,
-  SagaStepClass,
-  TEventClass,
-} from './saga.types'
+import type { AbstractProps, GenericSagaStateProps, TEventClass } from './saga.types'
 
 export class SagaManager<A extends AggregateRoot<EntityProps>> {
   static sagaRepo: TSagaRepo<AggregateRoot<EntityProps>>
@@ -21,9 +16,9 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
 
   readonly sagaManagerControl: SagaManagerControl<A>
 
-  public successfulSteps: InstanceType<SagaStepClass>[]
-  public steps: InstanceType<SagaStepClass>[]
-  public stepsMap: Record<string, InstanceType<SagaStepClass>>
+  public successfulSteps: SagaStep<A>[]
+  public steps: SagaStep<A>[]
+  public stepsMap: Record<string, SagaStep<A>>
 
   /**
    * @description before creating of ReserveBookingSaga, it should be initialized
@@ -31,7 +26,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
   public constructor(
     sagaManagerControl: SagaManagerControl<A>,
     stepCommands: {
-      stepClass: SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>
+      stepClass: SagaStepClassInheritor<A>
       additionalArguments?: any[]
     }[],
   ) {
@@ -57,10 +52,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
   /**
    * @description Initialize ReserveBookingSagaRepository and RabbitMQ client
    */
-  static initialize<A extends AggregateRoot<EntityProps>>(
-    sagaRepo: TSagaRepo<A>,
-    // messageBroker: RabbitMQClient,
-  ): void {
+  static initialize<A extends AggregateRoot<EntityProps>>(sagaRepo: TSagaRepo<A>): void {
     SagaManager.sagaRepo = sagaRepo
 
     console.log('[ReserveBookingSaga]: initialized')
@@ -78,7 +70,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
     this: new (
       sagaManagerControl: SagaManagerControl<A>,
       stepCommands: {
-        stepClass: SagaStepClass<NonNullable<AbstractProps<A>['childAggregate']>>
+        stepClass: SagaStepClassInheritor<A>
         additionalArguments?: any[]
       }[],
     ) => ReturnClass,
@@ -87,7 +79,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
     },
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: SagaStepClass
+      stepClass: SagaStepClassInheritor<A>
       additionalArguments?: any[]
     }[],
     name: string,
@@ -127,37 +119,35 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
     return new this(sagaManagerControl, stepCommands)
   }
 
-  static initializeStepsMap(
-    steps: InstanceType<SagaStepClass>[],
-  ): Record<string, InstanceType<SagaStepClass>> {
+  static initializeStepsMap<A extends AggregateRoot<Record<string, unknown>>>(
+    steps: SagaStep<A>[],
+  ): Record<string, SagaStep<A>> {
     return steps.reduce(
       (acc, cur) => {
         // @ts-expect-error ...
         if (cur.constructor?.STEP_NAME) {
           // @ts-expect-error ...
-          acc[(cur.constructor as SagaStepClass).STEP_NAME] = cur
+          acc[cur.constructor.STEP_NAME] = cur
         }
 
         // @ts-expect-error ...
         if (cur.constructor?.STEP_NAME_COMPENSATION) {
           // @ts-expect-error ...
-          acc[(cur.constructor as SagaStepClass).STEP_NAME_COMPENSATION] = cur
+          acc[cur.constructor.STEP_NAME_COMPENSATION] = cur
         }
 
         return acc
       },
-      {} as Record<string, InstanceType<SagaStepClass>>,
+      {} as Record<string, SagaStep<A>>,
     )
   }
 
-  static restoreSuccessfullSteps(
-    steps: InstanceType<SagaStepClass>[],
-    stepsMap: Record<string, InstanceType<SagaStepClass>>,
+  static restoreSuccessfullSteps<A extends AggregateRoot<Record<string, unknown>>>(
+    steps: SagaStep<A>[],
+    stepsMap: Record<string, SagaStep<A>>,
     lastSuccessfullStep: keyof typeof SagaManager.prototype.stepsMap,
-  ): InstanceType<SagaStepClass>[] {
-    const lastSuccessfullStepClass = stepsMap[lastSuccessfullStep] as
-      | InstanceType<SagaStepClass>
-      | undefined
+  ): SagaStep<A>[] {
+    const lastSuccessfullStepClass = stepsMap[lastSuccessfullStep]
 
     if (!lastSuccessfullStepClass) {
       return []

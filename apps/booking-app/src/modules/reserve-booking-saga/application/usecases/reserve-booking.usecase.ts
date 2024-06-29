@@ -1,9 +1,7 @@
-import type { RabbitMQModule } from '@booking-shared/infra/rabbit'
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
 import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/index'
-import type { EventEmitter } from 'node:events'
 
-import type { Booking, MaybeErrorResponse, BookingDomainService } from '@booking-domain/index'
+import type { Booking, MaybeErrorResponse } from '@booking-domain/index'
 
 import type { ReserveBookingSagaResult } from '@reserve-booking-saga-domain/index'
 import {
@@ -20,7 +18,6 @@ import {
 
 import type { UseCase } from '@libs/common/core'
 import type { TSagaRepo } from '@libs/saga/repo'
-import type { SagaStepClass } from '@libs/saga/saga.types'
 
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>

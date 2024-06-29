@@ -14,7 +14,6 @@ import { getConnectionToken } from '@libs/common/dynamic-modules/postgres/postgr
 import { TSagaRepo } from '@libs/saga/repo'
 
 import { UsecasesProxyModule } from './application/usecases-proxy.module'
-import type { ReserveBookingDTO } from './controller'
 import { ReserveBookingController } from './controller'
 import { ReserveBookingSaga } from './domain'
 import { dbConfig } from '../../shared/infra/postgres/config'

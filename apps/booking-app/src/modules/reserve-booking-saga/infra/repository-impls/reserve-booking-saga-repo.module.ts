@@ -1,5 +1,4 @@
-import { Global, Module } from '@nestjs/common'
-import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
+import { Module } from '@nestjs/common'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'

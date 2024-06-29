@@ -4,6 +4,8 @@ import type { EventEmitter } from 'node:stream'
 import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
 import type { IDomainEvent } from '@libs/common/domain/events'
 
+import type { SagaStep, SagaStepClassInheritor } from './saga-step'
+
 export type TSagaStepContext<
   ChildAggregate extends AggregateRoot<Record<string, unknown>>,
   DTO extends Record<string, unknown>,
@@ -66,12 +68,16 @@ export type AbstractProps<
   state: GenericSagaStateProps['state']
 }
 
-export type TSagaMapper<PersistenceEntity, DomainEntity> = {
+export type TSagaMapper<
+  A extends AggregateRoot<Record<string, unknown>>,
+  PersistenceEntity,
+  DomainEntity,
+> = {
   toDomain(
     persistenceEntity: PersistenceEntity,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     stepCommands: {
-      stepClass: SagaStepClass
+      stepClass: SagaStepClassInheritor<A>
       additionalArguments?: any[]
     }[],
     name: string,
@@ -82,10 +88,10 @@ export type TSagaMapper<PersistenceEntity, DomainEntity> = {
   toPersistence(domainEntity: DomainEntity): PersistenceEntity
 }
 
-export type ISagaManager = {
+export type ISagaManager<A extends AggregateRoot<Record<string, unknown>>> = {
   props: GenericSagaStateProps
-  successfulSteps: InstanceType<SagaStepClass>[]
-  steps: InstanceType<SagaStepClass>[]
+  successfulSteps: SagaStep<A>[]
+  steps: SagaStep<A>[]
 
   readonly eventBus: EventEmitter
   readonly completedEvent: TEventClass
