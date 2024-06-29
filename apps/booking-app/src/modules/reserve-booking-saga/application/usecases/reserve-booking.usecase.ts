@@ -11,13 +11,13 @@ import type { TSagaRepository } from '@libs/saga/repo'
 export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
-  static reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>
+  static reserveBookingSagaRepository: TSagaRepository<Booking>
 
   private constructor(private bookingDomainService: BookingDomainService) {}
 
   static initialize(
     bookingDomainService: BookingDomainService,
-    reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>,
+    reserveBookingSagaRepository: TSagaRepository<Booking>,
   ): ReserveBookingUsecase {
     ReserveBookingUsecase.reserveBookingSagaRepository = reserveBookingSagaRepository
 
@@ -30,7 +30,7 @@ export class ReserveBookingUsecase
     dto: ReserveBookingDTO,
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     // 1. Create saga instance
-    const reserveBookingSaga = ReserveBookingSaga.create<Booking, ReserveBookingDTO>(
+    const reserveBookingSaga = ReserveBookingSaga.create<Booking>(
       { childAggregate: null },
       ...reserveBookingSagaConfig,
     )

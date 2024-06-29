@@ -19,11 +19,7 @@ import { ReserveBookingUsecase } from './usecases/reserve-booking.usecase'
       inject: [ReserveBookingSagaRepoModule.RESERVE_BOOKING_SAGA_REPO_TOKEN],
       provide: UsecasesProxyModule.RESERVE_BOOKING_USECASE,
       useFactory: (
-        reserveBookingSagaRepository: SagaRepositoryImplDatabase<
-          Booking,
-          ReserveBookingDTO,
-          BookingPersistenceEntity
-        >,
+        reserveBookingSagaRepository: SagaRepositoryImplDatabase<Booking, BookingPersistenceEntity>,
       ): ReserveBookingUsecase =>
         ReserveBookingUsecase.initialize(new BookingDomainService(), reserveBookingSagaRepository),
     },

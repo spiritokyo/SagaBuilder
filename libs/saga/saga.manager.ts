@@ -18,14 +18,13 @@ import type {
 
 export class SagaManager<
     A extends AggregateRoot<EntityProps>,
-    DTO extends Record<string, unknown>,
     TCustomProps extends AbstractProps<A> = AbstractProps<A>,
   >
   extends AggregateRoot<GenericSagaStateProps>
   implements ISagaManager
 {
   static messageBroker: RabbitMQClient
-  static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>, Record<string, unknown>>
+  static sagaRepository: TSagaRepository<AggregateRoot<EntityProps>>
   static _isInitialized = false
 
   readonly eventBus: EventEmitter
@@ -73,8 +72,8 @@ export class SagaManager<
   /**
    * @description Initialize ReserveBookingSagaRepository and RabbitMQ client
    */
-  static initialize<A extends AggregateRoot<EntityProps>, DTO extends Record<string, unknown>>(
-    sagaRepository: TSagaRepository<A, DTO>,
+  static initialize<A extends AggregateRoot<EntityProps>>(
+    sagaRepository: TSagaRepository<A>,
     messageBroker: RabbitMQClient,
   ): void {
     SagaManager.messageBroker = messageBroker
@@ -132,8 +131,7 @@ export class SagaManager<
    */
   static create<
     A extends AggregateRoot<EntityProps>,
-    DTO extends Record<string, unknown>,
-    ReturnClass extends SagaManager<A, DTO> = SagaManager<A, DTO>,
+    ReturnClass extends SagaManager<A> = SagaManager<A>,
   >(
     this: new (
       props: AbstractProps<A>,

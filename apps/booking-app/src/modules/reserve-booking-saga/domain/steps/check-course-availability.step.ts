@@ -6,9 +6,8 @@ import type { EventEmitter } from 'node:events'
 import type { Booking } from '@booking-domain/index'
 
 import { CheckCourseAvailabilityCommand } from '@libs/common/shared'
+import { SagaStep } from '@libs/saga/saga-step'
 import type { TSagaStepContext } from '@libs/saga/saga.types'
-
-import { SagaStep } from '../../../../../../../libs/saga/saga-step'
 
 export class CheckCourseAvailabilityStep extends SagaStep<Booking, ReserveBookingDTO> {
   static STEP_NAME = 'CheckCourseAvailabilityStep' as const

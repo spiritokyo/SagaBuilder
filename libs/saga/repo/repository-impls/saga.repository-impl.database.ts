@@ -3,26 +3,24 @@ import type { EventEmitter } from 'node:events'
 import type { PoolClient } from 'pg'
 
 import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
-import { emulateChaosError } from '@libs/common/infra/error'
 import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 
-import type { SagaManager } from '../../saga.manager'
-import { SagaMapper } from '../../saga.mapper'
 import type {
-  AbstractProps,
+  SagaManager,
   SagaPersistenceEntity,
-  SagaStepClass,
   TEventClass,
-} from '../../saga.types'
+  SagaStepClass,
+  AbstractProps,
+} from '../..'
+import { SagaMapper } from '../..'
 import type { TSagaRepository } from '../saga.repository'
 
 export class SagaRepositoryImplDatabase<
   A extends AggregateRoot<EntityProps>,
-  DTO extends Record<string, unknown>,
   AbstractPersistenceEntity,
-> implements TSagaRepository<A, DTO>
+> implements TSagaRepository<A>
 {
-  sagaMapper: SagaMapper<A, DTO, AbstractPersistenceEntity>
+  sagaMapper: SagaMapper<A, AbstractPersistenceEntity>
 
   constructor(
     readonly client: PoolClient,
@@ -31,18 +29,14 @@ export class SagaRepositoryImplDatabase<
     this.sagaMapper = new SagaMapper(childAggregateRepo)
   }
 
-  static initialize<
-    A extends AggregateRoot<EntityProps>,
-    DTO extends Record<string, unknown>,
-    AbstractPersistenceEntity,
-  >(
+  static initialize<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>(
     client: PoolClient,
     childAggregateRepo: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
-  ): TSagaRepository<A, DTO> {
+  ): TSagaRepository<A> {
     return new SagaRepositoryImplDatabase(client, childAggregateRepo)
   }
 
-  async saveSagaInDB(saga: SagaManager<A, DTO>, updateOnlySagaState: boolean): Promise<void> {
+  async saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void> {
     // emulateChaosError(new ReserveBookingErrors.SagaBookingRepoInfraError(), 10)
 
     /**
@@ -92,7 +86,7 @@ export class SagaRepositoryImplDatabase<
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A, DTO> | null> {
+  ): Promise<SagaManager<A> | null> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     return reserveBookingSagaPersistenceEntity

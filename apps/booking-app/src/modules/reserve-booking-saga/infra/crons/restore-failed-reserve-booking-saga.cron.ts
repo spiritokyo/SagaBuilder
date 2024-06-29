@@ -15,11 +15,11 @@ import type { SagaPersistenceEntity } from '@libs/saga/saga.types'
 export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient
   public static job: CronJob
-  public static reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>
+  public static reserveBookingSagaRepository: TSagaRepository<Booking>
 
   static initialize(
     client: PoolClient,
-    reserveBookingSagaRepository: TSagaRepository<Booking, ReserveBookingDTO>,
+    reserveBookingSagaRepository: TSagaRepository<Booking>,
   ): typeof RestoreFailedReserveBookingSagaCron {
     this.client = client
     this.reserveBookingSagaRepository = reserveBookingSagaRepository

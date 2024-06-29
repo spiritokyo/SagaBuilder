@@ -6,11 +6,8 @@ import type { TAbstractAggregateRepository } from '@libs/common/infra/repo'
 import { SagaManager } from './saga.manager'
 import type { SagaPersistenceEntity, SagaStepClass, TEventClass, TSagaMapper } from './saga.types'
 
-export class SagaMapper<
-  A extends AggregateRoot<EntityProps>,
-  DTO extends Record<string, unknown>,
-  AbstractPersistenceEntity,
-> implements TSagaMapper<SagaPersistenceEntity, SagaManager<A, DTO>>
+export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
+  implements TSagaMapper<SagaPersistenceEntity, SagaManager<A>>
 {
   constructor(
     private childAggregateRepository: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
@@ -24,7 +21,7 @@ export class SagaMapper<
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A, DTO>> {
+  ): Promise<SagaManager<A>> {
     const { child_aggregate_id, state } = sagaPersistenceEntity
 
     const aggregate = await this.childAggregateRepository.restoreAggregateFromDB(child_aggregate_id)
@@ -33,7 +30,7 @@ export class SagaMapper<
       throw new Error('Aggregate not found')
     }
 
-    return SagaManager.create<A, DTO>(
+    return SagaManager.create<A>(
       {
         childAggregate: aggregate,
         state: {
@@ -50,7 +47,7 @@ export class SagaMapper<
     )
   }
 
-  toPersistence(domainEntity: SagaManager<A, DTO>): SagaPersistenceEntity {
+  toPersistence(domainEntity: SagaManager<A>): SagaPersistenceEntity {
     return {
       id: domainEntity.getId(),
       name: domainEntity.getName(),
