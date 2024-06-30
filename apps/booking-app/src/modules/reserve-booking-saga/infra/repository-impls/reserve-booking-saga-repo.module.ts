@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 import type { PoolClient } from 'pg'
 
 import type { Booking } from '@booking-domain/booking.aggregate'
@@ -23,8 +24,8 @@ import { BookingModule } from '../../../booking/booking.module'
       useFactory: (
         connection: PoolClient,
         bookingRepository: TAbstractAggregateRepository<Booking, BookingPersistenceEntity>,
-      ): TSagaRepo<Booking> =>
-        new SagaRepositoryImplDatabase<Booking, BookingPersistenceEntity>(
+      ): TSagaRepo<Booking, ReserveBookingDTO> =>
+        new SagaRepositoryImplDatabase<Booking, ReserveBookingDTO, BookingPersistenceEntity>(
           connection,
           bookingRepository,
         ),

@@ -23,7 +23,7 @@ export class ReserveBookingUsecase
   implements UseCase<ReserveBookingDTO, MaybeErrorResponse | ReserveBookingSagaResult>
 {
   constructor(
-    readonly reserveBookingSagaRepository: TSagaRepo<Booking>,
+    readonly reserveBookingSagaRepository: TSagaRepo<Booking, ReserveBookingDTO>,
     readonly messageBroker: RabbitMQClient,
   ) {}
 
@@ -32,41 +32,47 @@ export class ReserveBookingUsecase
   ): Promise<MaybeErrorResponse | ReserveBookingSagaResult> {
     try {
       // 1. Create saga instance
-      const reserveBookingSaga = await ReserveBookingSaga.createAndPersist<Booking>([
-        // Means that child aggregate doesn't exist yet (will be initialized later)
-        { childAggregate: null },
+      const reserveBookingSaga = await ReserveBookingSaga.createAndPersist<
+        Booking,
+        ReserveBookingDTO
+      >([
         {
-          completedEvent: ReserveBookingSagaCompletedDomainEvent,
-          failedEvent: ReserveBookingSagaFailedDomainEvent,
+          props: {
+            // Means that child aggregate doesn't exist yet (will be initialized later)
+            childAggregate: null,
+          },
+          events: {
+            // Will be emitted when saga will be completed
+            completedEvent: ReserveBookingSagaCompletedDomainEvent,
+            // Will be emitted if saga will be failed
+            failedEvent: ReserveBookingSagaFailedDomainEvent,
+          },
+          stepCommands: [
+            // Step 1
+            {
+              stepClass: RegisterTicketOnBookingCourseStep,
+            },
+            // Step 2
+            {
+              stepClass: CheckCourseAvailabilityStep,
+              additionalArguments: [this.messageBroker],
+            },
+            // Step 3
+            {
+              stepClass: AuthorizePaymentStep,
+              additionalArguments: [this.messageBroker],
+            },
+            // Step 4
+            {
+              stepClass: ConfirmBookingStep,
+            },
+          ],
+          // Saga name
+          name: 'ReserveBookingSaga',
         },
-        [
-          // Step 1
-          {
-            stepClass: RegisterTicketOnBookingCourseStep,
-          },
-          // Step 2
-          {
-            stepClass: CheckCourseAvailabilityStep,
-            additionalArguments: [this.messageBroker],
-          },
-          // Step 3
-          {
-            stepClass: AuthorizePaymentStep,
-            additionalArguments: [this.messageBroker],
-          },
-          // Step 4
-          {
-            stepClass: ConfirmBookingStep,
-          },
-        ],
-        // Saga name
-        'ReserveBookingSaga',
       ])
 
-      // 2. Save saga instance
-      // await ReserveBookingUsecase.reserveBookingSagaRepository.saveSagaInDB(reserveBookingSaga, false)
-
-      // 3. Run saga execution (RPC)
+      // 2. Run saga execution (RPC)
       return (await reserveBookingSaga.execute(dto)) as ReserveBookingSagaResult
     } catch (err) {
       return err as MaybeErrorResponse

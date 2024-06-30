@@ -8,8 +8,11 @@ import type { SagaStepClassInheritor } from './saga-step'
 import { SagaManager } from './saga.manager'
 import type { SagaPersistenceEntity, TEventClass, TSagaMapper } from './saga.types'
 
-export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenceEntity>
-  implements TSagaMapper<A, SagaPersistenceEntity, SagaManager<A>>
+export class SagaMapper<
+  A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
+  AbstractPersistenceEntity,
+> implements TSagaMapper<A, SagaPersistenceEntity, SagaManager<A, DTO>>
 {
   constructor(
     private childAggregateRepository: TAbstractAggregateRepository<A, AbstractPersistenceEntity>,
@@ -27,7 +30,7 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A>> {
+  ): Promise<SagaManager<A, DTO>> {
     const { child_aggregate_id, state } = sagaPersistenceEntity
 
     const aggregate = await this.childAggregateRepository.restoreAggregateFromDB(child_aggregate_id)
@@ -36,8 +39,8 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
       throw new Error('Aggregate not found')
     }
 
-    return SagaManager.create<A>(
-      {
+    return SagaManager.create<A, DTO>({
+      props: {
         childAggregate: aggregate,
         state: {
           isErrorSaga: state.is_error_saga,
@@ -50,12 +53,12 @@ export class SagaMapper<A extends AggregateRoot<EntityProps>, AbstractPersistenc
       stepCommands,
       name,
       additional,
-    )
+    })
   }
 
-  toPersistence(domainEntity: SagaManager<A>): SagaPersistenceEntity {
+  toPersistence(domainEntity: SagaManager<A, DTO>): SagaPersistenceEntity {
     return {
-      id: domainEntity.sagaManagerControl.getId(),
+      id: domainEntity.sagaManagerControl.getSagaId(),
       name: domainEntity.sagaManagerControl.getName(),
       child_aggregate_id:
         domainEntity.sagaManagerControl.props.childAggregate?.id.toString() || null,

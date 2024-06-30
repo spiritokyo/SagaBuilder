@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 import type { RabbitMQClient } from '@booking-shared/infra/rabbit/client'
+import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 import { CronJob } from 'cron'
 import type { PoolClient } from 'pg'
 
@@ -24,11 +25,11 @@ export class RestoreFailedReserveBookingSagaCron {
   public static client: PoolClient
   public static messageBroker: RabbitMQClient
   public static job: CronJob
-  public static reserveBookingSagaRepository: TSagaRepo<Booking>
+  public static reserveBookingSagaRepository: TSagaRepo<Booking, ReserveBookingDTO>
 
   static initialize(
     client: PoolClient,
-    reserveBookingSagaRepository: TSagaRepo<Booking>,
+    reserveBookingSagaRepository: TSagaRepo<Booking, ReserveBookingDTO>,
     messageBroker: RabbitMQClient,
   ): typeof RestoreFailedReserveBookingSagaCron {
     this.client = client

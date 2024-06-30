@@ -9,8 +9,9 @@ import type { AbstractProps, GenericSagaStateProps, TEventClass } from './saga.t
 
 export class SagaManagerControl<
   A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
 > extends AggregateRoot<GenericSagaStateProps> {
-  readonly sagaRepo: TSagaRepo<AggregateRoot<EntityProps>>
+  readonly sagaRepo: TSagaRepo<AggregateRoot<EntityProps>, Record<string, unknown>>
   readonly eventBus: EventEmitter
   readonly completedEvent: TEventClass
   readonly failedEvent: TEventClass
@@ -19,7 +20,7 @@ export class SagaManagerControl<
   public props: AbstractProps<A>
 
   constructor(
-    sagaRepo: TSagaRepo<AggregateRoot<EntityProps>>,
+    sagaRepo: TSagaRepo<A, DTO>,
     props: AbstractProps<A>,
     events: { completedEvent: TEventClass; failedEvent: TEventClass },
     name: string,
@@ -36,16 +37,16 @@ export class SagaManagerControl<
     this.failedEvent = events.failedEvent
   }
 
-  async freezeSaga(saga: SagaManager<A>): Promise<void> {
+  async freezeSaga(saga: SagaManager<A, DTO>): Promise<void> {
     this.getState().isErrorSaga = true
 
-    const event = new this.failedEvent(this.getId(), this.getState())
+    const event = new this.failedEvent(this.getSagaId(), this.getState())
     this.addDomainEvent(event)
 
     await this.saveSagaInDB(saga, false)
   }
 
-  async switchToCompensatingDirection(saga: SagaManager<A>): Promise<void> {
+  async switchToCompensatingDirection(saga: SagaManager<A, DTO>): Promise<void> {
     // We already are in compensation mode
     if (this.getState().isCompensatingDirection) {
       return
@@ -57,17 +58,17 @@ export class SagaManagerControl<
     await this.saveSagaInDB(saga, true)
   }
 
-  async compeleteSaga(saga: SagaManager<A>): Promise<void> {
+  async compeleteSaga(saga: SagaManager<A, DTO>): Promise<void> {
     this.getState().isCompleted = true
     this.getState().isErrorSaga = false
 
-    const event = new this.completedEvent(this.getId(), this.getState())
+    const event = new this.completedEvent(this.getSagaId(), this.getState())
     this.addDomainEvent(event)
 
     await this.saveSagaInDB(saga, true)
   }
 
-  async saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void> {
+  async saveSagaInDB(saga: SagaManager<A, DTO>, updateOnlySagaState: boolean): Promise<void> {
     await this.sagaRepo.saveSagaInDB(saga, updateOnlySagaState)
   }
 
@@ -85,7 +86,7 @@ export class SagaManagerControl<
     return this.props.state
   }
 
-  getId(): string {
+  getSagaId(): string {
     return this.id.toString()
   }
 

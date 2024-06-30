@@ -11,10 +11,11 @@ import type { TSagaRepo } from '../saga.repository'
 
 export class SagaRepositoryImplDatabase<
   A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
   AbstractPersistenceEntity,
-> implements TSagaRepo<A>
+> implements TSagaRepo<A, DTO>
 {
-  sagaMapper: SagaMapper<A, AbstractPersistenceEntity>
+  sagaMapper: SagaMapper<A, DTO, AbstractPersistenceEntity>
 
   constructor(
     readonly client: PoolClient,
@@ -23,7 +24,7 @@ export class SagaRepositoryImplDatabase<
     this.sagaMapper = new SagaMapper(childAggregateRepo)
   }
 
-  async saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void> {
+  async saveSagaInDB(saga: SagaManager<A, DTO>, updateOnlySagaState: boolean): Promise<void> {
     // emulateChaosError(new ReserveBookingErrors.SagaBookingRepoInfraError(), 10)
 
     /**
@@ -76,7 +77,7 @@ export class SagaRepositoryImplDatabase<
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A> | null> {
+  ): Promise<SagaManager<A, DTO> | null> {
     // emulateChaosError(new SagaBookingRepoInfraError(), 10)
 
     return reserveBookingSagaPersistenceEntity

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { EventEmitter } from 'node:stream'
 
-import type { AggregateRoot, UniqueEntityID } from '@libs/common/domain'
+import type { AggregateRoot, EntityProps, UniqueEntityID } from '@libs/common/domain'
 import type { IDomainEvent } from '@libs/common/domain/events'
 
 import type { SagaStep, SagaStepClassInheritor } from './saga-step'
@@ -88,4 +88,19 @@ export type ISagaManager<A extends AggregateRoot<Record<string, unknown>>> = {
   listenUpdateSagaState(): void
   getId(): string
   getState(): GenericSagaStateProps['state']
+}
+
+export type SagaCreateOptions<A extends AggregateRoot<EntityProps>> = {
+  props: Omit<AbstractProps<A>, 'state'> & {
+    state?: AbstractProps<A>['state']
+  }
+  events: { completedEvent: TEventClass; failedEvent: TEventClass }
+  stepCommands: {
+    stepClass: SagaStepClassInheritor<A>
+    additionalArguments?: any[]
+  }[]
+  name: string
+  additional?: {
+    id?: UniqueEntityID
+  }
 }

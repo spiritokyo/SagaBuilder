@@ -1,20 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable @typescript-eslint/prefer-reduce-type-parameter */
-import type { ReserveBookingDTO } from '@reserve-booking-saga-controller/reserve-booking.dto'
 
 import type { EntityProps, UniqueEntityID, AggregateRoot } from '@libs/common/domain'
 
 import type { TSagaRepo } from './repo/saga.repository'
 import type { SagaStep, SagaStepClassInheritor } from './saga-step'
 import { SagaManagerControl } from './saga.manager-control'
-import type { AbstractProps, GenericSagaStateProps, TEventClass } from './saga.types'
+import type {
+  AbstractProps,
+  GenericSagaStateProps,
+  SagaCreateOptions,
+  TEventClass,
+} from './saga.types'
 
-export class SagaManager<A extends AggregateRoot<EntityProps>> {
-  static sagaRepo: TSagaRepo<AggregateRoot<EntityProps>>
+export class SagaManager<
+  A extends AggregateRoot<EntityProps>,
+  DTO extends Record<string, unknown>,
+> {
+  static sagaRepo: TSagaRepo<AggregateRoot<EntityProps>, Record<string, unknown>>
   static isInitialized = false
 
-  readonly sagaManagerControl: SagaManagerControl<A>
+  readonly sagaManagerControl: SagaManagerControl<A, DTO>
 
   public successfulSteps: SagaStep<A>[]
   public steps: SagaStep<A>[]
@@ -24,7 +31,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
    * @description before creating of ReserveBookingSaga, it should be initialized
    */
   public constructor(
-    sagaManagerControl: SagaManagerControl<A>,
+    sagaManagerControl: SagaManagerControl<A, DTO>,
     stepCommands: {
       stepClass: SagaStepClassInheritor<A>
       additionalArguments?: any[]
@@ -52,7 +59,9 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
   /**
    * @description Initialize ReserveBookingSagaRepository and RabbitMQ client
    */
-  static initialize<A extends AggregateRoot<EntityProps>>(sagaRepo: TSagaRepo<A>): void {
+  static initialize<A extends AggregateRoot<EntityProps>, DTO extends Record<string, unknown>>(
+    sagaRepo: TSagaRepo<A, DTO>,
+  ): void {
     SagaManager.sagaRepo = sagaRepo
 
     console.log('[ReserveBookingSaga]: initialized')
@@ -65,28 +74,20 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
    */
   static create<
     A extends AggregateRoot<EntityProps>,
-    ReturnClass extends SagaManager<A> = SagaManager<A>,
+    DTO extends Record<string, unknown>,
+    SagaManagerInheritor extends SagaManager<A, DTO> = SagaManager<A, DTO>,
   >(
     this: new (
-      sagaManagerControl: SagaManagerControl<A>,
+      sagaManagerControl: SagaManagerControl<A, DTO>,
       stepCommands: {
         stepClass: SagaStepClassInheritor<A>
         additionalArguments?: any[]
       }[],
-    ) => ReturnClass,
-    props: Omit<AbstractProps<A>, 'state'> & {
-      state?: AbstractProps<A>['state']
-    },
-    events: { completedEvent: TEventClass; failedEvent: TEventClass },
-    stepCommands: {
-      stepClass: SagaStepClassInheritor<A>
-      additionalArguments?: any[]
-    }[],
-    name: string,
-    additional?: {
-      id?: UniqueEntityID
-    },
-  ): ReturnClass {
+    ) => SagaManagerInheritor,
+    options: SagaCreateOptions<A>,
+  ): SagaManagerInheritor {
+    const { events, name, props, stepCommands, additional } = options
+
     if (!SagaManager.isInitialized) {
       throw new Error('ReserveBookingSaga is not initialized')
     }
@@ -105,8 +106,8 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
       ? console.log('[RESTORE EXISTING SAGA]', props, additional?.id)
       : console.log('[BRAND NEW SAGA]', props, additional?.id)
 
-    const sagaManagerControl = new SagaManagerControl(
-      SagaManager.sagaRepo,
+    const sagaManagerControl = new SagaManagerControl<A, DTO>(
+      SagaManager.sagaRepo as TSagaRepo<A, DTO>,
       {
         ...props,
         state: initialState ? initialState : props.state,
@@ -122,10 +123,11 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
   /**
    * @description create/reconstruct in-memory ReserveBookingSaga and then to persist it
    */
-  static async createAndPersist<A extends AggregateRoot<EntityProps>>(
-    args: Parameters<typeof SagaManager.create<A>>,
-  ): Promise<SagaManager<A>> {
-    const sagaInstance: SagaManager<A> = SagaManager.create(...args)
+  static async createAndPersist<
+    A extends AggregateRoot<EntityProps>,
+    DTO extends Record<string, unknown>,
+  >(args: Parameters<typeof SagaManager.create<A, DTO>>): Promise<SagaManager<A, DTO>> {
+    const sagaInstance: SagaManager<A, DTO> = SagaManager.create(...args)
 
     await SagaManager.sagaRepo.saveSagaInDB(sagaInstance, false)
 
@@ -180,7 +182,7 @@ export class SagaManager<A extends AggregateRoot<EntityProps>> {
    * @throws `BookingCreatedFailureDomainError` - course is not available - THROWS ERROR
    * @throws `BookingConfirmFailureDomainError` - error during booking confirmation - THROW ERROR
    */
-  async execute(dto: ReserveBookingDTO): Promise<unknown> {
+  async execute(dto: DTO): Promise<unknown> {
     console.log('Start booking saga!')
 
     for (const step of this.steps) {

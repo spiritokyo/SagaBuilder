@@ -4,13 +4,13 @@ import type { SagaStepClassInheritor } from '../saga-step'
 import type { SagaManager } from '../saga.manager'
 import type { SagaPersistenceEntity, TEventClass } from '../saga.types'
 
-export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
+export type TSagaRepo<A extends AggregateRoot<EntityProps>, DTO extends Record<string, unknown>> = {
   /**
    *
    * @param reserveBookingSaga
    * @param updateOnlySagaState - if true, only reserve booking saga state will be updated in DB
    */
-  saveSagaInDB(saga: SagaManager<A>, updateOnlySagaState: boolean): Promise<void>
+  saveSagaInDB(saga: SagaManager<A, DTO>, updateOnlySagaState: boolean): Promise<void>
   /**
    * @description restore reserve booking aggregate from DB based on `sagaId`
    */
@@ -26,5 +26,5 @@ export type TSagaRepo<A extends AggregateRoot<EntityProps>> = {
     additional?: {
       id?: UniqueEntityID
     },
-  ): Promise<SagaManager<A> | null>
+  ): Promise<SagaManager<A, DTO> | null>
 }
